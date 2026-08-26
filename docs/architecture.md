@@ -149,21 +149,21 @@ graph TD
 
 ```mermaid
 flowchart LR
-    subgraph Compute Tier (Google Cloud Run)
-        TM[studiosonar-taskmaster]
-        CS[studiosonar-channel-monitor]
-        AD[studiosonar-anomaly-detector]
-        PR[studiosonar-pr-strategist]
-        VC[studiosonar-content-creator]
+    subgraph compute_tier ["Compute Tier (Google Cloud Run)"]
+        TM["studiosonar-taskmaster"]
+        CS["studiosonar-channel-monitor"]
+        AD["studiosonar-anomaly-detector"]
+        PR["studiosonar-pr-strategist"]
+        VC["studiosonar-content-creator"]
     end
 
-    subgraph Data & Storage Substrate
-        BQ[(Google BigQuery OLAP)]
-        GCS[(GCS: gs://studiosonar-dev-reports)]
+    subgraph storage_tier ["Data & Storage Substrate"]
+        BQ[("Google BigQuery OLAP")]
+        GCS[("GCS: gs://studiosonar-dev-reports")]
     end
 
-    subgraph AI Reasoning
-        VAI[Vertex AI Gemini Flash]
+    subgraph ai_reasoning ["AI Reasoning"]
+        VAI["Vertex AI Gemini Flash"]
     end
 
     TM <-->|Direct SQL Query| BQ
@@ -172,6 +172,7 @@ flowchart LR
     PR <-->|Zero-Key IAM ADC| VAI
     VC <-->|Zero-Key IAM ADC| VAI
 ```
+
 
 ### 1. Google BigQuery OLAP Storage
 * **Dataset:** `studiosonar-dev.studiosonar_analytics`
