@@ -200,26 +200,73 @@ StudioSonar groups telemetry into **Subject Entities**, connecting primary video
 
 ---
 
-## 🤝 Distributed Google ADK A2A Protocol
+## 🔄 End-to-End Swarm Coordination & Centralized Dossier Aggregation Flow
 
-Inter-agent communication follows the **Google Agent Development Kit (ADK)** Agent-to-Agent (A2A) protocol:
+A core architectural pillar of StudioSonar is **Decoupled Autonomous Execution with a Single Centralized Source of Truth**.
 
-1. **A2A HTTP Handoff Payload:**
-   ```json
-   {
-     "source_agent": "studiosonar-anomaly-detector",
-     "target_agent": "studiosonar-pr-strategist",
-     "trigger_reason": "PR_BACKLASH_SURGE",
-     "asset_id": "video_UH21OnJwxZE",
-     "telemetry": {
-       "velocity_spike_pct": 310.0,
-       "negative_sentiment_pct": 0.4,
-       "dominant_theme": "Viral Chorus Replay"
-     }
-   }
-   ```
-2. **Resilience & Fallback:**  
-   If downstream microservices are unreachable or during offline development, the `A2ADispatcher` automatically falls back to in-process execution seamlessly.
+```mermaid
+sequenceDiagram
+    autonumber
+    actor CloudScheduler as ⏰ Cloud Scheduler / Anomaly Webhook
+    participant Taskmaster as 👑 Taskmaster Root Orchestrator
+    participant Sentinel as 📡 Channel Sentinel & TikTok Harvester
+    participant Anomaly as 🔍 Anomaly Detector Agent
+    participant ViralAgent as ✍️ Viral Content Creator
+    participant PRAgent as 🚨 PR Crisis Strategist
+    participant GCS as 📦 GCS Substrate (gs://studiosonar-dev-reports)
+    participant BQ as 📊 BigQuery Catalog Registry
+    actor Dashboard as 🖥️ Single Pane of Glass Dashboard
+
+    CloudScheduler->>Taskmaster: Trigger Autonomous Cycle (POST /api/v1/trigger-cycle)
+    
+    par Parallel Sub-Agent Ingestion
+        Taskmaster->>Sentinel: Scan 7d/30d Uploads & TikTok UGC Streams
+        Sentinel->>GCS: Save sub-reports (channel_report_*.md, tiktok_report_*.md)
+        Sentinel->>BQ: Update time-series metrics & snapshot catalog
+    and Anomaly Evaluation
+        Taskmaster->>Anomaly: Evaluate Sentiment & Velocity Spikes (V_ratio, CVR)
+    end
+
+    alt Viral Retention Surge (V_ratio >= 2.0x & Sentiment > 95%)
+        Anomaly->>ViralAgent: A2A Handoff (Breakout Audio / Topic)
+        ViralAgent->>ViralAgent: Pre-Generate 60s Script (Hook 3s, Problem, Solution, B-Rolls)
+        ViralAgent->>GCS: Embed Viral Script Pack directly into Section 4
+    else PR Backlash / Crisis Surge (Spike > 150% & Negative > 20%)
+        Anomaly->>PRAgent: A2A Handoff (Backlash Comments & Tone Friction)
+        PRAgent->>PRAgent: Synthesize Root Cause & 3-Step Containment Stance
+        PRAgent->>GCS: Embed Risk Containment Stance into Section 4
+        PRAgent->>Taskmaster: Dispatch Slack Alert (#war-room-alerts) & Notion Triage
+    end
+
+    Taskmaster->>Taskmaster: Realtime24hPulseEngine aggregates all sub-reports
+    Taskmaster->>GCS: Publish Consolidated Master Dossier (realtime_24h_pulse_report.md)
+    
+    Dashboard->>BQ: Load Categorized Surveillance Tree (/api/v1/registry/tracking)
+    Dashboard->>GCS: Stream Live Consolidated Master Dossier (/api/v1/reports/content)
+```
+
+### 1. Who Owns the Final Report? (`Taskmaster Orchestrator` as Chief Editor)
+* Individual agents (`ChannelSentinelAgent`, `TikTokHarvester`, `AnomalyDetectorAgent`, `ViralContentCreatorAgent`, `PRCrisisStrategistAgent`) are **Specialist Contributors**. They analyze specific telemetry slices (e.g. YouTube API uploads, TikTok Sound volumes, comment sentiment).
+* The **`Taskmaster Orchestrator`** acts as the **Chief Intelligence Officer & Managing Editor**. It validates individual findings through Guardrails, synthesizes cross-platform correlations (e.g. how a TikTok audio wave drives a YouTube MV surge), and aggregates all data into a **Single Unified Master Report**.
+
+### 2. The Centralized Master File: `realtime_24h_pulse_report.md`
+Rather than scattering disparate summaries across disconnected tools, all telemetry is centralized into a single master file stored at:
+```
+gs://studiosonar-dev-reports/realtime_24h_pulse_report.md
+```
+This document synthesizes:
+1. **🌐 Macro Executive Overview:** Total 24h network volume, sentiment health, top breakout assets.
+2. **📊 Multi-Platform Subject Clusters:** Connected campaign entities (YouTube MVs + TikTok UGC sounds).
+3. **🚀 Heat Velocity & Interactive Density Grid:** $V_{\text{ratio}}$, $\text{CVR}$ (Comment-to-View Density), and $V_{\text{comment}}$.
+4. **💬 Thematic Sentiment Taxonomy:** Audience consensus, friction points, and creator adoption.
+5. **🎯 Master Prescriptive Action Plan:** Pre-generated viral scripts and risk containment stances.
+
+### 3. Cost-Effective Pre-Computed Substrate (Zero-Cost UI Exploration)
+* **Pre-Computed at Ingestion Time:** The `ViralContentCreatorAgent` and `PRCrisisStrategistAgent` run their generative reasoning **once per surveillance cycle** (every 1-6 hours) during background ingestion.
+* **Embedded Inside Section 4:** The generated 60s viral scripts (Hook 3s, Problem, Solution, CTA, Visual B-Roll Notes) and 3-step containment stances are rendered directly inside **Section 4: Prescriptive Action Plan** of the report.
+* **Zero Additional LLM Token Cost on Dashboard Views:** When executives or creators browse the dashboard, they view the pre-computed, fully synthesized scripts instantly (< 50ms latency) without incurring recurring LLM API invocation costs.
+
+---
 
 ---
 
