@@ -1,0 +1,300 @@
+{
+  "channels": [
+    {
+      "channel_id": "ch_business",
+      "report_key": "channel_bloomberg",
+      "handle": "@business",
+      "platform": "youtube",
+      "title": "Bloomberg Originals",
+      "category": "Global Business & Documentaries",
+      "tracking_status": "ACTIVE",
+      "check_frequency_minutes": 15,
+      "video_lookback_days": 30,
+      "custom_sentiment_categories": [
+        "Macroeconomic Debates",
+        "Data & Source Requests",
+        "Contrarian Perspectives",
+        "Editorial Praise"
+      ],
+      "notification_channel": "#media-alerts",
+      "created_at": "2026-08-25T04:31:08.512911+00:00",
+      "last_checked_at": null,
+      "latest_video_id": null,
+      "snapshots": [
+        {
+          "timestamp": "2026-08-25T04:31:08.512747+00:00",
+          "subscriber_count": 3400000,
+          "total_video_count": 1850,
+          "average_views_per_video": 650000.0,
+          "comments_24h": 842,
+          "top_clip_title": "The Dark Money Behind Myanmar’s Civil War (ROqpfx_9LGY)"
+        }
+
+      ]
+    },
+    {
+      "channel_id": "ch_kiemdinhphim90",
+      "report_key": "channel_kiemdinhphim",
+      "handle": "@KiemDinhPhim9.0",
+      "platform": "youtube",
+      "title": "Kiểm Định Phim 9.0",
+      "category": "Film Criticism & Satire",
+      "tracking_status": "ACTIVE",
+      "check_frequency_minutes": 15,
+      "video_lookback_days": 30,
+      "custom_sentiment_categories": [
+        "Comedic Roasting Praise",
+        "Actor & Drama Defense",
+        "Next Episode Suggestions",
+        "Awards Voting"
+      ],
+      "notification_channel": "#media-alerts",
+      "created_at": "2026-08-25T04:31:08.512929+00:00",
+      "last_checked_at": null,
+      "latest_video_id": null,
+      "snapshots": [
+        {
+          "timestamp": "2026-08-25T04:31:08.512922+00:00",
+          "subscriber_count": 48400,
+          "total_video_count": 65,
+          "average_views_per_video": 55000.0,
+          "comments_24h": 240,
+          "top_clip_title": "TOÀN BỘ PHIM VIỆT chiếu rạp dịp 2/9 (FEhLXCMXWUk)"
+        }
+
+      ]
+    },
+    {
+      "channel_id": "ch_thochupanhdalat",
+      "report_key": "channel_thochupanh",
+      "handle": "@thochupanh.dalat",
+      "platform": "tiktok",
+      "title": "Thợ Chụp Ảnh Đà Lạt",
+      "category": "Travel & Photography (TikTok Creator)",
+      "tracking_status": "ACTIVE",
+      "check_frequency_minutes": 15,
+      "video_lookback_days": 30,
+      "custom_sentiment_categories": [
+        "Direct Booking & Pricing",
+        "Aesthetic & Photo Praise",
+        "Location Inquiries",
+        "Service Feedback"
+      ],
+      "notification_channel": "#media-alerts",
+      "created_at": "2026-08-25T04:31:08.512938+00:00",
+      "last_checked_at": null,
+      "latest_video_id": null,
+      "snapshots": [
+        {
+          "timestamp": "2026-08-25T04:31:08.512934+00:00",
+          "subscriber_count": 85000,
+          "total_video_count": 120,
+          "average_views_per_video": 210000.0,
+          "comments_24h": 156,
+          "top_clip_title": "Sunset Pine Hill Photo Session"
+        }
+      ]
+    }
+
+  ],
+  "videos": [
+    {
+      "video_id": "UH21OnJwxZE",
+      "channel_id": "ch_phuongmychi",
+      "url": "https://www.youtube.com/watch?v=UH21OnJwxZE",
+      "title": "PHƯƠNG MỸ CHI x DTAP | 'THIÊN ĐƯỜNG VỚI NGƯỜI THƯƠNG' | OFFICIAL MUSIC VIDEO",
+      "published_at": "2026-08-20T12:00:00Z",
+      "tracking_duration_days": 30,
+      "expires_at": null,
+      "custom_sentiment_categories": [
+        "Viral Chorus Replay Obsession",
+        "Cultural Heritage Resonance",
+        "Music Video Storyline Praise",
+        "Choreography Inquiries"
+      ],
+      "monitoring_tier": "HIGH_PRIORITY_24H",
+      "tracking_status": "ACTIVE",
+      "created_at": "2026-08-25T09:55:00+00:00",
+      "last_analyzed_at": null,
+      "snapshots": [
+        {
+          "timestamp": "2026-08-25T09:55:00+00:00",
+          "hours_since_publish": 120.0,
+          "views": 14088244,
+          "likes": 238061,
+          "comments": 25382,
+          "velocity_views_per_hour": 117400.0,
+          "sentiment_positive_pct": 99.4,
+          "sentiment_negative_pct": 0.1
+        }
+      ],
+      "generated_report_path": "reports/video_report_UH21OnJwxZE.md",
+      "anomaly_status": "NORMAL"
+    },
+    {
+      "video_id": "tt_sound_pmc_thien_duong",
+      "channel_id": "ch_tiktok_sounds",
+      "url": "https://www.tiktok.com/music/Thien-Duong-Voi-Nguoi-Thuong-Official",
+      "title": "🎵 TikTok Sound: 'Thiên Đường Với Người Thương' (128.5K UGC Videos)",
+      "published_at": "2026-08-20T12:00:00Z",
+      "tracking_duration_days": 30,
+      "expires_at": null,
+      "custom_sentiment_categories": [
+        "Traditional Transformation Dance",
+        "Speed-Up Remix Adoption",
+        "UGC Creation Velocity",
+        "Hand Gesture Choreography"
+      ],
+      "monitoring_tier": "TIKTOK_SOUND_RADAR",
+      "tracking_status": "ACTIVE",
+      "created_at": "2026-08-25T09:55:00+00:00",
+      "last_analyzed_at": null,
+      "snapshots": [
+        {
+          "timestamp": "2026-08-26T04:00:00+00:00",
+          "hours_since_publish": 120.0,
+          "views": 128540,
+          "likes": 985000,
+          "comments": 14200,
+          "velocity_views_per_hour": 591.0,
+          "sentiment_positive_pct": 99.2,
+          "sentiment_negative_pct": 0.1
+        }
+      ],
+      "generated_report_path": "reports/tiktok_report_sound_thien_duong.md",
+      "anomaly_status": "VIRAL_SURGE"
+    },
+    {
+      "video_id": "Rp6ZnP5WRgI",
+      "channel_id": "ch_phuongmychi",
+      "url": "https://www.youtube.com/watch?v=Rp6ZnP5WRgI",
+      "title": "PHƯƠNG MỸ CHI x DTAP | ALBUM 'DÂN CHƠI DÂN CA' | OFFICIAL HIGHLIGHT MEDLEY",
+      "published_at": "2026-08-24T12:00:00Z",
+      "tracking_duration_days": 30,
+      "expires_at": null,
+      "custom_sentiment_categories": [
+        "Folk Fusion Innovation Praise",
+        "DTAP Music Production Quality",
+        "Vocal Transformation Dynamics",
+        "Album Release Inquiries"
+      ],
+      "monitoring_tier": "HIGH_PRIORITY_24H",
+      "tracking_status": "ACTIVE",
+      "created_at": "2026-08-25T09:55:00+00:00",
+      "last_analyzed_at": null,
+      "snapshots": [
+        {
+          "timestamp": "2026-08-25T09:55:00+00:00",
+          "hours_since_publish": 24.0,
+          "views": 232424,
+          "likes": 13370,
+          "comments": 839,
+          "velocity_views_per_hour": 9684.0,
+          "sentiment_positive_pct": 98.6,
+          "sentiment_negative_pct": 0.3
+        }
+      ],
+      "generated_report_path": "reports/video_report_Rp6ZnP5WRgI.md",
+      "anomaly_status": "NORMAL"
+    },
+    {
+      "video_id": "tt_sound_dtap_dan_choi",
+      "channel_id": "ch_tiktok_sounds",
+      "url": "https://www.tiktok.com/music/Dan-Choi-Dan-Ca-Drop-Beat",
+      "title": "🎵 TikTok Sound: 'Dân Chơi Dân Ca' (34.2K UGC Videos)",
+      "published_at": "2026-08-24T12:00:00Z",
+      "tracking_duration_days": 30,
+      "expires_at": null,
+      "custom_sentiment_categories": [
+        "Bass Drop Transitions",
+        "Street Style Dance",
+        "Remix Sound Inquiries",
+        "Short-form Virality"
+      ],
+      "monitoring_tier": "TIKTOK_SOUND_RADAR",
+      "tracking_status": "ACTIVE",
+      "created_at": "2026-08-25T09:55:00+00:00",
+      "last_analyzed_at": null,
+      "snapshots": [
+        {
+          "timestamp": "2026-08-26T04:00:00+00:00",
+          "hours_since_publish": 24.0,
+          "views": 34210,
+          "likes": 245000,
+          "comments": 4850,
+          "velocity_views_per_hour": 202.0,
+          "sentiment_positive_pct": 98.5,
+          "sentiment_negative_pct": 0.2
+        }
+      ],
+      "generated_report_path": "reports/tiktok_report_sound_dan_choi.md",
+      "anomaly_status": "VIRAL_SURGE"
+    },
+    {
+      "video_id": "R7Bf4l5VgO8",
+      "channel_id": "ch_thuychi",
+      "url": "https://www.youtube.com/watch?v=R7Bf4l5VgO8",
+      "title": "Thùy Chi - Yêu Lắm Miền Tây (Official Music Video)",
+      "published_at": "2026-08-25T00:00:00Z",
+      "tracking_duration_days": 30,
+      "expires_at": null,
+      "custom_sentiment_categories": [
+        "Vocal Tone & Melody Praise",
+        "Western Vietnam Scenery & Culture",
+        "Nostalgia & Emotional Connection",
+        "Arrangement Inquiries"
+      ],
+      "monitoring_tier": "HIGH_PRIORITY_24H",
+      "tracking_status": "ACTIVE",
+      "created_at": "2026-08-25T09:55:00+00:00",
+      "last_analyzed_at": null,
+      "snapshots": [
+        {
+          "timestamp": "2026-08-25T09:55:00+00:00",
+          "hours_since_publish": 12.0,
+          "views": 15842,
+          "likes": 1278,
+          "comments": 191,
+          "velocity_views_per_hour": 1320.0,
+          "sentiment_positive_pct": 99.1,
+          "sentiment_negative_pct": 0.1
+        }
+      ],
+      "generated_report_path": "reports/video_report_R7Bf4l5VgO8.md",
+      "anomaly_status": "NORMAL"
+    },
+    {
+      "video_id": "TNl9diGdyPo",
+      "channel_id": "ch_business",
+      "url": "https://www.youtube.com/watch?v=TNl9diGdyPo",
+      "title": "How Ferrero Makes 365,000 Tons Of Nutella A Year | Big Business | Business Insider",
+      "published_at": "2026-08-24T12:00:00Z",
+      "tracking_duration_days": 30,
+      "expires_at": null,
+      "custom_sentiment_categories": [
+        "Industrial Automation Fascination",
+        "Raw Ingredient Quality & Palm Oil",
+        "Factory Engineering Praise",
+        "Commercial Scale Inquiries"
+      ],
+      "monitoring_tier": "HIGH_PRIORITY_24H",
+      "tracking_status": "ACTIVE",
+      "created_at": "2026-08-25T07:45:00+00:00",
+      "last_analyzed_at": null,
+      "snapshots": [
+        {
+          "timestamp": "2026-08-25T07:45:00+00:00",
+          "hours_since_publish": 24.0,
+          "views": 388149,
+          "likes": 4830,
+          "comments": 473,
+          "velocity_views_per_hour": 16172.0,
+          "sentiment_positive_pct": 98.4,
+          "sentiment_negative_pct": 0.2
+        }
+      ],
+      "generated_report_path": "reports/video_report_TNl9diGdyPo.md",
+      "anomaly_status": "NORMAL"
+    }
+  ]
+}

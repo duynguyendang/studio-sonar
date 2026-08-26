@@ -1,0 +1,17 @@
+.git
+.github
+.pytest_cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.log
+.env
+.env.*
+reports/
+docs/
+infra/
+scratch/
+tests/
+*.md
+!README.md

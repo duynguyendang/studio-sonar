@@ -1,0 +1,79 @@
+[
+  {
+    "tip_id": "HT_001_FINANCIAL_DRAIN",
+    "category": "All",
+    "archetype": "Financial Catastrophe & Loss Aversion",
+    "name": "Nơi [Số Tiền Khủng] Đã 'Bốc Hơi'",
+    "psychology": "Con người sợ mất tiền gấp 2.5 lần mong muốn kiếm tiền (Loss Aversion). Con số cụ thể tạo tính chân thực.",
+    "formula": "[Con số tiền bạc cụ thể] + [Động từ thất thoát mạnh: 'Bốc hơi', 'Đốt sạch', 'Biến mất'] + [Lý do/Dự án]",
+    "example_3s": "Tôi đã tìm thấy nơi 26 tỷ đồng đầu tư vào dự án này đã 'bốc hơi' chỉ sau một đêm...",
+    "thumbnail_text": "26 TỶ 'BỐC HƠI'?",
+    "expected_ctr_boost": "+52%"
+  },
+  {
+    "tip_id": "HT_002_EXPENSIVE_MISTAKE",
+    "category": "Tech & Business",
+    "archetype": "Expensive Common Mistake",
+    "name": "Sai Lầm Đắt Giá Khiến [Đối Tượng] Mất [Số Tiền]",
+    "psychology": "Cảnh báo để người xem không bị mất tiền ngu.",
+    "formula": "'Sai lầm đắt giá nhất' + [Hành động sai] + 'khiến bạn mất trắng hàng nghìn đô'",
+    "example_3s": "Sai lầm ngớ ngẩn này trong kiến trúc Cloud đã khiến startup của chúng tôi mất 15.000$ tiền server chỉ trong 1 tuần!",
+    "thumbnail_text": "MẤT 15,000$ VÌ LỖI NÀY!",
+    "expected_ctr_boost": "+44%"
+  },
+  {
+    "tip_id": "HT_003_STOP_DOING_THIS",
+    "category": "All",
+    "archetype": "Contrarian Warning",
+    "name": "Dừng Ngay Việc [Hành Động Phổ Biến] Lại!",
+    "psychology": "Tạo cú sốc gián đoạn mô thức (Pattern Interrupt). Khiến người xem hoang mang tự hỏi mình có đang làm sai không.",
+    "formula": "'Dừng lại!' / 'ĐỪNG BAO GIỜ...' + [Hành động mà 90% số đông đang làm] + [Hậu quả tệ hại]",
+    "example_3s": "Dừng lại! Nếu bạn vẫn đang học viết prompt kiểu này trong 2026 thì bạn đang tự đào thải chính mình!",
+    "thumbnail_text": "DỪNG LÀM CÁCH NÀY!",
+    "expected_ctr_boost": "+48%"
+  },
+  {
+    "tip_id": "HT_004_ROASTING_PARADOX",
+    "category": "Entertainment & Lifestyle",
+    "archetype": "Satirical Roasting",
+    "name": "Làm [Thứ Gì Đó], ĐỪNG Làm Như [Ví Dụ Thảm Họa]",
+    "psychology": "Sử dụng sự hài hước châm biếm để chỉ ra tiêu chuẩn tồi tệ mà ai cũng muốn tránh.",
+    "formula": "'Làm [X], ĐỪNG làm như cách [Thảm họa] đang làm!'",
+    "example_3s": "Làm phim kinh dị, ĐỪNG BAO GIỜ dọa ma khán giả theo kiểu 'Ma Không Đầu' này nữa!",
+    "thumbnail_text": "ĐỪNG LÀM NHƯ THẾ!",
+    "expected_ctr_boost": "+46%"
+  },
+  {
+    "tip_id": "HT_005_BTS_VS_RESULT",
+    "category": "TikTok / Visual / Local",
+    "archetype": "Transformation Gap",
+    "name": "Hậu Trường 'Lóng Ngóng' vs Thành Phẩm 'Triệu Like'",
+    "psychology": "Sự tương phản thị giác tức thì trong 1 giây kích hoạt cảm xúc kinh ngạc (Visual Wow Effect).",
+    "formula": "[Hình ảnh thực tế gượng gạo (0-1s)] ➔ [Âm thanh máy ảnh 'Tách'] ➔ [Bức ảnh/kết quả lung linh (2-3s)]",
+    "example_3s": "Bạn nghĩ đứng đồi thông Đà Lạt chụp ảnh là dễ? Nhìn hậu trường lóng ngóng này và xem ảnh thành phẩm nhé!",
+    "thumbnail_text": "HẬU TRƯỜNG VS ẢNH THẬT",
+    "expected_ctr_boost": "+58%"
+  },
+  {
+    "tip_id": "HT_006_INSIDER_SECRET",
+    "category": "Tech, Career & Leadership",
+    "archetype": "Silicon Valley Insider Mystery",
+    "name": "Bí Mật Đằng Sau Cánh Gà [Tập Đoàn Nghìn Tỷ / Chuyên Gia]",
+    "psychology": "Khao khát tiếp cận thông tin độc quyền chưa từng công bố.",
+    "formula": "'Sự thật về...' / 'Bí mật đằng sau đêm 'Code Red'...' + [Nhân vật/Tập đoàn uy tín]",
+    "example_3s": "Người Việt đồng sáng lập Google Brain: Bí mật 12 năm ở Thung lũng Silicon mà chưa ai dám kể cho bạn...",
+    "thumbnail_text": "BÍ MẬT 12 NĂM GOOGLE",
+    "expected_ctr_boost": "+50%"
+  },
+  {
+    "tip_id": "HT_007_EXTREME_DISASTER",
+    "category": "All",
+    "archetype": "Extreme Qualifier",
+    "name": "Một Thứ 'DỞ TOÀN DIỆN' Sẽ Trông Như Thế Nào?",
+    "psychology": "Sự tò mò về 'đáy của sự thảm họa' (Schadenfreude / Morbid Curiosity).",
+    "formula": "'Một [Sản phẩm/Bộ phim/Hệ thống] DỞ TOÀN DIỆN sẽ trông như thế nào?'",
+    "example_3s": "Một dự án AI 'dở toàn diện' từ đầu đến chân sẽ trông như thế nào? Bóc trần 3 hạt sạn ngớ ngẩn nhất!",
+    "thumbnail_text": "DỞ TOÀN DIỆN?",
+    "expected_ctr_boost": "+43%"
+  }
+]
