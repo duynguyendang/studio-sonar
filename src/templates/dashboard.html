@@ -550,42 +550,15 @@
                 <h2 id="report-title-display">Real-Time Telemetry & Comment Pulse (Last 24h)</h2>
                 <span class="report-url-sub" id="report-url-display">Source: reports/realtime_24h_pulse_report.md (Hot-Reloaded Live)</span>
             </div>
-            <div class="report-controls" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-                <button id="btn-viral-action" class="btn-action-viral" onclick="triggerViralContentAgent()" title="Generate retention-engineered 60s viral video script via ViralContentCreatorAgent">
-                    <span>🚀</span> <span>Generate Viral Script</span>
-                </button>
-                <button id="btn-crisis-action" class="btn-action-crisis" onclick="triggerCrisisStrategyAgent()" title="Generate immediate 3-step containment plan via PRCrisisStrategistAgent">
-                    <span>🚨</span> <span>Generate Crisis Strategy</span>
-                </button>
-                <button class="btn-refresh" onclick="reloadCurrentReport()" title="Refresh live report from GCS">
-                    <span>🔄</span> Refresh
+            <div class="report-controls">
+                <button class="btn-refresh" onclick="reloadCurrentReport()" title="Refresh live intelligence report from GCS">
+                    <span>🔄</span> Refresh Report
                 </button>
             </div>
         </div>
 
         <div class="report-content" id="report-markdown-content">
             <!-- Rendered by Marked.js from GCS markdown reports -->
-        </div>
-    </div>
-</div>
-
-<!-- Interactive Google ADK Agent Output Modal -->
-<div class="modal-overlay" id="agent-modal-overlay">
-    <div class="modal-card" id="agent-modal-card">
-        <div class="modal-header">
-            <h3 id="modal-agent-title">🤖 Google ADK Autonomous Agent Output</h3>
-            <button onclick="closeAgentModal()" style="background: none; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer;">✕</button>
-        </div>
-        <div class="modal-body" id="modal-agent-body">
-            <!-- Dynamic Content Injected Here -->
-        </div>
-        <div class="modal-footer">
-            <button onclick="copyAgentModalOutput()" class="btn-refresh" style="background: rgba(0, 242, 254, 0.15); color: var(--accent-cyan); border-color: rgba(0, 242, 254, 0.3);">
-                <span>📋</span> Copy Output
-            </button>
-            <button onclick="closeAgentModal()" class="btn-refresh">
-                Close
-            </button>
         </div>
     </div>
 </div>

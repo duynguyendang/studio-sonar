@@ -40,7 +40,22 @@
 
 ---
 
-## 4. 🎯 Prescriptive Channel Action Plan
+## 4. 🎯 Prescriptive Channel Action Plan & Strategic Intervention Pack
 
+### 🎬 Recommended Actions:
 1. **Short-Form Syndication:** Repurpose key documentary segments into 45-second vertical clips for YouTube Shorts and LinkedIn.
 2. **Community Sourcing:** Solicit subscriber questions for upcoming investigative episodes on global energy infrastructure.
+
+### 🚀 Pre-Generated 60s High-Retention Script (Shorts / LinkedIn):
+* **⚡ 3-Second Psychological Hook:** *"Everyone thinks China is winning the chip war with AI, but they're dominating something much more dangerous."*
+* **🥊 Core Friction / Problem (0:04 - 0:20):** While Western headlines obsess over sub-3nm cutting-edge silicon, 90% of global electric vehicles, power grids, and medical devices run on mature 28nm legacy nodes.
+* **💡 Solution & Insight (0:21 - 0:48):** China is spending $100B building 32 new legacy chip fabs. They aren't trying to beat NVIDIA—they are creating a global chokehold on the unglamorous chips that keep modern civilization running.
+* **🎯 Call-To-Action (0:49 - 1:00):** Watch the full Bloomberg Originals investigative report on legacy silicon supply chains.
+* **🎬 Visual B-Roll Notes:**
+  - `0:00 - 0:03`: Rapid macro shots of silicon wafers with ominous red warning overlays.
+  - `0:15 - 0:25`: Teardown diagram of a Tesla EV showing dozens of 28nm microcontroller chips.
+  - `0:45 - 1:00`: Bloomberg terminal supply-chain graph comparing fab capacity trajectories.
+
+### 🛡️ Risk & Editorial Containment Stance:
+* **Containment Stance:** Maintain strict data attribution on fab subsidies. Pin top comment providing link to Bloomberg Terminal data methodology.
+

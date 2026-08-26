@@ -40,7 +40,19 @@
 
 ---
 
-## 4. 🎯 Prescriptive Channel Action Plan
+## 4. 🎯 Prescriptive Channel Action Plan & Pre-Generated Viral Script Pack
 
-1. **Shorts Snippet Repurposing:** Cut a 30-second punchline Short on *"Why holiday comedy films fail"* to capture viral interest before September 2nd.
-2. **Community Tab Voting Poll:** Launch a community poll: *"Phim Việt nào dịp 2/9 này bạn chắc chắn né?"* to drive algorithmic retention.
+### 🎬 Recommended Actions:
+1. **Shorts Snippet Repurposing:** Cut a 30-second punchline Short on *"Why holiday comedy films fail"* to capture viral search interest before September 2nd.
+2. **Community Tab Voting Poll:** Launch a community poll: *"Phim Việt nào dịp 2/9 này bạn chắc chắn né?"* to maximize algorithmic retention signals.
+
+### 🚀 Pre-Generated 60s Viral Video Script (Ready-to-Shoot):
+* **⚡ 3-Second Psychological Hook:** *"Đừng vội mua vé xem phim 2/9 này nếu bạn chưa biết sự thật sau trailer!"*
+* **🥊 Core Friction / Problem (0:04 - 0:20):** Cứ mỗi dịp lễ, rạp chiếu lại ngập tràn những bộ phim hài kịch bản chắp vá, câu view bằng danh hài nhưng cốt truyện rỗng tuếch khiến khán giả tiếc tiền vé.
+* **💡 Solution & Climax (0:21 - 0:48):** Thay vì xem theo thói quen, hãy nhìn thẳng vào 3 dấu hiệu trailer báo trước "thảm họa phòng vé": miếng hài hình thể cũ kỹ, kịch bản né tránh logic, và không dám chiếu suất sneak show sớm.
+* **🎯 Call-To-Action (0:49 - 1:00):** Đăng ký Kiểm Định Phim 9.0 để nhận ngay bản bóc tách trung thực toàn bộ phim chiếu rạp trước khi bạn rút ví!
+* **🎬 Visual B-Roll Notes:**
+  - `0:00 - 0:03`: Cắt nhanh các cảnh trailer lòe loẹt kèm âm thanh kính vỡ gây tò mò.
+  - `0:15 - 0:20`: Chèn biểu đồ doanh thu và comment thất vọng của khán giả các mùa trước.
+  - `0:45 - 1:00`: Chèn bảng chấm điểm kịch bản độc quyền của Kiểm Định Phim 9.0.
+

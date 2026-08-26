@@ -40,7 +40,19 @@
 
 ---
 
-## 4. 🎯 Prescriptive Commercial Action Plan
+## 4. 🎯 Prescriptive Commercial Action Plan & Pre-Generated TikTok Script
 
+### 📸 Recommended Actions:
 1. **Automate Bio Booking Funnel:** Pin an automated Google Form / Zalo booking link in bio during the current **4.20x FYP Surge** to convert Saves into paid photography sessions.
 2. **Preset Digital Monetization:** Launch a downloadable Lightroom Mobile preset pack linked in video descriptions.
+
+### 🚀 Pre-Generated 30s TikTok Viral Script (POV / Transformation):
+* **⚡ 3-Second Hook (Visual Beat-Drop):** *"90% người lên Đà Lạt chụp ảnh săn mây đều về tay trắng vì đi sai khung giờ này!"*
+* **🥊 Core Problem (0:04 - 0:12):** Thức dậy 4h sáng lặn lội ra đồi Đa Phú nhưng chỉ thấy sương mù dày đặc hoặc nắng chói chang không thể có ảnh đẹp.
+* **💡 Solution / Secret (0:13 - 0:24):** Quy tắc 15 phút vàng: chỉ săn mây từ 5h15 - 5h30 khi mặt trời vừa ló rạng qua tầng mây và hạ góc máy xuống 30 độ ngược sáng.
+* **🎯 Call-To-Action (0:25 - 0:30):** Lưu ngay video này cho chuyến đi Đà Lạt sắp tới và bấm link bio để nhận lịch hẹn chụp ảnh cinematic!
+* **🎬 Visual B-Roll Notes:**
+  - `0:00 - 0:03`: Cảnh du khách co ro trong sương mù mờ ảo kèm text đỏ: *"Đừng đi giờ này!"*
+  - `0:13 - 0:24`: Biến hình giật beat sang khung hình màu film vintage vàng ấm ngập tràn mây bồng bềnh.
+  - `0:25 - 0:30`: Hiển thị nút Save video & trỏ tay vào ảnh avatar link bio.
+
