@@ -214,11 +214,17 @@ def trigger_viral_content_agent_ui(req: DirectAgentTriggerRequest) -> Dict[str, 
     hook breakdown, Google Doc draft, and Notion Content Sprint task based on current report context.
     """
     topic = req.title or "Viral Breakout Campaign"
+    
+    # Extract report context snippet if available
+    report_text, _ = gcs_report_manager.fetch_report(req.report_key)
+    context_snippet = (report_text[:600] if report_text else "").replace("\n", " ")
+
+
     trend_payload = {
         "trend_topic": topic,
         "cross_platform_acceleration_pct": 310.0,
         "report_key": req.report_key,
-        "key_hook": "Stop building chatbots in 2026. Here is what real autonomous agents actually do."
+        "context_snippet": context_snippet
     }
     actions = taskmaster_orchestrator.content_creator.handle_breakout_trend(trend_payload)
     
@@ -232,14 +238,14 @@ def trigger_viral_content_agent_ui(req: DirectAgentTriggerRequest) -> Dict[str, 
         "role": "High-CTR Viral Content Specialist & Retention Architect",
         "topic": topic,
         "script": {
-            "hook_3s": gdoc_result.get("hook_3s", "Stop building chatbots in 2026. Here is what real autonomous agents actually do."),
-            "problem": gdoc_result.get("problem_statement", "Everyone is suffering from chatbot fatigue."),
-            "solution": gdoc_result.get("solution_core", "Real Taskmasters run 24/7 in the background on Google Cloud."),
-            "call_to_action": gdoc_result.get("call_to_action", "Follow StudioSonar for the full architecture blueprint."),
+            "hook_3s": gdoc_result.get("hook_3s", f"If you are watching '{topic}', stop making this one fatal mistake."),
+            "problem": gdoc_result.get("problem_statement", f"Viewers and creators face major friction analyzing '{topic}'."),
+            "solution": gdoc_result.get("solution_core", "StudioSonar deep telemetry identifies the exact algorithmic retention pacing."),
+            "call_to_action": gdoc_result.get("call_to_action", f"Follow StudioSonar for the full surveillance report on '{topic}'."),
             "broll_notes": gdoc_result.get("visual_broll_notes", [
-                "0:00 - Rapid cuts of frustrated user typing prompts into basic chat UI",
-                "0:15 - Screen recording of BigQuery live SQL stream and Slack red alert auto-firing",
-                "0:45 - High-tech architecture diagram showing Google ADK + Cloud Run"
+                f"0:00 - High-contrast visual cuts for '{topic}'",
+                "0:15 - Real-time metrics breakdown and engagement telemetry overlay",
+                "0:45 - High-tech architecture blueprint with call-to-action banner"
             ]),
             "doc_url": gdoc_result.get("doc_url", "https://docs.google.com/document/d/studiosonar-viral-script-draft"),
             "notion_task": notion_result.get("board_title", f"Content Sprint: Produce '{topic}' Shortform Video")
@@ -254,16 +260,21 @@ def trigger_crisis_strategy_agent_ui(req: DirectAgentTriggerRequest) -> Dict[str
     generate 3-step containment stance, Slack Red Alert, and Notion Triage board.
     """
     title = req.title or "Monitored Brand Asset"
+    report_text, _ = gcs_report_manager.fetch_report(req.report_key)
+    context_snippet = (report_text[:600] if report_text else "").replace("\n", " ")
+
+
     anomaly_payload = {
-        "channel_title": "StudioSonar Brand Channel",
+        "channel_title": "StudioSonar Surveillance Network",
         "video_title": title,
         "velocity_spike_pct": 145.0,
         "sample_negative_comments": [
-            "Why was this sponsorship not clearly disclosed in the first 30 seconds?",
-            "Conflicting claims between self-funded claim and partner press release.",
-            "Please clarify the data privacy policy regarding user telemetry tracking."
+            f"Why was this detail not clearly clarified in '{title}'?",
+            "Conflicting audience opinions and debate emerging in comments.",
+            "Please clarify the exact stance regarding recent community feedback."
         ],
-        "vector_clusters": [{"matched_topic": "Sponsorship Transparency & Compliance"}]
+        "vector_clusters": [{"matched_topic": f"Community Debate & Context on '{title}'"}],
+        "context_snippet": context_snippet
     }
     actions = taskmaster_orchestrator.pr_strategist.handle_incident(anomaly_payload)
     
@@ -277,13 +288,14 @@ def trigger_crisis_strategy_agent_ui(req: DirectAgentTriggerRequest) -> Dict[str
         "title": title,
         "crisis_plan": {
             "severity": "CRITICAL_P1",
-            "root_cause": slack_result.get("root_cause", "Viewer backlash regarding disclosure timing and partner claims."),
+            "root_cause": slack_result.get("root_cause", f"Audience friction and contrasting perspectives emerging around '{title}'."),
             "containment_stance": slack_result.get("recommended_stance", "1. Pin transparent clarification comment.\n2. Update video description with full disclosures.\n3. Pause automated social reposts."),
             "slack_dispatched_channel": slack_result.get("slack_channel", "#war-room-alerts"),
             "notion_triage_board": notion_result.get("board_title", f"URGENT PR: Containment Plan for '{title}'")
         },
         "actions_executed": actions
     }
+
 
 
 # =====================================================================

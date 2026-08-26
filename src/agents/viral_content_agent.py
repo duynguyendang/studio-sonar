@@ -37,29 +37,82 @@ class ViralContentCreatorAgent(BaseADKAgent):
         
         topic = trend_payload.get("trend_topic", "Breakout Tech Trend")
         accel = trend_payload.get("cross_platform_acceleration_pct", 0.0)
+        context_snippet = trend_payload.get("context_snippet", "")
 
+        # 1. Generate Retention-Optimized Script using Google Gemini Flash
+        from src.core.llm_client import llm_client
+        import json
+
+        llm_prompt = f"""You are an elite YouTube Shorts & TikTok Retention Architect and Viral Scriptwriter.
+Synthesize a high-CTR 60-second video script for the following topic/asset:
+Topic: "{topic}"
+Acceleration / Hot Index: +{accel:.1f}%
+Context / Analysis: {context_snippet}
+
+Apply the 4 proven psychological hook frameworks (Contrarian Truth, Financial / Costly Mistakes, Extreme Curiosity Gaps, Insider Secrets).
+
+You MUST respond strictly in valid JSON format with the following keys:
+{{
+  "hook_3s": "A hypnotic, curiosity-inducing opening line for seconds 0-3 that stops the scroll.",
+  "problem": "The core friction, debate, or misconception viewers face (seconds 4-20).",
+  "solution": "The deep insight, unexpected breakdown, or technical resolution (seconds 21-48).",
+  "call_to_action": "Clear, non-spammy conversion action (seconds 49-60).",
+  "visual_broll_notes": [
+    "0:00 - Visual description for hook",
+    "0:15 - Visual description for problem statement",
+    "0:45 - Visual description for climax resolution"
+  ]
+}}
+"""
+        hook_3s = f"If you are watching '{topic}', stop making this one fatal mistake."
+        problem = f"Most creators and viewers completely misunderstand the core mechanics behind '{topic}'."
+        solution = f"Here is the proven insider breakdown: focus on high-velocity retention signals and algorithmic pacing."
+        cta = f"Follow StudioSonar for the full breakdown and surveillance report on '{topic}'."
+        brolls = [
+            f"0:00 - High-contrast fast cuts illustrating '{topic}'",
+            "0:15 - Real-time metrics breakdown and engagement telemetry overlay",
+            "0:45 - High-tech architecture blueprint with call-to-action banner"
+        ]
+
+        try:
+            gemini_res = llm_client.generate(prompt=llm_prompt, system_instruction=self.system_instruction)
+            if gemini_res:
+                # Clean JSON markdown fences if present
+                clean_json = gemini_res.strip()
+                if clean_json.startswith("```json"):
+                    clean_json = clean_json[7:]
+                if clean_json.startswith("```"):
+                    clean_json = clean_json[3:]
+                if clean_json.endswith("```"):
+                    clean_json = clean_json[:-3]
+                parsed = json.loads(clean_json.strip())
+                hook_3s = parsed.get("hook_3s", hook_3s)
+                problem = parsed.get("problem", problem)
+                solution = parsed.get("solution", solution)
+                cta = parsed.get("call_to_action", cta)
+                brolls = parsed.get("visual_broll_notes", brolls)
+                logger.info(f"[{self.name}] Successfully synthesized dynamic script via Gemini Flash: '{hook_3s[:50]}...'")
+        except Exception as e:
+            logger.warning(f"[{self.name}] Gemini generation notice, using resilient fallback: {e}")
 
         actions_taken = []
 
-        # 1. Author Google Doc Video Script
+        # 2. Author Google Doc Video Script
         logger.info(f"[{self.name}] Calling Google Docs MCP tool...")
         doc_res = self.execute_tool(
             "create_google_doc_video_script",
             doc_title=f"Script: {topic}",
             target_platform="TikTok & YouTube Shorts",
             trend_topic=topic,
-            hook_3s="Stop building chatbots in 2026. Here is what real autonomous agents actually do.",
-            problem_statement="Everyone is suffering from chatbot fatigue. Typing prompts into a window all day is not automation—it's just a new kind of busywork.",
-            solution_core="Real Taskmasters run 24/7 in the background on Google Cloud. They monitor BigQuery data streams, analyze sentiment anomalies, and write your code and PR responses while you sleep.",
-            call_to_action="Follow StudioSonar for the full architecture blueprint and deploy your first Taskmaster agent today.",
-            visual_broll_notes=[
-                "0:00 - Rapid cuts of frustrated user typing prompts into a basic chat UI",
-                "0:15 - Screen recording of BigQuery live SQL stream and Slack red alert auto-firing",
-                "0:45 - High-tech architecture diagram showing Google ADK + Cloud Run"
-            ],
+            hook_3s=hook_3s,
+            problem_statement=problem,
+            solution_core=solution,
+            call_to_action=cta,
+            visual_broll_notes=brolls,
             estimated_duration_sec=60
         )
         actions_taken.append({"agent": self.name, "tool": "create_google_doc_video_script", "result": doc_res})
+
 
         # 2. Sync to Notion Production Workspace
         logger.info(f"[{self.name}] Calling Notion Board MCP tool...")

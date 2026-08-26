@@ -43,38 +43,48 @@ class PRCrisisStrategistAgent(BaseADKAgent):
 
         # Prompt Gemini LLM for Real Dynamic Root Cause & Stance Synthesis
         from src.core.llm_client import llm_client
+        import json
+
         sample_quotes_text = "\n".join([f'- "{q}"' for q in quotes[:5]])
-        llm_prompt = f"""You are an executive PR Crisis Strategist. Analyze the following social backlash data:
-Video Title: '{title}' on Channel '{channel}'
-Comment Velocity Spike: +{velocity:.1f}%
-Sample Negative Comments:
+        llm_prompt = f"""You are an executive PR Crisis Strategist for digital media. Analyze this audience backlash data:
+Asset Title: "{title}" on Channel "{channel}"
+Comment Velocity Surge: +{velocity:.1f}%
+Sample Friction Points / Comments:
 {sample_quotes_text}
 {cluster_summary}
 
-Provide:
-1. Root Cause Summary (1-2 concise sentences identifying the exact trigger).
-2. Recommended 3-step immediate PR containment stance."""
+You MUST respond strictly in valid JSON format with the following keys:
+{{
+  "severity": "CRITICAL_P1",
+  "root_cause": "A precise 1-2 sentence breakdown identifying the root controversy trigger.",
+  "containment_stance": "1. [Step 1 Immediate Pinned Action]\n2. [Step 2 Disclosure Update]\n3. [Step 3 Ad/Distribution Pause]"
+}}
+"""
+        root_cause = f"Viewer friction regarding tone and topic framing in '{title}'.{cluster_summary}"
+        stance = "1. Immediately pin a transparent clarification comment.\n2. Update video description with full context disclosures.\n3. Pause automated reposts."
+        severity = "CRITICAL_P1"
 
-
-        gemini_response = llm_client.generate(
-            prompt=llm_prompt,
-            system_instruction=self.system_instruction
-        )
-
-        if gemini_response:
-            root_cause = f"Gemini 3.7 Flash Root Cause Synthesis: {gemini_response}"
-            stance = "1. Execute transparent clarification.\n2. Update disclosures.\n3. Pause automated ads."
-        else:
-            root_cause = (
-                f"Severe viewer backlash regarding undisclosed sponsorship in '{title}'.{cluster_summary} "
-                "Viewers identified conflicting claims where the creator claimed self-funding while "
-                "a third party announced an equity partnership on social media."
+        try:
+            gemini_response = llm_client.generate(
+                prompt=llm_prompt,
+                system_instruction=self.system_instruction
             )
-            stance = (
-                "1. Immediately pin a transparent clarification comment acknowledging third-party sponsorship.\n"
-                "2. Update YouTube video description with full FTC compliance disclosures.\n"
-                "3. Pause automated social reposts until the PR statement is approved."
-            )
+            if gemini_response:
+                clean_json = gemini_response.strip()
+                if clean_json.startswith("```json"):
+                    clean_json = clean_json[7:]
+                if clean_json.startswith("```"):
+                    clean_json = clean_json[3:]
+                if clean_json.endswith("```"):
+                    clean_json = clean_json[:-3]
+                parsed = json.loads(clean_json.strip())
+                root_cause = parsed.get("root_cause", root_cause)
+                stance = parsed.get("containment_stance", stance)
+                severity = parsed.get("severity", severity)
+                logger.info(f"[{self.name}] Successfully synthesized crisis stance via Gemini Flash: '{root_cause[:50]}...'")
+        except Exception as e:
+            logger.warning(f"[{self.name}] Gemini crisis analysis notice, using resilient fallback: {e}")
+
 
         actions_taken = []
 
