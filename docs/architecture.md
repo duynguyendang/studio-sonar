@@ -97,7 +97,7 @@ $$\text{Velocity Spike \%} = \left( \frac{117,409.1 - 28,630.0}{28,630.0} \right
 ### 4. Channel Sentinel Early Upload Heat Ratio ($V_{\text{ratio}}$)
 When a monitored channel publishes a new video, the `ChannelSentinelAgent` measures the initial 24h performance against the channel's 30-day baseline to detect early algorithmic breakouts:
 
-$$V_{\text{ratio}} = \frac{V_{\text{new\_upload\_24h}}}{V_{\text{channel\_baseline}}}$$
+$$V_{\text{ratio}} = \frac{V_{\text{new, 24h}}}{V_{\text{baseline}}}$$
 
 * **🔥 Hot Viral Breakout ($V_{\text{ratio}} \ge 2.0x$):** New video velocity is $2\times$ faster than the channel's standard upload.
 * **⚡ Steady Momentum ($1.0x \le V_{\text{ratio}} < 2.0x$):** Healthy performance meeting channel benchmark.
@@ -111,6 +111,7 @@ Views measure passive impressions, whereas **Comments represent active cognitive
 $$\text{CVR} = \left( \frac{\text{Total Comments}}{\text{Total Views}} \right) \times 100\%$$
 
 $$V_{\text{comment}} = \frac{\Delta \text{Comments}}{\Delta t \text{ (hours)}}$$
+
 
 * **🔥 Hyper-Interactive ($\text{CVR} \ge 0.8\%$ or $V_{\text{comment}} \ge 20 \text{ comments/h}$):** High organic debate, commercial inquiries, or cultural controversy.
 * **⚡ Healthy Engagement ($0.3\% \le \text{CVR} < 0.8\%$):** Standard interactive community retention.
