@@ -15,7 +15,7 @@ class GeminiLLMClient:
         self.api_key = settings.gemini_api_key or os.getenv("GEMINI_API_KEY")
         self.project_id = settings.gcp_project_id
         self.location = settings.gcp_location
-        self.model_name = settings.gemini_model or "gemini-2.5-flash"
+        self.model_name = settings.gemini_model or "gemini-3.7-flash"
         self._client = None
         self._init_client()
 
@@ -48,7 +48,7 @@ class GeminiLLMClient:
             self._init_client()
 
         if self._client:
-            models_to_try = [self.model_name, "gemini-2.5-flash", "gemini-1.5-flash"]
+            models_to_try = [self.model_name, "gemini-3.7-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
             for m in models_to_try:
                 try:
                     from google.genai import types

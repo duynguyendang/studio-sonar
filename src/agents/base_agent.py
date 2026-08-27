@@ -23,7 +23,7 @@ def create_pure_adk_agent(
     Directly binds tools and LLM instructions without any custom wrapper class.
     Sets mode='single_turn' for native ADK Workflow graph node compatibility.
     """
-    active_model = model or settings.gemini_model or "gemini-2.5-flash"
+    active_model = model or settings.gemini_model or "gemini-3.7-flash"
     return Agent(
         name=name,
         model=active_model,

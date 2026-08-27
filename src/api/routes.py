@@ -43,7 +43,7 @@ def healthcheck_endpoint():
         "service": "studiosonar-taskmaster",
         "architecture": "Google ADK Multi-Agent Team (v2.7.1 Native)",
         "agents": ["StudioSonarRootTaskmaster", "ChannelMonitorAgent", "AnomalyDetectorAgent", "PRCrisisStrategistAgent", "ViralContentCreatorAgent"],
-        "model": "gemini-2.5-flash"
+        "model": "gemini-3.7-flash"
     }
 
 @router.get("/api/v1/swarm/telemetry")
