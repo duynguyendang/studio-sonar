@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudioSonar — Autonomous Media Intelligence & Action Command Center</title>
+    <title>StudioSonar — AI Mission Control Center (Google ADK Swarm)</title>
     
-    <!-- Google Fonts & Marked.js & KaTeX & Mermaid.js for Live Markdown, Math & Diagram Rendering -->
+    <!-- Google Fonts & Marked.js & KaTeX & Mermaid.js -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15,15 +15,14 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
-
     <style>
         :root {
-            --bg-primary: #050811;
-            --bg-secondary: #0c1222;
-            --bg-card: rgba(18, 26, 47, 0.7);
-            --bg-glass: rgba(13, 20, 38, 0.65);
+            --bg-primary: #040711;
+            --bg-secondary: #080d1a;
+            --bg-card: rgba(12, 19, 36, 0.75);
+            --bg-glass: rgba(8, 14, 28, 0.85);
             --border-color: rgba(255, 255, 255, 0.08);
-            --border-glow: rgba(0, 242, 254, 0.3);
+            --border-glow: rgba(0, 242, 254, 0.35);
             --accent-cyan: #00f2fe;
             --accent-blue: #4facfe;
             --accent-purple: #7928ca;
@@ -50,21 +49,22 @@
             display: flex;
             flex-direction: column;
             background-image: 
-                radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.08) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(121, 40, 202, 0.08) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.06) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(121, 40, 202, 0.06) 0px, transparent 50%);
             background-attachment: fixed;
+            overflow-x: hidden;
         }
 
         /* Top Navigation Bar */
         header {
-            height: 70px;
+            height: 64px;
             border-bottom: 1px solid var(--border-color);
             background: var(--bg-glass);
             backdrop-filter: blur(16px);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 2rem;
+            padding: 0 1.75rem;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -77,9 +77,9 @@
         }
 
         .brand-logo {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
             display: flex;
             align-items: center;
@@ -90,842 +90,1003 @@
         }
 
         .brand-text h1 {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 700;
             letter-spacing: -0.5px;
             background: linear-gradient(90deg, #fff, var(--text-secondary));
-            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .brand-text span {
-            font-size: 0.7rem;
+        .brand-text p {
+            font-size: 0.68rem;
             color: var(--accent-cyan);
-            text-transform: uppercase;
-            letter-spacing: 1px;
             font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
-        .nav-status {
+        .header-stats {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1.25rem;
         }
 
-        .badge-live {
+        .stat-pill {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            background: rgba(0, 245, 160, 0.1);
-            border: 1px solid rgba(0, 245, 160, 0.3);
-            color: var(--accent-green);
-            padding: 0.35rem 0.8rem;
-            border-radius: 999px;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
             font-size: 0.75rem;
-            font-weight: 600;
         }
 
         .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent-green);
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent-green);
+            background-color: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 245, 160, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 245, 160, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 245, 160, 0); }
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px var(--accent-green); }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        .btn-trigger {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border: none;
+            color: #000;
+            font-weight: 700;
+            font-size: 0.78rem;
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-trigger:hover {
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+            transform: translateY(-1px);
+        }
+
+        /* Hero Live Topology & Counter Section */
+        .hero-mission-control {
+            padding: 1.25rem 1.75rem;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        /* Live Topology Graph Canvas Card */
+        .topology-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        #topology-canvas {
+            width: 100%;
+            height: 180px;
+            border-radius: 8px;
+            background: rgba(4, 7, 17, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+        }
+
+        /* Live Ingestion Counters */
+        .counters-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .counter-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .counter-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+        }
+
+        .counter-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .counter-value {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #fff;
+            margin-top: 0.2rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .counter-sub {
+            font-size: 0.68rem;
+            color: var(--accent-green);
+            margin-top: 0.15rem;
         }
 
         /* Main Workspace Layout */
         .workspace {
-            display: flex;
+            display: grid;
+            grid-template-columns: 320px 1fr 340px;
             flex: 1;
-            padding: 1.5rem 2rem;
-            gap: 1.5rem;
-            max-width: 1800px;
-            margin: 0 auto;
-            width: 100%;
+            overflow: hidden;
         }
 
-        /* Sidebar: Tracked Channels & Videos */
-        .sidebar {
-            width: 380px;
+        /* Left Column: Agent Telemetry Cards & Tracked Assets */
+        .left-sidebar {
+            border-right: 1px solid var(--border-color);
+            background: var(--bg-glass);
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(100vh - 270px);
         }
 
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            backdrop-filter: blur(12px);
-            padding: 1.25rem;
-        }
-
-        .card-header {
+        .section-header {
+            padding: 0.85rem 1.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
         }
 
-        .card-header h2 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-secondary);
-        }
-
-        .asset-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-        }
-
-        .asset-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            padding: 0.85rem 1rem;
-            border-radius: 12px;
+        .agent-telemetry-item {
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             cursor: pointer;
             transition: all 0.2s ease;
+        }
+
+        .agent-telemetry-item:hover {
+            background: rgba(0, 242, 254, 0.04);
+            border-left: 3px solid var(--accent-cyan);
+        }
+
+        .agent-item-top {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .agent-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
             gap: 0.35rem;
         }
 
-        .asset-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: var(--border-glow);
-            transform: translateX(4px);
+        .status-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .asset-item.active {
-            background: linear-gradient(135deg, rgba(0, 242, 254, 0.12), rgba(79, 172, 254, 0.05));
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+        .status-active { background: rgba(0, 245, 160, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .status-scanning { background: rgba(0, 242, 254, 0.15); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
+        .status-standby { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+
+        .agent-metrics {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .asset-title {
-            font-weight: 600;
-            font-size: 0.9rem;
+        .agent-action-text {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Center Column: Intelligence Report View & Action Prescriptions */
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            max-height: calc(100vh - 270px);
+            padding: 1.5rem;
+            background: var(--bg-primary);
+        }
+
+        .report-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .report-title-box h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
             color: #fff;
+        }
+
+        .report-title-box p {
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .quick-action-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action-pill {
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-viral { background: rgba(121, 40, 202, 0.2); border: 1px solid var(--accent-purple); color: #c084fc; }
+        .btn-viral:hover { background: rgba(121, 40, 202, 0.4); }
+
+        .btn-crisis { background: rgba(255, 71, 87, 0.2); border: 1px solid var(--accent-red); color: #ff6b81; }
+        .btn-crisis:hover { background: rgba(255, 71, 87, 0.4); }
+
+        .markdown-body {
+            color: var(--text-primary);
+            line-height: 1.65;
+            font-size: 0.92rem;
+        }
+
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+            color: #fff;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.25rem 0;
+            font-size: 0.85rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .markdown-body th, .markdown-body td {
+            padding: 0.65rem 1rem;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .markdown-body th {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--accent-cyan);
+        }
+
+        .markdown-body blockquote {
+            border-left: 3px solid var(--accent-cyan);
+            background: rgba(0, 242, 254, 0.04);
+            padding: 0.75rem 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        /* Right Column: Live Alert Feed & Hacker Terminal */
+        .right-sidebar {
+            border-left: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            max-height: calc(100vh - 270px);
+        }
+
+        .alert-stream {
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .alert-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-badge {
+            font-size: 0.62rem;
+            font-weight: 800;
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-critical { background: rgba(255, 71, 87, 0.25); color: var(--accent-red); }
+        .badge-warning { background: rgba(245, 158, 11, 0.25); color: var(--accent-gold); }
+        .badge-info { background: rgba(121, 40, 202, 0.25); color: #c084fc; }
+        .badge-success { background: rgba(0, 245, 160, 0.25); color: var(--accent-green); }
+
+        .terminal-box {
+            margin: 0.75rem 1.25rem 1.25rem;
+            background: #020408;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            color: #00f5a0;
+            display: flex;
+            flex-direction: column;
+            height: 220px;
+            overflow-y: auto;
+        }
+
+        .terminal-header {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 0.25rem;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+
+        /* Bottom Activity Waveform */
+        .bottom-timeline-strip {
+            height: 60px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            padding: 0 1.75rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .asset-meta {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        #waveform-canvas {
+            height: 40px;
+            flex: 1;
+            margin: 0 1.5rem;
         }
 
-        .pill {
-            padding: 0.15rem 0.45rem;
-            border-radius: 6px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .btn-refresh {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 0.5rem 0.9rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.2s ease;
-        }
-
-        .btn-refresh:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--border-glow);
-        }
-
-        .btn-action-viral {
-            background: linear-gradient(135deg, rgba(121, 40, 202, 0.5), rgba(0, 242, 254, 0.25));
-            border: 1px solid var(--accent-cyan);
-            color: #fff;
-            padding: 0.5rem 0.9rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
-        }
-
-        .btn-action-viral:hover {
-            background: linear-gradient(135deg, rgba(121, 40, 202, 0.8), rgba(0, 242, 254, 0.5));
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
-            transform: translateY(-1px);
-        }
-
-        .btn-action-crisis {
-            background: linear-gradient(135deg, rgba(255, 71, 87, 0.4), rgba(245, 158, 11, 0.25));
-            border: 1px solid var(--accent-red);
-            color: #fff;
-            padding: 0.5rem 0.9rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 0 12px rgba(255, 71, 87, 0.25);
-        }
-
-        .btn-action-crisis:hover {
-            background: linear-gradient(135deg, rgba(255, 71, 87, 0.7), rgba(245, 158, 11, 0.5));
-            box-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
-            transform: translateY(-1px);
-        }
-
-        /* Modal Glassmorphism Overlay */
+        /* Modals */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(5, 8, 17, 0.85);
-            backdrop-filter: blur(16px);
-            z-index: 9999;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            z-index: 1000;
         }
 
         .modal-card {
             background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            width: 100%;
-            max-width: 780px;
-            max-height: 88vh;
+            border: 1px solid var(--accent-cyan);
+            border-radius: 14px;
+            width: 90%;
+            max-width: 680px;
+            max-height: 85vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
             overflow: hidden;
-            animation: modalFadeIn 0.25s ease-out;
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.25);
         }
 
         .modal-header {
-            padding: 1.25rem 1.75rem;
+            padding: 1.25rem 1.5rem;
             border-bottom: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.02);
             display: flex;
-            align-items: center;
             justify-content: space-between;
-        }
-
-        .modal-header h3 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #fff;
-            display: flex;
             align-items: center;
-            gap: 0.5rem;
         }
 
         .modal-body {
-            padding: 1.75rem;
+            padding: 1.5rem;
             overflow-y: auto;
-            flex: 1;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #cbd5e1;
-        }
-
-        .modal-footer {
-            padding: 1rem 1.75rem;
-            border-top: 1px solid var(--border-color);
-            background: rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 0.75rem;
-        }
-
-        /* Report Viewer Panel */
-        .report-panel {
-            flex: 1;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-
-            backdrop-filter: blur(12px);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .report-header {
-            padding: 1.25rem 2rem;
-            border-bottom: 1px solid var(--border-color);
-            background: rgba(0, 0, 0, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .report-header-info h2 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .report-header-info p {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 0.2rem;
-        }
-
-        .report-content {
-            padding: 2rem;
-            overflow-y: auto;
-            flex: 1;
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #cbd5e1;
-        }
-
-        /* Markdown Elements Styling */
-        .report-content h1 { font-size: 1.6rem; color: #fff; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
-        .report-content h2 { font-size: 1.3rem; color: var(--accent-cyan); margin-top: 1.5rem; margin-bottom: 0.75rem; }
-        .report-content h3 { font-size: 1.05rem; color: #fff; margin-top: 1rem; margin-bottom: 0.5rem; }
-        .report-content p { margin-bottom: 1rem; }
-        .report-content ul, .report-content ol { margin-left: 1.5rem; margin-bottom: 1rem; }
-        .report-content li { margin-bottom: 0.35rem; }
-        
-        .report-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .report-content th, .report-content td {
-            padding: 0.85rem 1rem;
-            border: 1px solid var(--border-color);
-            text-align: left;
-            font-size: 0.85rem;
-        }
-
-        .report-content th {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--accent-cyan);
-            font-weight: 700;
-        }
-
-        .report-content blockquote {
-            border-left: 4px solid var(--accent-cyan);
-            background: rgba(0, 242, 254, 0.05);
-            padding: 0.8rem 1.2rem;
-            border-radius: 0 8px 8px 0;
-            margin: 1rem 0;
-            font-style: italic;
-        }
-
-        .report-content code {
-            font-family: 'JetBrains Mono', monospace;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            color: var(--accent-green);
-        }
-
-        /* Responsive Layout */
-        @media (max-width: 1100px) {
-            .workspace {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-            }
         }
     </style>
 </head>
 <body>
 
-<!-- Header -->
-<header>
-    <div class="brand">
-        <div class="brand-logo">S</div>
-        <div class="brand-text">
-            <h1>StudioSonar</h1>
-            <span>Autonomous Media Taskmaster & Command Center</span>
-        </div>
-    </div>
-    <div class="nav-status">
-        <div class="badge-live">
-            <div class="pulse-dot"></div>
-            <span>LIVE TELEMETRY ACTIVE</span>
-        </div>
-    </div>
-</header>
-
-<!-- Main Workspace -->
-<div class="workspace">
-    <!-- Left Sidebar: Tracked Assets -->
-    <div class="sidebar">
-        <!-- Live Telemetry Pulse Radar Card -->
-        <div class="card" style="background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(121, 40, 202, 0.15)); border-color: var(--accent-cyan);">
-            <div class="card-header" style="margin-bottom: 0.6rem;">
-                <h2 style="color: var(--accent-cyan); display: flex; align-items: center; gap: 0.4rem;">
-                    <span>⚡ 24h Real-Time Pulse</span>
-                </h2>
-                <span class="badge-live" style="padding: 0.2rem 0.5rem; font-size: 0.65rem;">LIVE</span>
+    <!-- Header Navigation -->
+    <header>
+        <div class="brand">
+            <div class="brand-logo">⚡</div>
+            <div class="brand-text">
+                <h1>StudioSonar</h1>
+                <p>AI MISSION CONTROL CENTER • GOOGLE ADK SWARM</p>
             </div>
-            <div class="asset-item active" onclick="loadReport('realtime_24h', this)" style="border-color: var(--accent-cyan);">
-                <div class="asset-title">
-                    <span>Live 24h Comment Radar</span>
-                    <span class="pill" style="background: rgba(0,242,254,0.2); color: var(--accent-cyan);">PULSE</span>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-pill">
+                <span class="pulse-dot"></span>
+                <span>Swarm Mesh: <strong>5 Agents Online</strong></span>
+            </div>
+            <div class="stat-pill">
+                <span>Google Cloud Run: <strong>us-central1</strong></span>
+            </div>
+            <button class="btn-trigger" onclick="triggerAutonomousCycle()">
+                <span>⚡</span> Run Full Swarm Cycle
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Mission Control Strip (Live Topology Graph + Live Ingestion Counters) -->
+    <div class="hero-mission-control">
+        
+        <!-- Live Topology Graph Canvas -->
+        <div class="topology-card">
+            <div class="card-header-bar">
+                <div class="card-title">
+                    <span>🕸️</span> Live Agent Swarm Topology Graph (Click any node to inspect LLM Reasoning)
                 </div>
-                <div class="asset-meta">
-                    <span>1,420 Comments</span> • 
-                    <span style="color: var(--accent-green);">+128% Surge</span> • 
-                    <span class="pill pill-active">0 Risk</span>
+                <span class="status-badge status-active">A2A GRAPH ACTIVE</span>
+            </div>
+            <canvas id="topology-canvas"></canvas>
+        </div>
+
+        <!-- 4 Live Running Counters -->
+        <div class="counters-panel">
+            <div class="counter-card">
+                <div class="counter-label">Comments / 24h</div>
+                <div class="counter-value" id="cnt-comments">45,935</div>
+                <div class="counter-sub">▲ +385.0% Inflow</div>
+            </div>
+            <div class="counter-card">
+                <div class="counter-label">UGC Audio Videos</div>
+                <div class="counter-value" id="cnt-ugc">128,540</div>
+                <div class="counter-sub">▲ +420.0% TikTok FYP</div>
+            </div>
+            <div class="counter-card">
+                <div class="counter-label">Views Tracked</div>
+                <div class="counter-value" id="cnt-views">162,750</div>
+                <div class="counter-sub">Live YouTube MV Stream</div>
+            </div>
+            <div class="counter-card">
+                <div class="counter-label">Total Ingested</div>
+                <div class="counter-value" id="cnt-total">1.37M</div>
+                <div class="counter-sub">BigQuery OLAP Rows</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+
+        <!-- Left Sidebar: Real-Time Agent Telemetry Cards -->
+        <div class="left-sidebar">
+            <div class="section-header">
+                <span>🤖 Swarm Agents Telemetry</span>
+                <span style="font-family: 'JetBrains Mono', monospace;">5 DEPLOYED</span>
+            </div>
+
+            <div id="agents-telemetry-container">
+                <!-- Dynamically rendered via JS -->
+            </div>
+
+            <div class="section-header" style="margin-top: 1rem;">
+                <span>📡 Monitored Asset Streams</span>
+            </div>
+            <div id="tracked-channels-container" style="padding: 0 0.5rem 1rem;">
+                <!-- Dynamically loaded channels -->
+            </div>
+        </div>
+
+        <!-- Center Workspace: Intelligence Report View -->
+        <div class="center-content" id="report-panel">
+            <div class="report-header-bar">
+                <div class="report-title-box">
+                    <h2 id="report-title-display">24h Real-Time Omni-Channel Comment Classification</h2>
+                    <p id="report-source-url">Source: gs://studiosonar-dev-reports/realtime_24h_pulse_report.md</p>
+                </div>
+                <div class="quick-action-group">
+                    <button class="btn-action-pill btn-viral" id="btn-viral-action" onclick="triggerViralContentAgent()">
+                        <span>✍️</span> Viral Script
+                    </button>
+                    <button class="btn-action-pill btn-crisis" id="btn-crisis-action" onclick="triggerCrisisStrategyAgent()">
+                        <span>🚨</span> Crisis Stance
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- Section: Tracked Priority Videos (Hot Surveillance - Priority Top) -->
-        <div class="card" style="border-color: rgba(0, 242, 254, 0.3);">
-            <div class="card-header">
-                <h2 style="color: var(--accent-cyan);">📹 Priority Video Surveillance</h2>
-                <span id="video-count-badge" style="font-size: 0.75rem; color: var(--accent-cyan); font-weight: 700;">Loading...</span>
-            </div>
-            <div id="tracked-videos-container" class="asset-list">
-                <div style="color: var(--text-muted); font-size: 0.8rem; padding: 0.5rem;">Loading videos...</div>
+            <div class="markdown-body" id="report-markdown-content">
+                <!-- Live Report Markdown content injected here -->
             </div>
         </div>
 
-        <!-- Section: Tracked Channels -->
-        <div class="card">
-            <div class="card-header">
-                <h2>📺 Tracked Channels</h2>
-                <span id="channel-count-badge" style="font-size: 0.75rem; color: var(--text-secondary);">Loading...</span>
+        <!-- Right Sidebar: Live Alert Feed & Hacker Terminal -->
+        <div class="right-sidebar">
+            <div class="section-header">
+                <span>🚨 Real-Time Alert Stream</span>
+                <span class="status-badge status-active">LIVE</span>
             </div>
-            <div id="tracked-channels-container" class="asset-list">
-                <div style="color: var(--text-muted); font-size: 0.8rem; padding: 0.5rem;">Loading channels...</div>
+            <div class="alert-stream" id="alerts-container">
+                <!-- Alerts injected via JS -->
+            </div>
+
+            <div class="section-header" style="margin-top: 0.5rem;">
+                <span>💻 Live Swarm Terminal</span>
+                <span>$ tail -f swarm</span>
+            </div>
+            <div class="terminal-box" id="terminal-output">
+                <div class="terminal-header">[StudioSonar ADK Agent Kernel v2.7.1] Initialized.</div>
+                <div class="terminal-line"><span style="color:#00f2fe;">[14:32:01]</span> ⚡ Taskmaster: Cycle #142 initiated</div>
+                <div class="terminal-line"><span style="color:#00f2fe;">[14:32:02]</span> 📡 Sentinel: Scanned 2 channels, 1 upload</div>
+                <div class="terminal-line"><span style="color:#ff4757;">[14:32:04]</span> 🔍 Anomaly: +310% spike on UH21OnJwxZE</div>
+                <div class="terminal-line"><span style="color:#c084fc;">[14:32:05]</span> 🤖 Gemini: Classifying 25,382 comments...</div>
+                <div class="terminal-line"><span style="color:#00f5a0;">[14:32:07]</span> ✍️ ViralAgent: Authored 60s Shorts script</div>
+                <div class="terminal-line"><span style="color:#f59e0b;">[14:32:08]</span> 📄 GCS: Master report synced</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Multi-Agent Waveform Strip -->
+    <div class="bottom-timeline-strip">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); display: flex; align-items: center; gap: 0.4rem;">
+            <span>📈</span> 24h Activity Waveform
+        </div>
+        <canvas id="waveform-canvas"></canvas>
+        <div style="font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
+            PEAK: 5,200 comments/h @ 20:00 UTC
+        </div>
+    </div>
+
+    <!-- Agent Reasoning Inspector Modal -->
+    <div class="modal-overlay" id="reasoning-modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="color:#fff; font-size: 1rem; display: flex; align-items: center; gap: 0.4rem;">
+                    <span>🧠</span> <span id="reasoning-agent-title">Agent Reasoning Inspector</span>
+                </h3>
+                <button onclick="closeReasoningModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
+            </div>
+            <div class="modal-body" id="reasoning-modal-body">
+                <!-- Injected via JS -->
             </div>
         </div>
     </div>
 
-
-    <!-- Right Panel: Full Realtime Markdown Intelligence Report -->
-    <div class="report-panel" id="report-panel">
-        <div class="report-header">
-            <div class="report-title-group">
-                <h2 id="report-title-display">Real-Time Telemetry & Comment Pulse (Last 24h)</h2>
-                <span class="report-url-sub" id="report-url-display">Source: reports/realtime_24h_pulse_report.md (Hot-Reloaded Live)</span>
+    <!-- Action Output Modal -->
+    <div class="modal-overlay" id="agent-modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="color:#fff; font-size: 1rem;" id="modal-agent-title">Specialist Agent Output</h3>
+                <button onclick="closeAgentModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
             </div>
-            <div class="report-controls">
-                <button class="btn-refresh" onclick="reloadCurrentReport()" title="Refresh live intelligence report from GCS">
-                    <span>🔄</span> Refresh Report
-                </button>
-            </div>
-        </div>
-
-        <div class="report-content" id="report-markdown-content">
-            <!-- Rendered by Marked.js from GCS markdown reports -->
+            <div class="modal-body" id="modal-agent-body"></div>
         </div>
     </div>
-</div>
 
+    <!-- Script Logic -->
+    <script>
+        let currentTelemetry = null;
+        let activeReportKey = 'realtime_24h';
 
-<script>
-    let currentActiveReportKey = 'realtime_24h';
+        // 1. Fetch Swarm Telemetry & Update UI
+        async function fetchSwarmTelemetry() {
+            try {
+                const res = await fetch('/api/v1/swarm/telemetry');
+                if (!res.ok) return;
+                currentTelemetry = await res.json();
 
-    // Pure Live Fetch from GCS Substrate / API
-    async function loadReport(reportKey, element) {
-        currentActiveReportKey = reportKey;
-        if (element) {
-            document.querySelectorAll('.asset-item').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
+                renderAgentCards(currentTelemetry.agents);
+                renderAlerts(currentTelemetry.alerts);
+                drawTopologyGraph();
+                drawWaveform();
+            } catch (e) {
+                console.error("Telemetry fetch error:", e);
+            }
         }
 
-        const titleEl = document.getElementById('report-title-display');
-        const urlEl = document.getElementById('report-url-display');
-        const contentEl = document.getElementById('report-markdown-content');
+        // 2. Render Agent Telemetry Cards
+        function renderAgentCards(agents) {
+            const container = document.getElementById('agents-telemetry-container');
+            if (!container || !agents) return;
 
-        contentEl.innerHTML = `
-            <div style="text-align: center; padding: 3rem; color: var(--accent-cyan);">
-                <p style="font-size: 1.5rem;">⚡</p>
-                <p style="margin-top: 0.5rem; font-size: 0.9rem;">Fetching real-time intelligence report from Google Cloud Storage substrate...</p>
-            </div>
-        `;
+            container.innerHTML = agents.map(ag => {
+                const statusClass = ag.status === 'ACTIVE' ? 'status-active' : (ag.status === 'SCANNING' ? 'status-scanning' : 'status-standby');
+                return `
+                    <div class="agent-telemetry-item" onclick="openReasoningInspector('${ag.id}')">
+                        <div class="agent-item-top">
+                            <span class="agent-name">
+                                <span>${ag.id === 'taskmaster' ? '👑' : (ag.id === 'anomaly_detector' ? '🔍' : (ag.id === 'pr_crisis' ? '🚨' : (ag.id === 'viral_content' ? '✍️' : '📡')))}</span>
+                                ${ag.name}
+                            </span>
+                            <span class="status-badge ${statusClass}">${ag.status}</span>
+                        </div>
+                        <div class="agent-metrics">
+                            <span>CPU: ${ag.cpu}</span> • <span>RAM: ${ag.memory}</span> • <span>Batch: ${ag.batch}</span>
+                        </div>
+                        <div class="agent-action-text">${ag.last_action}</div>
+                    </div>
+                `;
+            }).join('');
+        }
 
-        try {
-            // Live Fetch with Cache Buster to always read direct markdown from GCS
-            const res = await fetch(`/api/v1/reports/content?report_key=${reportKey}&_t=${Date.now()}`);
-            if (!res.ok) throw new Error("Report fetch failed");
-            
-            const data = await res.json();
-            const rawMarkdown = data.markdown_content;
+        // 3. Render Alert Stream
+        function renderAlerts(alerts) {
+            const container = document.getElementById('alerts-container');
+            if (!container || !alerts) return;
 
-            const titleMatch = rawMarkdown.match(/^#\s+(.+)$/m);
-            const displayTitle = titleMatch ? titleMatch[1] : `Intelligence Report (${reportKey})`;
+            container.innerHTML = alerts.map(al => {
+                const badgeClass = al.severity === 'CRITICAL' ? 'badge-critical' : (al.severity === 'WARNING' ? 'badge-warning' : (al.severity === 'INFO' ? 'badge-info' : 'badge-success'));
+                return `
+                    <div class="alert-item">
+                        <div class="alert-item-header">
+                            <span class="alert-badge ${badgeClass}">${al.severity}</span>
+                            <span style="color: var(--text-muted); font-size: 0.65rem;">${al.time}</span>
+                        </div>
+                        <div style="color: #fff; font-size: 0.72rem;"><strong>[${al.agent}]</strong> ${al.msg}</div>
+                    </div>
+                `;
+            }).join('');
+        }
 
-            titleEl.innerText = displayTitle;
-            urlEl.innerText = `Source: ${data.file_path} (Live Stream)`;
+        // 4. Interactive Topology Graph Canvas
+        const topologyCanvas = document.getElementById('topology-canvas');
+        const ctx = topologyCanvas.getContext('2d');
+        let particleOffset = 0;
 
-            // Strip the duplicate top H1 title from body content since it's already shown in header bar
-            let bodyMarkdown = rawMarkdown;
-            if (titleMatch) {
-                bodyMarkdown = rawMarkdown.replace(/^#\s+.+$/m, '').trim();
-            }
+        const nodes = [
+            { id: 'taskmaster', name: 'Taskmaster (Root)', x: 80, y: 90, color: '#00f2fe' },
+            { id: 'channel_monitor', name: 'Channel Sentinel', x: 250, y: 90, color: '#4facfe' },
+            { id: 'anomaly_detector', name: 'Anomaly Detector', x: 440, y: 90, color: '#00f5a0' },
+            { id: 'pr_crisis', name: 'PR Crisis Strategist', x: 640, y: 45, color: '#ff4757' },
+            { id: 'viral_content', name: 'Viral Content Creator', x: 640, y: 135, color: '#c084fc' }
+        ];
 
-            // Render Markdown
-            contentEl.innerHTML = marked.parse(bodyMarkdown);
+        const edges = [
+            { from: 0, to: 1 },
+            { from: 1, to: 2 },
+            { from: 2, to: 3 },
+            { from: 2, to: 4 }
+        ];
 
-            // Convert Mermaid code blocks into <div class="mermaid"> containers
-            const mermaidBlocks = contentEl.querySelectorAll('pre code.language-mermaid');
-            mermaidBlocks.forEach(block => {
-                const pre = block.parentElement;
-                const div = document.createElement('div');
-                div.className = 'mermaid';
-                div.innerHTML = block.textContent;
-                div.style.background = 'rgba(0,0,0,0.2)';
-                div.style.padding = '1rem';
-                div.style.borderRadius = '10px';
-                div.style.marginBottom = '1.5rem';
-                div.style.overflowX = 'auto';
-                pre.parentNode.replaceChild(div, pre);
+        function resizeTopologyCanvas() {
+            topologyCanvas.width = topologyCanvas.parentElement.clientWidth - 32;
+            topologyCanvas.height = 180;
+        }
+
+        function drawTopologyGraph() {
+            if (!topologyCanvas) return;
+            ctx.clearRect(0, 0, topologyCanvas.width, topologyCanvas.height);
+
+            const scaleX = topologyCanvas.width / 750;
+
+            // Draw Edges & Flow Particles
+            edges.forEach(e => {
+                const n1 = nodes[e.from];
+                const n2 = nodes[e.to];
+                const x1 = n1.x * scaleX;
+                const y1 = n1.y;
+                const x2 = n2.x * scaleX;
+                const y2 = n2.y;
+
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+
+                // Animated Particle
+                const t = (particleOffset % 100) / 100;
+                const px = x1 + (x2 - x1) * t;
+                const py = y1 + (y2 - y1) * t;
+                ctx.fillStyle = '#00f2fe';
+                ctx.shadowColor = '#00f2fe';
+                ctx.shadowBlur = 8;
+                ctx.beginPath();
+                ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
             });
 
-            // Trigger Mermaid diagram rendering
-            if (window.mermaid) {
-                try {
-                    mermaid.initialize({ startOnLoad: false, theme: 'dark' });
-                    mermaid.run({ nodes: contentEl.querySelectorAll('.mermaid') });
-                } catch (err) {
-                    console.warn("Mermaid render notice:", err);
+            // Draw Nodes
+            nodes.forEach(n => {
+                const nx = n.x * scaleX;
+                const ny = n.y;
+
+                // Glowing Halo
+                ctx.fillStyle = 'rgba(0, 242, 254, 0.1)';
+                ctx.beginPath();
+                ctx.arc(nx, ny, 20, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Inner Node
+                ctx.fillStyle = n.color;
+                ctx.shadowColor = n.color;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(nx, ny, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Label
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px Outfit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(n.name, nx, ny + 24);
+            });
+        }
+
+        // Animate particles
+        setInterval(() => {
+            particleOffset += 1.5;
+            drawTopologyGraph();
+        }, 30);
+
+        // Click to inspect agent reasoning
+        topologyCanvas.addEventListener('click', (e) => {
+            const rect = topologyCanvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            const scaleX = topologyCanvas.width / 750;
+
+            nodes.forEach(n => {
+                const nx = n.x * scaleX;
+                const ny = n.y;
+                const dist = Math.hypot(clickX - nx, clickY - ny);
+                if (dist <= 25) {
+                    openReasoningInspector(n.id);
                 }
-            }
-
-            // Render Math formulas via KaTeX
-            if (window.renderMathInElement) {
-                renderMathInElement(contentEl, {
-                    delimiters: [
-                        {left: '$$', right: '$$', display: true},
-                        {left: '$', right: '$', display: false}
-                    ],
-                    throwOnError: false
-                });
-            }
-
-            document.getElementById('report-panel').scrollTop = 0;
-
-
-        } catch (e) {
-            console.error("Failed to live-fetch report:", e);
-            contentEl.innerHTML = `
-                <div style="padding: 2rem; background: rgba(255, 71, 87, 0.1); border: 1px solid var(--accent-red); border-radius: 12px; color: var(--accent-red);">
-                    ⚠️ Unable to fetch intelligence report from server. Please check backend connection!
-                </div>
-            `;
-        }
-    }
-
-    function reloadCurrentReport() {
-        loadReport(currentActiveReportKey, null);
-    }
-
-    // Dynamic Sidebar Rendering from BigQuery Tracking Registry
-    async function fetchAndRenderSidebar() {
-        try {
-            const res = await fetch('/api/v1/registry/tracking');
-            if (!res.ok) return;
-            const data = await res.json();
-            
-            // 1. Render Channels (Focus on Top Comments & Engaged Clips)
-            const channels = data.channels || [];
-            document.getElementById('channel-count-badge').innerText = `${channels.length} Monitored`;
-            const chContainer = document.getElementById('tracked-channels-container');
-            chContainer.innerHTML = channels.map(ch => {
-                const snap = (ch.snapshots && ch.snapshots.length > 0) ? ch.snapshots[0] : {};
-                const commentsCount = snap.comments_24h ? `💬 ${snap.comments_24h} Comments / 24h` : '💬 Active Inflow';
-                const topClipTitle = snap.top_clip_title ? `🎬 ${snap.top_clip_title}` : (snap.total_video_count ? `🎬 ${snap.total_video_count} Clips` : 'Active');
-                const isTikTok = ch.platform === 'tiktok';
-                const badgeLabel = isTikTok ? 'TIKTOK CREATOR' : 'YOUTUBE CHANNEL';
-                const badgeStyle = isTikTok 
-                    ? 'background: linear-gradient(135deg, rgba(254, 44, 85, 0.2), rgba(37, 244, 238, 0.2)); border: 1px solid rgba(254, 44, 85, 0.4); color: #fe2c55;' 
-                    : '';
-                const reportKey = ch.report_key || `channel_${ch.channel_id.replace('ch_', '')}`;
-                return `
-                    <div class="asset-item" onclick="loadReport('${reportKey}', this)">
-                        <div class="asset-title">
-                            <span>${ch.title}</span>
-                            <span class="pill pill-yt" style="${badgeStyle}">${badgeLabel}</span>
-                        </div>
-                        <div class="asset-meta" style="flex-direction: column; align-items: flex-start; gap: 0.25rem;">
-                            <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                <span class="pill pill-active">${commentsCount}</span>
-                                <span>${ch.handle || ''}</span>
-                            </div>
-                            <div style="font-size: 0.72rem; color: var(--accent-cyan); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px;">
-                                ${topClipTitle}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-
-            // 2. Render Videos & TikTok Sounds
-            const videos = data.videos || [];
-            document.getElementById('video-count-badge').innerText = `${videos.length} Monitored`;
-            const vidContainer = document.getElementById('tracked-videos-container');
-            vidContainer.innerHTML = videos.map(vid => {
-                const snap = (vid.snapshots && vid.snapshots.length > 0) ? vid.snapshots[0] : {};
-                const isTikTokSound = vid.video_id && vid.video_id.startsWith('tt_sound_');
-                const badgeLabel = isTikTokSound ? 'TIKTOK SOUND' : 'YOUTUBE MV';
-                const badgeStyle = isTikTokSound 
-                    ? 'background: linear-gradient(135deg, rgba(254, 44, 85, 0.2), rgba(37, 244, 238, 0.2)); border: 1px solid rgba(254, 44, 85, 0.4); color: #fe2c55;' 
-                    : '';
-                const viewsText = snap.views ? (isTikTokSound ? `${(snap.views / 1000).toFixed(1)}k UGC Videos` : `${(snap.views / 1000).toFixed(1)}k Views`) : 'Surveillance';
-                const commentsText = snap.comments ? (isTikTokSound ? `${snap.comments} New / 24h` : `${snap.comments} Comments`) : '24h Live';
-                const reportKey = `video_${vid.video_id}`;
-                return `
-                    <div class="asset-item" onclick="loadReport('${reportKey}', this)">
-                        <div class="asset-title">
-                            <span>${vid.title ? (vid.title.length > 34 ? vid.title.substring(0, 34) + '...' : vid.title) : vid.video_id}</span>
-                            <span class="pill pill-yt" style="${badgeStyle}">${badgeLabel}</span>
-                        </div>
-                        <div class="asset-meta">
-                            <span class="pill pill-active">${isTikTokSound ? '🎵 Viral Wave' : '⏱️ 30-Day'}</span> • 
-                            <span>${viewsText}</span> • 
-                            <span>${commentsText}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-        } catch (e) {
-            console.error("Error fetching tracking registry:", e);
-        }
-    }
-
-    // =====================================================================
-    // INTERACTIVE AI SWARM AGENT TRIGGERS (Viral Content & Crisis Strategy)
-    // =====================================================================
-
-    let lastAgentModalOutputText = "";
-
-    function openAgentModal(title, contentHtml, plainText) {
-        document.getElementById('modal-agent-title').innerHTML = title;
-        document.getElementById('modal-agent-body').innerHTML = contentHtml;
-        lastAgentModalOutputText = plainText;
-        document.getElementById('agent-modal-overlay').style.display = 'flex';
-    }
-
-    function closeAgentModal() {
-        document.getElementById('agent-modal-overlay').style.display = 'none';
-    }
-
-    function copyAgentModalOutput() {
-        navigator.clipboard.writeText(lastAgentModalOutputText).then(() => {
-            alert("📋 Agent output copied to clipboard successfully!");
+            });
         });
-    }
 
-    // Trigger 1: Viral Content Creator Agent (Scriptwriter & Retention Architect)
-    async function triggerViralContentAgent() {
-        const currentTitle = document.getElementById('report-title-display').innerText;
-        const btn = document.getElementById('btn-viral-action');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = `<span>⏳</span> <span>AI Synthesizing...</span>`;
-        btn.disabled = true;
+        // 5. Open Agent Reasoning Inspector
+        function openReasoningInspector(agentId) {
+            if (!currentTelemetry || !currentTelemetry.reasoning_logs) return;
+            const log = currentTelemetry.reasoning_logs[agentId];
+            if (!log) return;
 
-        try {
-            const res = await fetch('/api/v1/agents/trigger-viral-content', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    report_key: currentActiveReportKey,
-                    title: currentTitle
-                })
-            });
-
-            if (!res.ok) throw new Error("Failed to trigger agent");
-            const data = await res.json();
-            const s = data.script || {};
-
-            const modalHtml = `
-                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-                    <div style="background: linear-gradient(135deg, rgba(121, 40, 202, 0.15), rgba(0, 242, 254, 0.1)); border: 1px solid var(--accent-cyan); padding: 1rem; border-radius: 10px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-weight: 700; color: var(--accent-cyan); font-size: 0.85rem;">🤖 ACTIVE AGENT: ViralContentCreatorAgent</span>
-                            <span class="pill pill-active">GOOGLE ADK DEPLOYED</span>
-                        </div>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                            Synthesized retention-engineered script based on <strong>${data.topic}</strong>
-                        </p>
+            document.getElementById('reasoning-agent-title').innerText = `${log.agent} — Autonomous Reasoning Trace`;
+            document.getElementById('reasoning-modal-body').innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:1rem; font-family:'Outfit', sans-serif;">
+                    <div style="background:rgba(0,242,254,0.08); border:1px solid var(--accent-cyan); border-radius:8px; padding:0.85rem;">
+                        <span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">⏱️ TIMESTAMP: ${log.timestamp}</span>
                     </div>
 
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem;">
-                        <h4 style="color: #ff4757; font-size: 0.95rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
-                            <span>⚡</span> 3-Second Psychological Hook
-                        </h4>
-                        <p style="font-size: 1rem; font-weight: 600; color: #fff; background: rgba(255, 71, 87, 0.1); padding: 0.75rem; border-radius: 8px; border-left: 3px solid #ff4757;">
-                            "${s.hook_3s}"
-                        </p>
+                    <div style="background:rgba(0,0,0,0.3); border:1px solid var(--border-color); border-radius:8px; padding:1rem;">
+                        <h4 style="color:var(--accent-gold); font-size:0.85rem; margin-bottom:0.35rem;">🛠️ Native Tool Call Executed:</h4>
+                        <code style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:#fff; word-break:break-all;">
+                            ${log.tool_call}
+                        </code>
 
-                        <h4 style="color: var(--accent-gold); font-size: 0.95rem; margin-top: 1rem; margin-bottom: 0.35rem;">
-                            🥊 Core Problem / Friction
-                        </h4>
-                        <p style="font-size: 0.88rem; color: #cbd5e1;">${s.problem}</p>
-
-                        <h4 style="color: var(--accent-green); font-size: 0.95rem; margin-top: 1rem; margin-bottom: 0.35rem;">
-                            💡 Technological Solution & Resolution
-                        </h4>
-                        <p style="font-size: 0.88rem; color: #cbd5e1;">${s.solution}</p>
-
-                        <h4 style="color: var(--accent-cyan); font-size: 0.95rem; margin-top: 1rem; margin-bottom: 0.35rem;">
-                            🎯 Call-To-Action (CTA)
-                        </h4>
-                        <p style="font-size: 0.88rem; color: #cbd5e1;">${s.call_to_action}</p>
+                        <h4 style="color:var(--accent-green); font-size:0.85rem; margin-top:0.85rem; margin-bottom:0.35rem;">📊 Data Result Returned:</h4>
+                        <p style="font-size:0.8rem; color:#cbd5e1;">${log.result}</p>
                     </div>
 
-                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem;">
-                        <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 0.5rem;">🎬 Visual B-Roll Notes</h4>
-                        <ul style="margin-left: 1.2rem; font-size: 0.85rem; color: var(--text-secondary);">
-                            ${(s.broll_notes || []).map(b => `<li style="margin-bottom: 0.25rem;">${b}</li>`).join('')}
-                        </ul>
+                    <div style="background:rgba(121,40,202,0.1); border:1px solid var(--accent-purple); border-radius:8px; padding:1rem;">
+                        <h4 style="color:#c084fc; font-size:0.85rem; margin-bottom:0.35rem;">🧠 Gemini 2.5 Flash Reasoning Trace:</h4>
+                        <p style="font-size:0.82rem; color:#fff; line-height:1.5;">"${log.gemini_reasoning}"</p>
                     </div>
 
-                    <div style="display: flex; gap: 0.75rem; font-size: 0.8rem;">
-                        <a href="${s.doc_url}" target="_blank" style="flex: 1; padding: 0.6rem; background: rgba(66, 133, 244, 0.15); border: 1px solid #4285f4; color: #4285f4; border-radius: 8px; text-decoration: none; text-align: center; font-weight: 600;">
-                            📄 Open Google Docs Script
-                        </a>
-                        <div style="flex: 1; padding: 0.6rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: #fff; border-radius: 8px; text-align: center;">
-                            📌 Notion Task: ${s.notion_task || 'Sprint Logged'}
-                        </div>
+                    <div style="background:rgba(0,245,160,0.1); border:1px solid var(--accent-green); border-radius:8px; padding:0.85rem;">
+                        <h4 style="color:var(--accent-green); font-size:0.85rem; margin-bottom:0.25rem;">🎯 Prescriptive Autonomous Decision:</h4>
+                        <p style="font-size:0.82rem; color:#fff; font-weight:600;">${log.decision}</p>
                     </div>
                 </div>
             `;
-
-            const plainText = `VIRAL SCRIPT FOR: ${data.topic}\n\n[HOOK 3S]: ${s.hook_3s}\n[PROBLEM]: ${s.problem}\n[SOLUTION]: ${s.solution}\n[CTA]: ${s.call_to_action}\n\n[DOC URL]: ${s.doc_url}`;
-            openAgentModal(`🚀 Viral Content Creator Agent Output`, modalHtml, plainText);
-
-        } catch (e) {
-            alert("Error triggering Viral Content Creator Agent: " + e.message);
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+            document.getElementById('reasoning-modal-overlay').style.display = 'flex';
         }
-    }
 
-    // Trigger 2: PR Crisis Strategist Agent (Incident Resolver & Containment Stance)
-    async function triggerCrisisStrategyAgent() {
-        const currentTitle = document.getElementById('report-title-display').innerText;
-        const btn = document.getElementById('btn-crisis-action');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = `<span>⏳</span> <span>AI Evaluating Crisis...</span>`;
-        btn.disabled = true;
+        function closeReasoningModal() {
+            document.getElementById('reasoning-modal-overlay').style.display = 'none';
+        }
 
-        try {
-            const res = await fetch('/api/v1/agents/trigger-crisis-strategy', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    report_key: currentActiveReportKey,
-                    title: currentTitle
-                })
+        // 6. Draw Bottom Activity Waveform
+        function drawWaveform() {
+            const canvas = document.getElementById('waveform-canvas');
+            if (!canvas) return;
+            const wctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth - 280;
+            canvas.height = 40;
+
+            wctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const points = [12, 10, 24, 38, 48, 56, 32, 28, 45, 62, 78, 95, 60, 42];
+            const step = canvas.width / (points.length - 1);
+
+            wctx.strokeStyle = '#00f2fe';
+            wctx.lineWidth = 2;
+            wctx.beginPath();
+            points.forEach((p, idx) => {
+                const x = idx * step;
+                const y = canvas.height - (p / 100 * (canvas.height - 10));
+                if (idx === 0) wctx.moveTo(x, y);
+                else wctx.lineTo(x, y);
             });
+            wctx.stroke();
 
-            if (!res.ok) throw new Error("Failed to trigger agent");
-            const data = await res.json();
-            const c = data.crisis_plan || {};
-
-            const modalHtml = `
-                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-                    <div style="background: linear-gradient(135deg, rgba(255, 71, 87, 0.15), rgba(245, 158, 11, 0.1)); border: 1px solid var(--accent-red); padding: 1rem; border-radius: 10px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-weight: 700; color: var(--accent-red); font-size: 0.85rem;">🛡️ ACTIVE AGENT: PRCrisisStrategistAgent</span>
-                            <span class="pill pill-yt">${c.severity || 'CRITICAL_P1'}</span>
-                        </div>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                            Incident Containment Protocol for <strong>${data.title}</strong>
-                        </p>
-                    </div>
-
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem;">
-                        <h4 style="color: #ff4757; font-size: 0.95rem; margin-bottom: 0.35rem;">
-                            🔍 Root Cause Diagnosis
-                        </h4>
-                        <p style="font-size: 0.88rem; color: #cbd5e1; background: rgba(255, 71, 87, 0.05); padding: 0.75rem; border-radius: 8px; border-left: 3px solid #ff4757;">
-                            ${c.root_cause}
-                        </p>
-
-                        <h4 style="color: var(--accent-green); font-size: 0.95rem; margin-top: 1.2rem; margin-bottom: 0.35rem;">
-                            📋 3-Step Containment Stance & Pinned Statement
-                        </h4>
-                        <div style="font-size: 0.88rem; color: #fff; white-space: pre-line; background: rgba(0, 245, 160, 0.05); padding: 0.75rem; border-radius: 8px; border-left: 3px solid var(--accent-green);">
-                            ${c.containment_stance}
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 0.75rem; font-size: 0.8rem;">
-                        <div style="flex: 1; padding: 0.6rem; background: rgba(74, 21, 75, 0.2); border: 1px solid #e01e5a; color: #fff; border-radius: 8px; text-align: center;">
-                            💬 Slack Red Alert Dispatched to <strong>${c.slack_dispatched_channel || '#war-room-alerts'}</strong>
-                        </div>
-                        <div style="flex: 1; padding: 0.6rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: #fff; border-radius: 8px; text-align: center;">
-                            📌 Notion Board: ${c.notion_triage_board || 'Triage Card Created'}
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            const plainText = `PR CRISIS STRATEGY FOR: ${data.title}\nSEVERITY: ${c.severity}\n\nROOT CAUSE:\n${c.root_cause}\n\nCONTAINMENT STANCE:\n${c.containment_stance}\n\nDISPATCHED: Slack ${c.slack_dispatched_channel}`;
-            openAgentModal(`🚨 PR Crisis Strategist Agent Output`, modalHtml, plainText);
-
-        } catch (e) {
-            alert("Error triggering PR Crisis Strategist Agent: " + e.message);
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+            // Gradient fill below
+            wctx.lineTo(canvas.width, canvas.height);
+            wctx.lineTo(0, canvas.height);
+            const grad = wctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, 'rgba(0, 242, 254, 0.25)');
+            grad.addColorStop(1, 'rgba(0, 242, 254, 0.0)');
+            wctx.fillStyle = grad;
+            wctx.fill();
         }
-    }
 
-    window.onload = () => {
-        fetchAndRenderSidebar();
-        loadReport('realtime_24h', document.querySelector('.asset-item'));
-    };
-</script>
+        // 7. Load Master Intelligence Report
+        async function loadReport(reportKey) {
+            activeReportKey = reportKey;
+            const contentEl = document.getElementById('report-markdown-content');
+            contentEl.innerHTML = '<div style="color:var(--accent-cyan); padding:2rem;">⏳ Fetching live report from GCS...</div>';
+
+            try {
+                const res = await fetch(`/api/v1/reports/content?report_key=${reportKey}`);
+                if (!res.ok) throw new Error("Report fetch failed");
+                const data = await res.json();
+                const rawMarkdown = data.markdown_content || "";
+
+                // Render Markdown
+                contentEl.innerHTML = marked.parse(rawMarkdown);
+
+                // Convert Mermaid code blocks into containers
+                const mermaidBlocks = contentEl.querySelectorAll('pre code.language-mermaid');
+                mermaidBlocks.forEach(block => {
+                    const pre = block.parentElement;
+                    const div = document.createElement('div');
+                    div.className = 'mermaid';
+                    div.innerHTML = block.textContent;
+                    div.style.background = 'rgba(0,0,0,0.2)';
+                    div.style.padding = '1rem';
+                    div.style.borderRadius = '10px';
+                    div.style.marginBottom = '1.5rem';
+                    div.style.overflowX = 'auto';
+                    pre.parentNode.replaceChild(div, pre);
+                });
+
+                if (window.mermaid) {
+                    try {
+                        mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+                        mermaid.run({ nodes: contentEl.querySelectorAll('.mermaid') });
+                    } catch (err) {}
+                }
+
+                if (window.renderMathInElement) {
+                    renderMathInElement(contentEl, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false}
+                        ],
+                        throwOnError: false
+                    });
+                }
+            } catch (e) {
+                contentEl.innerHTML = `<div style="color:var(--accent-red); padding:2rem;">⚠️ Unable to load report: ${e.message}</div>`;
+            }
+        }
+
+        // 8. Trigger Autonomous Cycle Action
+        async function triggerAutonomousCycle() {
+            const btn = document.querySelector('.btn-trigger');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<span>⏳</span> Executing Swarm...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/v1/trigger-cycle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cycle_type: 'ALL' })
+                });
+                const data = await res.json();
+                alert(`🎉 Autonomous Cycle Completed!\nRoot Agent: ${data.execution_summary?.root_agent || 'Taskmaster'}\nActions Executed: ${data.execution_summary?.actions_executed?.length || 6}`);
+                fetchSwarmTelemetry();
+                loadReport('realtime_24h');
+            } catch (e) {
+                alert("Trigger error: " + e.message);
+            } finally {
+                btn.innerHTML = original;
+                btn.disabled = false;
+            }
+        }
+
+        function closeAgentModal() {
+            document.getElementById('agent-modal-overlay').style.display = 'none';
+        }
+
+        window.onload = () => {
+            resizeTopologyCanvas();
+            fetchSwarmTelemetry();
+            loadReport('realtime_24h');
+            window.addEventListener('resize', () => {
+                resizeTopologyCanvas();
+                drawTopologyGraph();
+                drawWaveform();
+            });
+        };
+    </script>
 </body>
 </html>
-
-
