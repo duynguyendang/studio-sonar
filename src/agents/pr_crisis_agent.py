@@ -1,14 +1,33 @@
 import logging
 from typing import Dict, List, Any
-from src.agents.base_agent import BaseADKAgent, ADKAgentMessage
+from google.adk import Agent
+from src.agents.base_agent import BaseADKAgent, create_adk_agent
 from src.mcp.slack_tools import dispatch_slack_crisis_alert
 from src.mcp.notion_tools import generate_notion_action_board
 
 logger = logging.getLogger("studiosonar.agent.pr")
 
+PR_CRISIS_INSTRUCTION = (
+    "You are the Crisis Response Strategist. When handed an anomaly, you perform root-cause "
+    "analysis on viewer sentiment, synthesize an actionable response stance, and dispatch "
+    "immediate Slack Red Alerts and Notion triage cards without human intervention."
+)
+
+PR_CRISIS_TOOLS = [
+    dispatch_slack_crisis_alert,
+    generate_notion_action_board
+]
+
+# Native Google ADK Agent Instance
+native_pr_crisis_agent: Agent = create_adk_agent(
+    name="PRCrisisStrategistAgent",
+    instruction=PR_CRISIS_INSTRUCTION,
+    tools=PR_CRISIS_TOOLS
+)
+
 class PRCrisisStrategistAgent(BaseADKAgent):
     """
-    Specialist Agent 2: PR Crisis Strategy & Executive Resolution.
+    Specialist Agent 2: PR Crisis Strategy & Executive Resolution (Google ADK Native).
     Analyzes root-cause drivers of backlash and executes immediate remediation via Slack and Notion.
     """
 
@@ -16,15 +35,8 @@ class PRCrisisStrategistAgent(BaseADKAgent):
         super().__init__(
             name="PRCrisisStrategistAgent",
             role="Executive PR Strategist & Crisis Resolver",
-            system_instruction=(
-                "You are the Crisis Response Strategist. When handed an anomaly, you perform root-cause "
-                "analysis on viewer sentiment, synthesize an actionable response stance, and dispatch "
-                "immediate Slack Red Alerts and Notion triage cards without human intervention."
-            ),
-            tools=[
-                dispatch_slack_crisis_alert,
-                generate_notion_action_board
-            ]
+            system_instruction=PR_CRISIS_INSTRUCTION,
+            tools=PR_CRISIS_TOOLS
         )
 
     def handle_incident(self, anomaly_payload: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -57,67 +69,61 @@ You MUST respond strictly in valid JSON format with the following keys:
 {{
   "severity": "CRITICAL_P1",
   "root_cause": "A precise 1-2 sentence breakdown identifying the root controversy trigger.",
-  "containment_stance": "1. [Step 1 Immediate Pinned Action]\n2. [Step 2 Disclosure Update]\n3. [Step 3 Ad/Distribution Pause]"
+  "containment_stance": "1. [Step 1 Immediate Pinned Action]\\n2. [Step 2 Disclosure Update]\\n3. [Step 3 Ad/Distribution Pause]"
 }}
 """
-        root_cause = f"Viewer friction regarding tone and topic framing in '{title}'.{cluster_summary}"
-        stance = "1. Immediately pin a transparent clarification comment.\n2. Update video description with full context disclosures.\n3. Pause automated reposts."
-        severity = "CRITICAL_P1"
-
         try:
-            gemini_response = llm_client.generate(
+            raw_response = llm_client.generate(
                 prompt=llm_prompt,
                 system_instruction=self.system_instruction
             )
-            if gemini_response:
-                clean_json = gemini_response.strip()
-                if clean_json.startswith("```json"):
-                    clean_json = clean_json[7:]
-                if clean_json.startswith("```"):
-                    clean_json = clean_json[3:]
-                if clean_json.endswith("```"):
-                    clean_json = clean_json[:-3]
-                parsed = json.loads(clean_json.strip())
-                root_cause = parsed.get("root_cause", root_cause)
-                stance = parsed.get("containment_stance", stance)
-                severity = parsed.get("severity", severity)
-                logger.info(f"[{self.name}] Successfully synthesized crisis stance via Gemini Flash: '{root_cause[:50]}...'")
+            parsed_json = json.loads(raw_response.strip().replace("```json", "").replace("```", "").strip())
+            severity = parsed_json.get("severity", "CRITICAL_P1")
+            root_cause = parsed_json.get("root_cause", f"Rapid sentiment backlash (+{velocity:.1f}%) on core message transparency.")
+            containment_stance = parsed_json.get("containment_stance", (
+                "1. Publish verified pinned clarification comment addressing friction points directly.\n"
+                "2. Update video description with transparent disclosure timestamps.\n"
+                "3. Temporarily pause automated ad placements until sentiment stabilizes."
+            ))
         except Exception as e:
-            logger.warning(f"[{self.name}] Gemini crisis analysis notice, using resilient fallback: {e}")
+            logger.warning(f"[{self.name}] LLM dynamic generation fallback: {e}")
+            severity = "CRITICAL_P1"
+            root_cause = f"Rapid sentiment backlash (+{velocity:.1f}%) on transparency: '{quotes[0] if quotes else 'Public backlash'}'.{cluster_summary}"
+            containment_stance = (
+                "1. Publish verified pinned clarification comment addressing friction points directly.\n"
+                "2. Update video description with transparent disclosure timestamps.\n"
+                "3. Temporarily pause automated ad placements until sentiment stabilizes."
+            )
 
+        executed_actions = []
 
-        actions_taken = []
-
-
-        # 1. Dispatch Slack Red Alert
-        logger.info(f"[{self.name}] Calling Slack Red Alert MCP tool...")
+        # Tool 1: Slack Alert
         slack_res = self.execute_tool(
             "dispatch_slack_crisis_alert",
-            severity="CRITICAL_P1",
-            title=f"Undisclosed Sponsor Backlash on '{title}'",
-            channel_id_or_name=f"@{channel}",
+            severity=severity,
+            title=title,
+            channel_id_or_name=channel,
             root_cause_summary=root_cause,
-            sample_negative_quotes=quotes,
-            recommended_pr_stance=stance,
+            sample_negative_quotes=quotes[:3],
+            recommended_pr_stance=containment_stance,
             metric_velocity_pct=velocity
         )
-        actions_taken.append({"agent": self.name, "tool": "dispatch_slack_crisis_alert", "result": slack_res})
+        executed_actions.append({"tool": "dispatch_slack_crisis_alert", "result": slack_res})
 
-        # 2. Dispatch Notion Triage Card
-        logger.info(f"[{self.name}] Calling Notion Kanban Board MCP tool...")
+        # Tool 2: Notion Triage Board
         notion_res = self.execute_tool(
             "generate_notion_action_board",
-            title=f"URGENT PR: Address Disclosure Backlash on '{title}'",
-            priority="Urgent",
+            title=f"PR Backlash Triage: {title[:35]}...",
+            priority="Urgent" if "P1" in severity else "High",
             assigned_team="PR & Crisis Management",
             summary=root_cause,
             action_items=[
-                "Draft pinned clarification comment for YouTube",
-                "Update FTC disclosure tags in video metadata",
-                "Review sponsorship contract with Legal team"
-            ],
-            due_in_hours=12
+                "Draft and approve pinned comment addressing transparency",
+                "Review sponsor disclosure guidelines with legal team",
+                "Monitor sentiment velocity at 60m interval"
+            ]
         )
-        actions_taken.append({"agent": self.name, "tool": "generate_notion_action_board", "result": notion_res})
+        executed_actions.append({"tool": "generate_notion_action_board", "result": notion_res})
 
-        return actions_taken
+        logger.info(f"[{self.name}] PR Incident mitigation dispatched successfully (2 actions).")
+        return executed_actions

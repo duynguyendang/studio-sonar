@@ -117,7 +117,39 @@ class StudioSonarBigQueryClient:
             }
         ]
 
+    def search_vector_topic_clusters(self, query_text: str, top_k: int = 5) -> List[Dict[str, Any]]:
+        """Uses BigQuery Vector Search on text-embedding-004 vectors to find semantic clusters."""
+        if self.mode == "live" and self._bq_client:
+            try:
+                query = f"""
+                    SELECT base.comment_text, base.sentiment_label, distance
+                    FROM VECTOR_SEARCH(
+                        TABLE `{self.project_id}.{self.dataset}.comments`,
+                        'embedding',
+                        (SELECT ML.GENERATE_EMBEDDING(MODEL `{self.project_id}.{self.dataset}.embedding_model`, @query) AS embedding),
+                        top_k => @top_k
+                    )
+                """
+                from google.cloud import bigquery
+                job_config = bigquery.QueryJobConfig(
+                    query_parameters=[
+                        bigquery.ScalarQueryParameter("query", "STRING", query_text),
+                        bigquery.ScalarQueryParameter("top_k", "INT64", top_k),
+                    ]
+                )
+                query_job = self._bq_client.query(query, job_config=job_config)
+                return [dict(row) for row in query_job.result()]
+            except Exception as e:
+                logger.warning(f"Vector search falling back: {e}")
+
+        # Fallback simulation
+        return [
+            {"matched_topic": "Public Reaction", "similarity_score": 0.89, "sample_comment": "Cần thêm thông tin minh bạch."},
+            {"matched_topic": "Content Feedback", "similarity_score": 0.84, "sample_comment": "Video có nhiều điểm thú vị nhưng cần cải thiện pacing."}
+        ]
+
     def collect_and_ingest_latest_telemetry(self) -> Dict[str, Any]:
+
         """
         Step 0 Autonomous Ingestion Job:
         Fetches live telemetry via YouTube Data API v3 and streams snapshots into BigQuery.

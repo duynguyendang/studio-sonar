@@ -50,6 +50,9 @@ class TrackingRegistryManager:
         Returns all actively tracked videos directly from Database (BigQuery).
         If user deletes or adds a video in BigQuery, dashboard reflects immediately!
         """
+        if not os.getenv("K_SERVICE") and not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+            return self._load_data().get("videos", [])
+
         try:
             from google.cloud import bigquery
             client = bigquery.Client(project=os.getenv("GCP_PROJECT_ID", "studiosonar-dev"))

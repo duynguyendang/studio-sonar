@@ -1,17 +1,46 @@
 import logging
-from typing import Dict, List, Any
-from src.agents.base_agent import BaseADKAgent, ADKAgentMessage
-from src.agents.anomaly_detector_agent import AnomalyDetectorAgent
-from src.agents.pr_crisis_agent import PRCrisisStrategistAgent
-from src.agents.viral_content_agent import ViralContentCreatorAgent
-from src.agents.channel_monitor_agent import ChannelMonitorAgent
+from typing import Dict, List, Any, Optional
+from google.adk import Agent, Workflow, Runner, Context, Event
+from src.agents.base_agent import BaseADKAgent, ADKAgentMessage, create_adk_agent
+from src.agents.anomaly_detector_agent import AnomalyDetectorAgent, native_anomaly_detector
+from src.agents.pr_crisis_agent import PRCrisisStrategistAgent, native_pr_crisis_agent
+from src.agents.viral_content_agent import ViralContentCreatorAgent, native_viral_content_agent
+from src.agents.channel_monitor_agent import ChannelMonitorAgent, native_channel_monitor_agent
 from src.core.config import settings
 
 logger = logging.getLogger("studiosonar.agent.orchestrator")
 
+TASKMASTER_SYSTEM_INSTRUCTION = (
+    "You are the Root Taskmaster Orchestrator. You receive Cloud Scheduler triggers, "
+    "delegate telemetry scanning to the AnomalyDetectorAgent, route crisis anomalies to the "
+    "PRCrisisStrategistAgent, route breakout trends to the ViralContentCreatorAgent, "
+    "and direct ChannelMonitorAgent to track company channel uploads and generate statistical scorecards."
+)
+
+# 1. Native Google ADK Root Agent
+native_taskmaster_agent: Agent = create_adk_agent(
+    name="StudioSonarRootTaskmaster",
+    instruction=TASKMASTER_SYSTEM_INSTRUCTION,
+    tools=[]
+)
+
+# 2. Native Google ADK Graph-Based Workflow
+# Defines the multi-agent execution topology:
+# START ➔ Channel Monitor ➔ Anomaly Detector ➔ [PR Crisis Strategist | Viral Content Creator]
+native_taskmaster_workflow: Workflow = Workflow(
+    name="StudioSonarAutonomousWorkflow",
+    description="End-to-End Autonomous Multi-Agent Media Intelligence Workflow",
+    edges=[
+        ("START", native_channel_monitor_agent),
+        (native_channel_monitor_agent, native_anomaly_detector),
+        (native_anomaly_detector, native_pr_crisis_agent),
+        (native_anomaly_detector, native_viral_content_agent)
+    ]
+)
+
 class StudioSonarOrchestrator(BaseADKAgent):
     """
-    Root Taskmaster Agent (Google ADK Multi-Agent Team Supervisor).
+    Root Taskmaster Agent (Google ADK Multi-Agent Team Supervisor & Workflow Coordinator).
     Orchestrates specialized sub-agents, manages inter-agent handoffs, and ensures 24/7 autonomous action.
     """
 
@@ -19,12 +48,8 @@ class StudioSonarOrchestrator(BaseADKAgent):
         super().__init__(
             name="StudioSonarOrchestrator",
             role="Taskmaster Team Supervisor & Chief Orchestrator",
-            system_instruction=(
-                "You are the Root Taskmaster Orchestrator. You receive Cloud Scheduler triggers, "
-                "delegate telemetry scanning to the AnomalyDetectorAgent, route crisis anomalies to the "
-                "PRCrisisStrategistAgent, route breakout trends to the ViralContentCreatorAgent, "
-                "and direct ChannelMonitorAgent to track company channel uploads and generate statistical scorecards."
-            )
+            system_instruction=TASKMASTER_SYSTEM_INSTRUCTION,
+            tools=[self.run_autonomous_cycle]
         )
         # Register Specialized Sub-Agents
         self.anomaly_detector = AnomalyDetectorAgent()
@@ -39,17 +64,18 @@ class StudioSonarOrchestrator(BaseADKAgent):
             self.channel_monitor
         ]
 
-    def get_root_adk_agent(self):
+        # Bind Native ADK Workflow
+        self.workflow = native_taskmaster_workflow
+
+    def get_root_adk_agent(self) -> Agent:
         """Returns the native Google ADK Root Agent object for adk CLI & runners."""
-        from google.adk import Agent
-        return Agent(
-            name=self.name,
-            description=f"{self.role}: {self.system_instruction}",
-            tools=[self.run_autonomous_cycle]
-        )
+        return native_taskmaster_agent
+
+    def get_adk_workflow(self) -> Workflow:
+        """Returns the native Google ADK Workflow graph object."""
+        return self.workflow
 
     def run_autonomous_cycle(self, cycle_type: str = "ALL") -> Dict[str, Any]:
-
         """
         Runs an autonomous Multi-Agent cycle with explicit inter-agent communication logs.
         
@@ -104,7 +130,6 @@ class StudioSonarOrchestrator(BaseADKAgent):
                 channel_results = self.channel_monitor.monitor_and_synthesize(channel_id=target_ch_id)
 
             all_actions.extend(channel_results.get("actions_executed", []))
-
 
         # =====================================================================
         # 2. DELEGATION TO ANOMALY DETECTOR AGENT (PR & Trends)
@@ -186,6 +211,7 @@ class StudioSonarOrchestrator(BaseADKAgent):
             "status": "COMPLETED",
             "cycle_type": cycle_type,
             "agent_team": [agent.name for agent in self.agent_team],
+            "workflow_name": self.workflow.name,
             "inter_agent_messages_exchanged": len(inter_agent_traces),
             "inter_agent_traces": inter_agent_traces,
             "actions_executed": all_actions

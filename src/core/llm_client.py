@@ -32,7 +32,7 @@ class GeminiLLMClient:
                     logger.warning(f"Google AI API key init notice: {e}")
 
             # 2. Secondary: Google Cloud Vertex AI ADC (Zero-Key on Cloud Run)
-            if self.project_id:
+            if self.project_id and os.getenv("K_SERVICE"):  # Only on Cloud Run environment
                 try:
                     self._client = genai.Client(vertexai=True, project=self.project_id, location=self.location)
                     logger.info(f"Initialized Gemini Client via Vertex AI Zero-Key (Project: {self.project_id}, Region: {self.location})")

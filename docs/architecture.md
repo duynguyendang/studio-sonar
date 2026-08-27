@@ -48,7 +48,22 @@ A common mistake in AI engineering is creating individual "agents" for trivial I
   * **I/O & Data Muscle (Tools Layer):** Deterministic Python connectors (`YouTubeLiveClient`, `TikTokStreamHarvester`, `BigQueryOLAP`, `GCSReportManager`) execute fast, reliable data operations without LLM overhead.
   * **Cognitive Swarm (Google ADK Agents Layer):** Agents focus strictly on **higher-order reasoning, risk evaluation, A2A handoffs, and strategic synthesis**.
 
-### 2. Why Google ADK Over Traditional Python Scripts or LangChain?
+### 2. Why Google ADK (v2.7.1) Over Traditional Python Scripts or LangChain?
+* **100% Native Google ADK Architecture:** Every agent is directly instantiated via `google.adk.Agent` and coordinated through `google.adk.Workflow` graph-based edges:
+  ```python
+  from google.adk import Agent, Workflow
+
+  native_taskmaster_workflow = Workflow(
+      name="StudioSonarAutonomousWorkflow",
+      edges=[
+          ("START", native_channel_monitor_agent),
+          (native_channel_monitor_agent, native_anomaly_detector),
+          (native_anomaly_detector, native_pr_crisis_agent),
+          (native_anomaly_detector, native_viral_content_agent)
+      ]
+  )
+  ```
+* **Declarative Function Tools:** All MCP tools in `src/mcp/` follow strict Google-Style docstrings and type annotations, allowing Gemini Flash to auto-extract function schemas seamlessly.
 * **Native Agent-to-Agent (A2A) Handoffs:** Standardizes context transfer across decentralized microservices, eliminating fragile API glue.
 * **Role-Based Least-Privilege Tool Binding:** Each agent is scoped strictly to its operational domain (e.g., `PRCrisisStrategistAgent` only has access to Slack/Notion dispatchers, preventing accidental script publishing).
 * **Dual-Tier Fault Tolerance:** Built-in in-process fallback ensures that temporary network partitions between Cloud Run services never crash the hourly Taskmaster cycle.

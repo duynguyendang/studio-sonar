@@ -30,7 +30,7 @@ class YouTubeLiveClient:
             "key": self.api_key
         }
         try:
-            res = requests.get(url, params=params, timeout=10)
+            res = requests.get(url, params=params, timeout=2.0)
             if res.status_code == 200:
                 data = res.json()
                 items = data.get("items", [])
@@ -167,7 +167,7 @@ class YouTubeLiveClient:
         }
         comments = []
         try:
-            res = requests.get(url, params=params, timeout=10)
+            res = requests.get(url, params=params, timeout=2.0)
             if res.status_code == 200:
                 data = res.json()
                 for item in data.get("items", []):
