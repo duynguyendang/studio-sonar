@@ -365,6 +365,15 @@ class StudioSonarOrchestrationEngine:
         except Exception as e:
             logger.error(f"Error publishing master dossier to GCS: {e}")
 
+        # =====================================================================
+        # Step 5: BigQuery Telemetry Persistence (Save Swarm State to DB)
+        # =====================================================================
+        try:
+            from src.data.telemetry_sync import telemetry_sync
+            telemetry_sync.sync_all_agents_current_cycle(executed_actions=executed_actions)
+        except Exception as e:
+            logger.warning(f"Telemetry BigQuery sync notice: {e}")
+
         traces = adk_event_tracer.get_traces()
         return {
             "status": "COMPLETED",

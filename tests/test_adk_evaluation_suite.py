@@ -3,8 +3,13 @@ Google ADK Evaluation Suite Test Runner.
 Executes autonomous benchmark evals across all specialized Pure ADK Agents.
 """
 
+import os
+import sys
 import json
 import pytest
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from src.agents.anomaly_detector_agent import anomaly_detector_agent
 from src.agents.pr_crisis_agent import pr_crisis_agent
 from src.agents.viral_content_agent import viral_content_agent

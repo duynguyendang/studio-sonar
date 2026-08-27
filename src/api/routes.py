@@ -75,6 +75,13 @@ def get_swarm_telemetry():
     if total_comments == 0:
         total_comments = 38402 # 25.99K (PMC) + 12.41K (Thùy Chi)
 
+    # Fetch live agent telemetry directly from BigQuery table agent_telemetry
+    from src.data.telemetry_sync import telemetry_sync
+    bq_agents = telemetry_sync.fetch_live_telemetry_from_bigquery()
+    if not bq_agents:
+        telemetry_sync.sync_all_agents_current_cycle(executed_actions=[])
+        bq_agents = telemetry_sync.fetch_live_telemetry_from_bigquery()
+
     return {
         "status": "ONLINE",
         "container_specs": {
@@ -82,7 +89,8 @@ def get_swarm_telemetry():
             "region": "us-central1",
             "allocated_cpu": "1 vCPU",
             "allocated_memory": "1024 MiB (1.0 GB)",
-            "process_rss_mb": f"{active_rss_mb} MB"
+            "process_rss_mb": f"{active_rss_mb} MB",
+            "persistence": "BigQuery partitioned table studiosonar_analytics.agent_telemetry"
         },
         "live_counters": {
             "comments_24h": total_comments,
@@ -90,104 +98,7 @@ def get_swarm_telemetry():
             "views_tracked": total_views,
             "total_processed": total_views + total_comments + 128540
         },
-        "agents": [
-            {
-                "id": "taskmaster",
-                "name": "StudioSonarRootTaskmaster",
-                "role": "Chief Swarm Supervisor",
-                "status": "ACTIVE",
-                "cpu": "12%",
-                "memory": "142 MB / 1.0 GB",
-                "batch": "#1,420",
-                "tasks_completed": 142,
-                "last_action": "Orchestrated 4-node A2A Graph Cycle",
-                "tools": ["Workflow Graph", "SubAgent Router", "ADK Event Tracer"]
-            },
-            {
-                "id": "channel_monitor",
-                "name": "ChannelMonitorAgent",
-                "role": "Target Channel Sentinel",
-                "status": "SCANNING",
-                "cpu": "16%",
-                "memory": "118 MB / 1.0 GB",
-                "batch": "#894",
-                "tasks_completed": 98,
-                "last_action": "Scanned @business & @KiemDinhPhim9.0 (0 new PR alerts)",
-                "tools": ["check_channel_new_uploads", "synthesize_video_scorecard", "dispatch_slack_scorecard"]
-            },
-            {
-                "id": "anomaly_detector",
-                "name": "AnomalyDetectorAgent",
-                "role": "BigQuery OLAP Analytics",
-                "status": "STREAMING",
-                "cpu": "32%",
-                "memory": "215 MB / 1.0 GB",
-                "batch": "#4,281",
-                "tasks_completed": 312,
-                "last_action": "Detected +310% velocity spike on UH21OnJwxZE",
-                "tools": ["query_bigquery_sentiment_spikes", "query_bigquery_viral_trends", "search_vector_context"]
-            },
-            {
-                "id": "pr_crisis",
-                "name": "PRCrisisStrategistAgent",
-                "role": "Brand Safety & Triage",
-                "status": "STANDBY",
-                "cpu": "6%",
-                "memory": "98 MB / 1.0 GB",
-                "batch": "#140",
-                "tasks_completed": 16,
-                "last_action": "Health Check: 0 active PR backlash incidents flagged",
-                "tools": ["dispatch_slack_crisis_alert", "generate_notion_action_board"]
-            },
-            {
-                "id": "viral_content",
-                "name": "ViralContentCreatorAgent",
-                "role": "High-CTR Retention Architect",
-                "status": "ACTING",
-                "cpu": "22%",
-                "memory": "164 MB / 1.0 GB",
-                "batch": "#620",
-                "tasks_completed": 64,
-                "last_action": "Authored 60s Shorts script for 'Thiên Đường Với Người Thương'",
-                "tools": ["create_google_doc_video_script", "generate_notion_action_board"]
-            },
-            {
-                "id": "tiktok_harvester",
-                "name": "TikTokHarvesterAgent",
-                "role": "Cross-Platform UGC Sound Sentinel",
-                "status": "STREAMING",
-                "cpu": "26%",
-                "memory": "185 MB / 1.0 GB",
-                "batch": "#2,180",
-                "tasks_completed": 240,
-                "last_action": "Cataloged 14,200 new UGC clips for 'Thiên Đường Với Người Thương'",
-                "tools": ["harvest_tiktok_sound_velocity", "ingest_ugc_metadata"]
-            },
-            {
-                "id": "behavioral_classifier",
-                "name": "BehavioralClassifierAgent",
-                "role": "Vietnamese Intent & Cultural NLP",
-                "status": "ACTIVE",
-                "cpu": "24%",
-                "memory": "172 MB / 1.0 GB",
-                "batch": "#3,890",
-                "tasks_completed": 295,
-                "last_action": "Classified 25.3K comments with 96.4% confidence across 5 clusters",
-                "tools": ["classify_cultural_intent", "cluster_semantic_embeddings"]
-            },
-            {
-                "id": "settings_copilot",
-                "name": "SettingsCopilotAgent",
-                "role": "FinOps & Dynamic Config Copilot",
-                "status": "READY",
-                "cpu": "4%",
-                "memory": "85 MB / 1.0 GB",
-                "batch": "#340",
-                "tasks_completed": 45,
-                "last_action": "Adjusted tracking window for TS. Lương Minh Thắng to 14 days",
-                "tools": ["update_video_tracking_duration", "add_channel", "generate_viral_hook"]
-            }
-        ],
+        "agents": bq_agents if bq_agents else [],
         "alerts": [
             {"severity": "SUCCESS", "time": "14:40:12", "agent": "Taskmaster", "msg": "Autonomous Cycle #142 completed successfully in 3.8s"},
             {"severity": "INFO", "time": "14:38:05", "agent": "TikTokHarvester", "msg": "14,200 new UGC clips cataloged on sound 'Thiên Đường' (+420% surge)"},
