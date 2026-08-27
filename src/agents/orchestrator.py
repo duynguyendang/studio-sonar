@@ -344,7 +344,7 @@ class StudioSonarOrchestrationEngine:
                 executed_actions.append({"agent": viral_content_agent.name, "tool": "generate_notion_action_board", "result": notion_res})
 
         # =====================================================================
-        # Step 4: Autonomous GCS Dossier Auto-Publisher (Master Pulse Report)
+        # Step 4: Autonomous GCS Dossier Auto-Publisher (Publish All 12 Reports)
         # =====================================================================
         gcs_published_files = []
         try:
@@ -357,13 +357,21 @@ class StudioSonarOrchestrationEngine:
                 scripts=viral_scripts_generated
             )
             
-            # Save to GCS bucket & local mirror
+            # Save master dossier
             master_saved = gcs_report_manager.save_report("realtime_24h_pulse_report.md", dossier_content)
             if master_saved:
                 gcs_published_files.append("gs://studiosonar-dev-reports/realtime_24h_pulse_report.md")
-                logger.info(f"Published real-time pulse report to GCS bucket: {gcs_published_files[-1]}")
+
+            # Synchronize and publish ALL 12 detailed surveillance reports to GCS
+            from src.core.report_publisher import report_publisher
+            live_stats_map = {}
+            for v in ingest_res.get("videos", []):
+                live_stats_map[v.get("video_id")] = v
+            all_published = report_publisher.publish_all_reports_to_gcs(live_video_stats=live_stats_map)
+            gcs_published_files = list(set(gcs_published_files + all_published))
+            logger.info(f"Successfully synchronized and published {len(gcs_published_files)} reports to GCS bucket")
         except Exception as e:
-            logger.error(f"Error publishing master dossier to GCS: {e}")
+            logger.error(f"Error publishing master dossier and detailed reports to GCS: {e}")
 
         # =====================================================================
         # Step 5: BigQuery Telemetry Persistence (Save Swarm State to DB)

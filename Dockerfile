@@ -21,8 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application source code only (Stateless Container)
+# Copy application source code and reports
 COPY src/ ./src/
+COPY reports/ ./reports/
 
 
 
