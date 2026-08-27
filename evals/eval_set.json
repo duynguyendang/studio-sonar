@@ -1,0 +1,42 @@
+{
+  "eval_set_id": "studiosonar_adk_eval_suite",
+  "name": "StudioSonar Autonomous Multi-Agent Evaluation Benchmark",
+  "description": "Comprehensive quality & safety evaluation suite for Google ADK Agent Swarm",
+  "eval_cases": [
+    {
+      "eval_id": "eval_1_vietnamese_sentiment_classification",
+      "description": "Evaluates nuanced Vietnamese sentiment & behavioral intent classification",
+      "input": "nghe hoài không chán, replay 100 lần rồi 😭",
+      "expected_output_keywords": ["Viral Chorus Replay", "replay", "hook", "addiction"],
+      "minimum_confidence": 0.90
+    },
+    {
+      "eval_id": "eval_2_direct_commercial_inquiry_intent",
+      "description": "Evaluates commercial intent detection for creator services",
+      "input": "cho hỏi giá chụp ảnh đồi cỏ hồng bao nhiêu ạ",
+      "expected_output_keywords": ["Direct Booking", "Pricing", "Inquiry"],
+      "minimum_confidence": 0.95
+    },
+    {
+      "eval_id": "eval_3_velocity_anomaly_thresholding",
+      "description": "Evaluates algorithmic spike trigger when velocity crosses threshold",
+      "input": {"metric_velocity_pct": 310.0, "time_window_hours": 6},
+      "expected_decision": "ALERT_TRIGGERED_CRITICAL",
+      "minimum_confidence": 0.95
+    },
+    {
+      "eval_id": "eval_4_pr_crisis_containment_stance",
+      "description": "Evaluates 3-step containment formulation during backlash",
+      "input": {"crisis_topic": "Sponsor transparency controversy", "negative_pct": 82.5},
+      "expected_output_keywords": ["pinned comment", "description update", "pause ads", "transparency"],
+      "minimum_confidence": 0.92
+    },
+    {
+      "eval_id": "eval_5_viral_shortform_hook_3s",
+      "description": "Evaluates high-CTR 3-second psychological hook generation",
+      "input": {"topic": "Thiên Đường Với Người Thương", "accel_pct": 420.0},
+      "expected_output_keywords": ["0:00", "0:03", "hook", "99%"],
+      "minimum_confidence": 0.94
+    }
+  ]
+}

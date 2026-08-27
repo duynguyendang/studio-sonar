@@ -1,6 +1,6 @@
 """
 Google ADK (Agent Development Kit v2.7.1) Core Module.
-Provides native Agent factory, Event tracing, and Context wrappers without custom abstraction overhead.
+Provides native Agent factory and Event tracing without custom wrapper abstractions.
 """
 
 import logging
@@ -53,27 +53,3 @@ class ADKEventTracer:
         return self.events
 
 adk_event_tracer = ADKEventTracer()
-
-# Legacy Compatibility Envelopes (for backwards compatibility with tools)
-class ADKAgentMessage:
-    def __init__(self, sender: str, recipient: str, message_type: str, content: Dict[str, Any]):
-        self.sender = sender
-        self.recipient = recipient
-        self.message_type = message_type
-        self.content = content
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "sender": self.sender,
-            "recipient": self.recipient,
-            "message_type": self.message_type,
-            "content": self.content
-        }
-
-class BaseADKAgent:
-    """Legacy compatibility bridge pointing to Pure ADK Agent."""
-    def __init__(self, name: str, role: str, system_instruction: str, tools: Optional[List[Callable]] = None):
-        self.name = name
-        self.role = role
-        self.system_instruction = system_instruction
-        self.adk_agent = create_pure_adk_agent(name=name, instruction=f"{role}: {system_instruction}", tools=tools)
