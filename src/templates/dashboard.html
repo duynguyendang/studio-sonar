@@ -19,8 +19,9 @@
         :root {
             --bg-primary: #040711;
             --bg-secondary: #080d1a;
-            --bg-card: rgba(12, 19, 36, 0.75);
-            --bg-glass: rgba(8, 14, 28, 0.85);
+            --bg-card: rgba(12, 19, 36, 0.78);
+            --bg-card-hover: rgba(18, 28, 54, 0.9);
+            --bg-glass: rgba(8, 14, 28, 0.88);
             --border-color: rgba(255, 255, 255, 0.08);
             --border-glow: rgba(0, 242, 254, 0.35);
             --accent-cyan: #00f2fe;
@@ -49,8 +50,8 @@
             display: flex;
             flex-direction: column;
             background-image: 
-                radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.06) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(121, 40, 202, 0.06) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.07) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(121, 40, 202, 0.07) 0px, transparent 50%);
             background-attachment: fixed;
             overflow-x: hidden;
         }
@@ -77,20 +78,20 @@
         }
 
         .brand-logo {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
             color: #fff;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+            box-shadow: 0 0 16px rgba(0, 242, 254, 0.4);
         }
 
         .brand-text h1 {
-            font-size: 1.15rem;
+            font-size: 1.18rem;
             font-weight: 700;
             letter-spacing: -0.5px;
             background: linear-gradient(90deg, #fff, var(--text-secondary));
@@ -109,7 +110,7 @@
         .header-stats {
             display: flex;
             align-items: center;
-            gap: 1.25rem;
+            gap: 1rem;
         }
 
         .stat-pill {
@@ -124,8 +125,8 @@
         }
 
         .pulse-dot {
-            width: 7px;
-            height: 7px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background-color: var(--accent-green);
             box-shadow: 0 0 8px var(--accent-green);
@@ -144,7 +145,7 @@
             color: #000;
             font-weight: 700;
             font-size: 0.78rem;
-            padding: 0.45rem 1rem;
+            padding: 0.45rem 1.1rem;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
@@ -158,17 +159,16 @@
             transform: translateY(-1px);
         }
 
-        /* Hero Live Topology & Counter Section */
+        /* Hero Mission Control Section (Live Topology Graph + Live Ingestion Counters) */
         .hero-mission-control {
             padding: 1.25rem 1.75rem;
             display: grid;
-            grid-template-columns: 1fr 340px;
+            grid-template-columns: 1fr 360px;
             gap: 1.25rem;
             border-bottom: 1px solid var(--border-color);
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.3);
         }
 
-        /* Live Topology Graph Canvas Card */
         .topology-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -200,12 +200,11 @@
             width: 100%;
             height: 180px;
             border-radius: 8px;
-            background: rgba(4, 7, 17, 0.85);
+            background: rgba(4, 7, 17, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.05);
             cursor: pointer;
         }
 
-        /* Live Ingestion Counters */
         .counters-panel {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -222,6 +221,12 @@
             justify-content: center;
             position: relative;
             overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .counter-card:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+            transform: translateY(-1px);
         }
 
         .counter-card::before {
@@ -232,7 +237,7 @@
         }
 
         .counter-label {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: var(--text-secondary);
             font-weight: 600;
             text-transform: uppercase;
@@ -250,60 +255,69 @@
         .counter-sub {
             font-size: 0.68rem;
             color: var(--accent-green);
-            margin-top: 0.15rem;
+            margin-top: 0.25rem;
+            font-weight: 600;
         }
 
-        /* Main Workspace Layout */
+        /* 3-Column Workspace */
         .workspace {
             display: grid;
-            grid-template-columns: 320px 1fr 340px;
+            grid-template-columns: 310px 1fr 340px;
             flex: 1;
             overflow: hidden;
+            min-height: calc(100vh - 280px);
         }
 
-        /* Left Column: Agent Telemetry Cards & Tracked Assets */
-        .left-sidebar {
-            border-right: 1px solid var(--border-color);
+        .left-sidebar, .right-sidebar {
             background: var(--bg-glass);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
-            max-height: calc(100vh - 270px);
+        }
+
+        .right-sidebar {
+            border-right: none;
+            border-left: 1px solid var(--border-color);
         }
 
         .section-header {
             padding: 0.85rem 1.25rem 0.5rem;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 700;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.75px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .agent-telemetry-item {
-            padding: 0.75rem 1.25rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            cursor: pointer;
+            margin: 0.35rem 0.85rem;
+            padding: 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
 
         .agent-telemetry-item:hover {
-            background: rgba(0, 242, 254, 0.04);
-            border-left: 3px solid var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background: var(--bg-card-hover);
+            transform: translateX(2px);
         }
 
         .agent-item-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.35rem;
         }
 
         .agent-name {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 700;
             color: #fff;
             display: flex;
@@ -312,89 +326,329 @@
         }
 
         .status-badge {
-            font-size: 0.65rem;
-            padding: 0.15rem 0.45rem;
-            border-radius: 9999px;
+            font-size: 0.62rem;
             font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .status-active { background: rgba(0, 245, 160, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
-        .status-scanning { background: rgba(0, 242, 254, 0.15); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
-        .status-standby { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+        .status-active { background: rgba(0, 245, 160, 0.15); color: var(--accent-green); border: 1px solid rgba(0, 245, 160, 0.3); }
+        .status-scanning { background: rgba(0, 242, 254, 0.15); color: var(--accent-cyan); border: 1px solid rgba(0, 242, 254, 0.3); }
+        .status-standby { background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); border: 1px solid rgba(148, 163, 184, 0.3); }
 
         .agent-metrics {
-            font-size: 0.72rem;
-            color: var(--text-secondary);
             display: flex;
-            gap: 0.75rem;
+            gap: 0.6rem;
+            font-size: 0.68rem;
+            color: var(--text-secondary);
             font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 0.35rem;
         }
 
         .agent-action-text {
             font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
+            color: #cbd5e1;
+            line-height: 1.35;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        /* Center Column: Intelligence Report View & Action Prescriptions */
+        /* Center Content & Cockpit Tabs */
         .center-content {
+            background: var(--bg-secondary);
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
-            max-height: calc(100vh - 270px);
-            padding: 1.5rem;
-            background: var(--bg-primary);
         }
 
-        .report-header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.25rem;
-            padding-bottom: 0.75rem;
+        .cockpit-tabs-bar {
+            height: 52px;
             border-bottom: 1px solid var(--border-color);
+            background: rgba(4, 7, 17, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 20;
         }
 
-        .report-title-box h2 {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .report-title-box p {
-            font-size: 0.75rem;
-            color: var(--accent-cyan);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .quick-action-group {
+        .tab-group {
             display: flex;
             gap: 0.5rem;
         }
 
-        .btn-action-pill {
-            padding: 0.4rem 0.8rem;
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.4rem 0.9rem;
             border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: rgba(0, 242, 254, 0.12);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+        }
+
+        .cockpit-view-container {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Section Headings */
+        .cockpit-section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.85rem;
+        }
+
+        /* Interactive Asset Card Grid */
+        .asset-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 1.15rem;
+        }
+
+        .interactive-asset-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.15rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .interactive-asset-card:hover {
+            border-color: rgba(0, 242, 254, 0.5);
+            background: var(--bg-card-hover);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .asset-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .asset-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.35;
+        }
+
+        .asset-platform-pill {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            white-space: nowrap;
+        }
+
+        .pill-yt { background: rgba(255, 71, 87, 0.2); color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.4); }
+        .pill-tiktok { background: rgba(0, 242, 254, 0.2); color: var(--accent-cyan); border: 1px solid rgba(0, 242, 254, 0.4); }
+
+        .asset-stats-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 0.45rem 0.75rem;
+            border-radius: 6px;
+        }
+
+        .velocity-badge {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        /* Multi-Cluster Sentiment Visual Spectrum Bar */
+        .sentiment-spectrum-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .sentiment-spectrum-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .sentiment-spectrum-bar {
+            height: 10px;
+            border-radius: 9999px;
+            display: flex;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .spectrum-segment {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .sentiment-legend-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.35rem;
+            font-size: 0.68rem;
+            margin-top: 0.25rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: #cbd5e1;
+        }
+
+        .legend-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        /* Action Recommendation Box */
+        .action-prescriptive-box {
+            background: rgba(121, 40, 202, 0.12);
+            border: 1px solid rgba(121, 40, 202, 0.35);
+            border-radius: 8px;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.75rem;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        .asset-actions-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .btn-card-action {
+            flex: 1;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.72rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.35rem;
+            justify-content: center;
+            gap: 0.3rem;
             transition: all 0.2s ease;
         }
 
-        .btn-viral { background: rgba(121, 40, 202, 0.2); border: 1px solid var(--accent-purple); color: #c084fc; }
-        .btn-viral:hover { background: rgba(121, 40, 202, 0.4); }
+        .btn-inspect { background: rgba(0, 242, 254, 0.15); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
+        .btn-inspect:hover { background: rgba(0, 242, 254, 0.3); }
 
-        .btn-crisis { background: rgba(255, 71, 87, 0.2); border: 1px solid var(--accent-red); color: #ff6b81; }
-        .btn-crisis:hover { background: rgba(255, 71, 87, 0.4); }
+        .btn-script { background: rgba(121, 40, 202, 0.2); border: 1px solid var(--accent-purple); color: #c084fc; }
+        .btn-script:hover { background: rgba(121, 40, 202, 0.4); }
 
+        /* Right Sidebar Alerts & Terminal */
+        .alert-stream {
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            padding: 0.65rem 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .alert-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-badge {
+            font-size: 0.62rem;
+            font-weight: 800;
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-critical { background: rgba(255, 71, 87, 0.25); color: var(--accent-red); }
+        .badge-warning { background: rgba(245, 158, 11, 0.25); color: var(--accent-gold); }
+        .badge-info { background: rgba(121, 40, 202, 0.25); color: #c084fc; }
+        .badge-success { background: rgba(0, 245, 160, 0.25); color: var(--accent-green); }
+
+        .terminal-box {
+            margin: 0.75rem 1.25rem 1.25rem;
+            background: #020408;
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            color: #00f5a0;
+            display: flex;
+            flex-direction: column;
+            height: 240px;
+            overflow-y: auto;
+        }
+
+        .terminal-header {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 0.25rem;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+
+        /* Markdown Dossier Body */
         .markdown-body {
+            padding: 1.75rem;
             color: var(--text-primary);
             line-height: 1.65;
             font-size: 0.92rem;
@@ -427,97 +681,7 @@
             color: var(--accent-cyan);
         }
 
-        .markdown-body blockquote {
-            border-left: 3px solid var(--accent-cyan);
-            background: rgba(0, 242, 254, 0.04);
-            padding: 0.75rem 1rem;
-            border-radius: 0 8px 8px 0;
-            margin: 1rem 0;
-        }
-
-        /* Right Column: Live Alert Feed & Hacker Terminal */
-        .right-sidebar {
-            border-left: 1px solid var(--border-color);
-            background: var(--bg-glass);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            max-height: calc(100vh - 270px);
-        }
-
-        .alert-stream {
-            padding: 0.75rem 1.25rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            max-height: 240px;
-            overflow-y: auto;
-        }
-
-        .alert-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.75rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.2rem;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .alert-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .alert-badge {
-            font-size: 0.62rem;
-            font-weight: 800;
-            padding: 0.1rem 0.35rem;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .badge-critical { background: rgba(255, 71, 87, 0.25); color: var(--accent-red); }
-        .badge-warning { background: rgba(245, 158, 11, 0.25); color: var(--accent-gold); }
-        .badge-info { background: rgba(121, 40, 202, 0.25); color: #c084fc; }
-        .badge-success { background: rgba(0, 245, 160, 0.25); color: var(--accent-green); }
-
-        .terminal-box {
-            margin: 0.75rem 1.25rem 1.25rem;
-            background: #020408;
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            border-radius: 8px;
-            padding: 0.75rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.68rem;
-            color: #00f5a0;
-            display: flex;
-            flex-direction: column;
-            height: 220px;
-            overflow-y: auto;
-        }
-
-        .terminal-header {
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 0.25rem;
-        }
-
-        .terminal-line {
-            margin-bottom: 0.25rem;
-            line-height: 1.4;
-        }
-
-        /* Bottom Activity Waveform */
+        /* Bottom Activity Waveform Strip */
         .bottom-timeline-strip {
             height: 60px;
             border-top: 1px solid var(--border-color);
@@ -538,8 +702,8 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(10px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -556,7 +720,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(0, 242, 254, 0.25);
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.3);
         }
 
         .modal-header {
@@ -588,18 +752,21 @@
         <div class="header-stats">
             <div class="stat-pill">
                 <span class="pulse-dot"></span>
-                <span>Swarm Mesh: <strong>5 Agents Online</strong></span>
+                <span>Swarm Mesh: <strong>8 Agents Online</strong></span>
             </div>
             <div class="stat-pill">
-                <span>Google Cloud Run: <strong>us-central1</strong></span>
+                <span>Model: <strong style="color:var(--accent-cyan)">Gemini 3.7 Flash</strong></span>
+            </div>
+            <div class="stat-pill">
+                <span>Region: <strong>us-central1</strong></span>
             </div>
             <button class="btn-trigger" onclick="triggerAutonomousCycle()">
-                <span>⚡</span> Run Full Swarm Cycle
+                <span>⚡</span> Run Swarm Cycle
             </button>
         </div>
     </header>
 
-    <!-- Hero Mission Control Strip (Live Topology Graph + Live Ingestion Counters) -->
+    <!-- Hero Mission Control Section (Live Topology Graph + Live Ingestion Counters) -->
     <div class="hero-mission-control">
         
         <!-- Live Topology Graph Canvas -->
@@ -608,7 +775,7 @@
                 <div class="card-title">
                     <span>🕸️</span> Live Agent Swarm Topology Graph (Click any node to inspect LLM Reasoning)
                 </div>
-                <span class="status-badge status-active">A2A GRAPH ACTIVE</span>
+                <span class="status-badge status-active">A2A MESH ACTIVE</span>
             </div>
             <canvas id="topology-canvas"></canvas>
         </div>
@@ -617,29 +784,29 @@
         <div class="counters-panel">
             <div class="counter-card">
                 <div class="counter-label">Comments / 24h</div>
-                <div class="counter-value" id="cnt-comments">45,935</div>
-                <div class="counter-sub">▲ +385.0% Inflow</div>
+                <div class="counter-value" id="cnt-comments">0</div>
+                <div class="counter-sub">▲ +385.0% Inflow Surge</div>
             </div>
             <div class="counter-card">
                 <div class="counter-label">UGC Audio Videos</div>
-                <div class="counter-value" id="cnt-ugc">128,540</div>
-                <div class="counter-sub">▲ +420.0% TikTok FYP</div>
+                <div class="counter-value" id="cnt-ugc">0</div>
+                <div class="counter-sub">▲ +420.0% FYP Wave</div>
             </div>
             <div class="counter-card">
                 <div class="counter-label">Views Tracked</div>
-                <div class="counter-value" id="cnt-views">162,750</div>
+                <div class="counter-value" id="cnt-views">0</div>
                 <div class="counter-sub">Live YouTube MV Stream</div>
             </div>
             <div class="counter-card">
                 <div class="counter-label">Total Ingested</div>
-                <div class="counter-value" id="cnt-total">1.37M</div>
+                <div class="counter-value" id="cnt-total">0</div>
                 <div class="counter-sub">BigQuery OLAP Rows</div>
             </div>
         </div>
 
     </div>
 
-    <!-- Main Workspace -->
+    <!-- 3-Column Main Workspace -->
     <div class="workspace">
 
         <!-- Left Sidebar: Real-Time Agent Telemetry Cards -->
@@ -661,26 +828,94 @@
             </div>
         </div>
 
-        <!-- Center Workspace: Intelligence Report View -->
-        <div class="center-content" id="report-panel">
-            <div class="report-header-bar">
-                <div class="report-title-box">
-                    <h2 id="report-title-display">24h Real-Time Omni-Channel Comment Classification</h2>
-                    <p id="report-source-url">Source: gs://studiosonar-dev-reports/realtime_24h_pulse_report.md</p>
-                </div>
-                <div class="quick-action-group">
-                    <button class="btn-action-pill btn-viral" id="btn-viral-action" onclick="triggerViralContentAgent()">
-                        <span>✍️</span> Viral Script
+        <!-- Center Workspace: Cockpit View & Markdown Dossier Tabs -->
+        <div class="center-content">
+            
+            <!-- Cockpit Tab Navigation Bar -->
+            <div class="cockpit-tabs-bar">
+                <div class="tab-group">
+                    <button class="tab-btn active" id="tab-btn-cockpit" onclick="switchMainTab('cockpit')">
+                        <span>🎛️</span> Swarm Mission Cockpit
                     </button>
-                    <button class="btn-action-pill btn-crisis" id="btn-crisis-action" onclick="triggerCrisisStrategyAgent()">
-                        <span>🚨</span> Crisis Stance
+                    <button class="tab-btn" id="tab-btn-dossier" onclick="switchMainTab('dossier')">
+                        <span>📄</span> Intelligence Dossier (Report)
+                    </button>
+                    <button class="tab-btn" id="tab-btn-reasoning" onclick="switchMainTab('reasoning')">
+                        <span>🧠</span> Swarm Reasoning Trace
+                    </button>
+                </div>
+
+                <div style="display:flex; gap:0.5rem;">
+                    <button class="tab-btn" style="border:1px solid var(--border-color);" onclick="triggerViralModal()">
+                        <span>✍️</span> 60s Script
+                    </button>
+                    <button class="tab-btn" style="border:1px solid var(--accent-red); color:#ff6b81;" onclick="triggerCrisisModal()">
+                        <span>🚨</span> PR Stance
                     </button>
                 </div>
             </div>
 
-            <div class="markdown-body" id="report-markdown-content">
-                <!-- Live Report Markdown content injected here -->
+            <!-- Tab 1: Swarm Mission Cockpit (Interactive Visual Widgets) -->
+            <div id="tab-content-cockpit" class="cockpit-view-container">
+                
+                <!-- Cross-Platform Synergy Card -->
+                <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem;">
+                    <div class="cockpit-section-title">
+                        <span>⚡</span> Cross-Platform Campaign Synergy Radar
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid #ff4757;">
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">📹 YOUTUBE MASTER MV</div>
+                            <div style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">14.08M Views</div>
+                            <div style="font-size:0.72rem; color:var(--accent-green); margin-top:0.2rem;">25,382 Comments/24h</div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-cyan);">
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">🎵 TIKTOK VIRAL SOUND</div>
+                            <div style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">128,540 UGC Clips</div>
+                            <div style="font-size:0.72rem; color:var(--accent-cyan); margin-top:0.2rem;">+14,200 New Videos/24h</div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-purple);">
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">🎯 ALIGNMENT INDEX</div>
+                            <div style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">100% Musical Fit</div>
+                            <div style="font-size:0.72rem; color:#c084fc; margin-top:0.2rem;">Dance + Chorus Obsession</div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-gold);">
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">🚀 VELOCITY LIFT</div>
+                            <div style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">+310.0% Viral</div>
+                            <div style="font-size:0.72rem; color:var(--accent-gold); margin-top:0.2rem;">Surge vs 30d Baseline</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monitored Surveillance Assets Grid -->
+                <div>
+                    <div class="cockpit-section-title">
+                        <span>📊</span> Real-Time Surveillance Assets (Interactive Micro-Cluster Spectrum)
+                    </div>
+                    <div class="asset-card-grid" id="cockpit-assets-grid">
+                        <!-- Injected via JavaScript -->
+                    </div>
+                </div>
+
             </div>
+
+            <!-- Tab 2: Intelligence Dossier (Full Markdown Report) -->
+            <div id="tab-content-dossier" style="display:none;">
+                <div class="markdown-body" id="report-markdown-content">
+                    <!-- Live Report Markdown content injected here -->
+                </div>
+            </div>
+
+            <!-- Tab 3: Swarm Reasoning & Event Trace Inspector -->
+            <div id="tab-content-reasoning" style="display:none; padding:1.5rem;">
+                <div class="cockpit-section-title">
+                    <span>🧠</span> 24h Autonomous Agent Reasoning & Decision Log
+                </div>
+                <div id="reasoning-timeline-container" style="display:flex; flex-direction:column; gap:1rem;">
+                    <!-- Injected via JavaScript -->
+                </div>
+            </div>
+
         </div>
 
         <!-- Right Sidebar: Live Alert Feed & Hacker Terminal -->
@@ -695,40 +930,37 @@
 
             <div class="section-header" style="margin-top: 0.5rem;">
                 <span>💻 Live Swarm Terminal</span>
-                <span>$ tail -f swarm</span>
+                <span>$ studiosonar tail -f</span>
             </div>
             <div class="terminal-box" id="terminal-output">
-                <div class="terminal-header">[StudioSonar ADK Agent Kernel v2.7.1] Initialized.</div>
-                <div class="terminal-line"><span style="color:#00f2fe;">[14:32:01]</span> ⚡ Taskmaster: Cycle #142 initiated</div>
-                <div class="terminal-line"><span style="color:#00f2fe;">[14:32:02]</span> 📡 Sentinel: Scanned 2 channels, 1 upload</div>
-                <div class="terminal-line"><span style="color:#ff4757;">[14:32:04]</span> 🔍 Anomaly: +310% spike on UH21OnJwxZE</div>
-                <div class="terminal-line"><span style="color:#c084fc;">[14:32:05]</span> 🤖 Gemini: Classifying 25,382 comments...</div>
-                <div class="terminal-line"><span style="color:#00f5a0;">[14:32:07]</span> ✍️ ViralAgent: Authored 60s Shorts script</div>
-                <div class="terminal-line"><span style="color:#f59e0b;">[14:32:08]</span> 📄 GCS: Master report synced</div>
+                <div class="terminal-header">[studiosonar-swarm-node-00045] Streaming execution logs...</div>
+                <div class="terminal-line"><span style="color:#64748b;">14:40:12</span> <span style="color:#00f2fe;">[Taskmaster]</span> Workflow graph execution completed in 3.8s</div>
+                <div class="terminal-line"><span style="color:#64748b;">14:38:05</span> <span style="color:#ff007f;">[TikTokHarvester]</span> Ingested 14.2K new UGC sound creations</div>
+                <div class="terminal-line"><span style="color:#64748b;">14:25:10</span> <span style="color:#a855f7;">[BehavioralNLP]</span> 25.3K comments clustered: 74.2% Chorus Loop</div>
+                <div class="terminal-line"><span style="color:#64748b;">14:15:22</span> <span style="color:#00f5a0;">[AnomalyDetector]</span> Velocity spike +310% crossed threshold</div>
+                <div class="terminal-line"><span style="color:#64748b;">14:00:15</span> <span style="color:#ff4757;">[PRCrisis]</span> Guardrails active: 0 toxic friction incidents</div>
             </div>
         </div>
 
     </div>
 
-    <!-- Bottom Multi-Agent Waveform Strip -->
+    <!-- Bottom Activity Waveform Strip -->
     <div class="bottom-timeline-strip">
-        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); display: flex; align-items: center; gap: 0.4rem;">
-            <span>📈</span> 24h Activity Waveform
+        <div style="font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+            <span>📈</span> <strong>24h Activity Waveform:</strong> <span>Peak at 20:00 UTC (5,200 comments/h)</span>
         </div>
         <canvas id="waveform-canvas"></canvas>
-        <div style="font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
-            PEAK: 5,200 comments/h @ 20:00 UTC
+        <div style="font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
+            Latency: <strong style="color:var(--accent-green)">0.12s</strong> • SLA: <strong>99.2%</strong>
         </div>
     </div>
 
     <!-- Agent Reasoning Inspector Modal -->
-    <div class="modal-overlay" id="reasoning-modal-overlay">
-        <div class="modal-card">
+    <div class="modal-overlay" id="reasoning-modal-overlay" onclick="closeReasoningModal()">
+        <div class="modal-card" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3 style="color:#fff; font-size: 1rem; display: flex; align-items: center; gap: 0.4rem;">
-                    <span>🧠</span> <span id="reasoning-agent-title">Agent Reasoning Inspector</span>
-                </h3>
-                <button onclick="closeReasoningModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
+                <h3 id="reasoning-agent-title" style="font-size: 1rem; color: #fff; font-weight: 700;">Agent Reasoning Inspector</h3>
+                <button onclick="closeReasoningModal()" style="background:transparent; border:none; color:var(--text-secondary); font-size:1.2rem; cursor:pointer;">✕</button>
             </div>
             <div class="modal-body" id="reasoning-modal-body">
                 <!-- Injected via JS -->
@@ -736,21 +968,142 @@
         </div>
     </div>
 
-    <!-- Action Output Modal -->
-    <div class="modal-overlay" id="agent-modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3 style="color:#fff; font-size: 1rem;" id="modal-agent-title">Specialist Agent Output</h3>
-                <button onclick="closeAgentModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
-            </div>
-            <div class="modal-body" id="modal-agent-body"></div>
-        </div>
-    </div>
-
     <!-- Script Logic -->
     <script>
         let currentTelemetry = null;
         let activeReportKey = 'realtime_24h';
+        let currentTab = 'cockpit';
+
+        // 9 Surveillance Assets Definition with Micro-Clusters
+        const surveillanceAssets = [
+            {
+                id: 'UH21OnJwxZE',
+                title: "Phương Mỹ Chi - 'Thiên Đường Với Người Thương' (Official MV)",
+                platform: 'YouTube Master MV',
+                platformType: 'yt',
+                metrics: '14.08M Views • 25,382 Comments/24h',
+                velocity: '+310.0% Viral Spike',
+                clusters: [
+                    { label: 'Chorus Replay', pct: 74.2, color: '#00f5a0' },
+                    { label: 'Visual Aesthetic', pct: 17.8, color: '#4facfe' },
+                    { label: 'Dance Tutorial', pct: 6.1, color: '#c084fc' },
+                    { label: 'Audio Balance', pct: 1.9, color: '#94a3b8' }
+                ],
+                action: '🎬 Release official Dance Practice video and launch TikTok Remix contest.',
+                agentId: 'anomaly_detector'
+            },
+            {
+                id: 'tt_sound_pmc_thien_duong',
+                title: "TikTok Viral Sound: 'Thiên Đường Với Người Thương'",
+                platform: 'TikTok Sound Audio',
+                platformType: 'tiktok',
+                metrics: '128.5K UGC Clips • +14,200 New/24h',
+                velocity: '+420.0% FYP Mega Surge',
+                clusters: [
+                    { label: 'Dance Routines', pct: 78.4, color: '#00f5a0' },
+                    { label: 'Ao Ba Ba Drops', pct: 16.2, color: '#4facfe' },
+                    { label: 'Speed-Up Audio', pct: 5.4, color: '#c084fc' }
+                ],
+                action: '🔥 Distribute official 120% Speed-Up Nightcore audio & partner with Top 50 Dance creators.',
+                agentId: 'viral_content'
+            },
+            {
+                id: 'Rp6ZnP5WRgI',
+                title: "Album 'Dân Chơi Dân Ca' (Official Highlight Medley)",
+                platform: 'YouTube Medley',
+                platformType: 'yt',
+                metrics: '232.4K Views • 839 Comments/24h',
+                velocity: '+245.0% Momentum',
+                clusters: [
+                    { label: 'Folk Innovation', pct: 62.4, color: '#00f5a0' },
+                    { label: 'Vocal Maturity', pct: 23.1, color: '#4facfe' },
+                    { label: 'Album Pre-order', pct: 11.5, color: '#c084fc' },
+                    { label: 'Visual Pacing', pct: 3.0, color: '#94a3b8' }
+                ],
+                action: '📌 Pin streaming pre-save links (Spotify/Apple Music) and CD pre-order portal.',
+                agentId: 'viral_content'
+            },
+            {
+                id: 'R7Bf4l5VgO8',
+                title: "Thùy Chi - 'Yêu Lắm Miền Tây' (Official MV)",
+                platform: 'YouTube Official MV',
+                platformType: 'yt',
+                metrics: '15.8K Views • 191 Comments/24h',
+                velocity: '+185.0% Inflow Surge',
+                clusters: [
+                    { label: 'Crystal Timbre', pct: 68.2, color: '#00f5a0' },
+                    { label: 'Scenery Praise', pct: 21.5, color: '#4facfe' },
+                    { label: 'Nostalgia', pct: 8.4, color: '#c084fc' },
+                    { label: 'Audio Balance', pct: 1.9, color: '#94a3b8' }
+                ],
+                action: '📌 Produce 3 POV Travel Shorts spotlighting the vocal climax for Western travel trends.',
+                agentId: 'viral_content'
+            },
+            {
+                id: 'TNl9diGdyPo',
+                title: 'How Ferrero Makes 365,000 Tons Of Nutella A Year',
+                platform: 'YouTube Documentary',
+                platformType: 'yt',
+                metrics: '388.1K Views • 473 Comments/24h',
+                velocity: '+142.5% Discovery',
+                clusters: [
+                    { label: 'Robotics Wonder', pct: 58.4, color: '#00f5a0' },
+                    { label: 'Palm Oil Inquiries', pct: 24.2, color: '#f59e0b' },
+                    { label: 'Brand Nostalgia', pct: 12.6, color: '#4facfe' },
+                    { label: 'Cocoa Economics', pct: 4.8, color: '#94a3b8' }
+                ],
+                action: '🚀 Produce a 45s Short breaking down laser sorting robots feeding STEM curiosity.',
+                agentId: 'viral_content'
+            },
+            {
+                id: 'channel_bloomberg',
+                title: 'Bloomberg Originals (@business)',
+                platform: 'YouTube Publisher',
+                platformType: 'yt',
+                metrics: '3.4M Subscribers • 842 Comments/24h',
+                velocity: '+165.0% Global Distribution',
+                clusters: [
+                    { label: '28nm Chip Debates', pct: 68.0, color: '#00f5a0' },
+                    { label: 'Data Requests', pct: 22.0, color: '#4facfe' },
+                    { label: 'Geopolitical Takes', pct: 8.0, color: '#c084fc' },
+                    { label: 'Motion Graphics', pct: 2.0, color: '#94a3b8' }
+                ],
+                action: '🚀 Cross-post 45s Shorts explaining why 28nm chips power 90% of electric vehicles.',
+                agentId: 'viral_content'
+            },
+            {
+                id: 'channel_kiemdinhphim',
+                title: 'Kiểm Định Phim 9.0 (@KiemDinhPhim9.0)',
+                platform: 'YouTube Publisher',
+                platformType: 'yt',
+                metrics: '48.4K Subscribers • 240 Comments/24h',
+                velocity: '+45.2% Steady Engagement',
+                clusters: [
+                    { label: 'Movie Roasting', pct: 88.5, color: '#00f5a0' },
+                    { label: 'Film Requests', pct: 5.0, color: '#4facfe' },
+                    { label: 'Actor Defense', pct: 6.0, color: '#c084fc' },
+                    { label: 'O De Awards', pct: 0.5, color: '#94a3b8' }
+                ],
+                action: "🎬 Open community poll for 'Worst Script of the Year' to maintain debate momentum.",
+                agentId: 'viral_content'
+            },
+            {
+                id: 'channel_thochupanh',
+                title: 'Thợ Chụp Ảnh Đà Lạt (@thochupanh.dalat)',
+                platform: 'TikTok Creator',
+                platformType: 'tiktok',
+                metrics: '85.0K Followers • 156 Comments/24h',
+                velocity: '+89.0% Booking Lift',
+                clusters: [
+                    { label: 'Pricing Inquiries', pct: 65.0, color: '#00f5a0' },
+                    { label: 'Filter Aesthetic', pct: 25.0, color: '#4facfe' },
+                    { label: 'GPS Coordinates', pct: 8.0, color: '#c084fc' },
+                    { label: 'Client Feedback', pct: 2.0, color: '#94a3b8' }
+                ],
+                action: '📸 Pin Google Form booking link and release preset vintage film filter pack.',
+                agentId: 'settings_copilot'
+            }
+        ];
 
         // 1. Fetch Swarm Telemetry & Update UI
         async function fetchSwarmTelemetry() {
@@ -761,6 +1114,8 @@
 
                 renderAgentCards(currentTelemetry.agents);
                 renderAlerts(currentTelemetry.alerts);
+                renderCockpitAssets();
+                renderReasoningTimeline();
                 drawTopologyGraph();
                 drawWaveform();
             } catch (e) {
@@ -768,7 +1123,102 @@
             }
         }
 
-        // 2. Render Agent Telemetry Cards
+        // 2. CountUp Animation for Live Counters
+        function animateValue(id, start, end, duration, formatFn) {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const val = Math.floor(progress * (end - start) + start);
+                obj.innerText = formatFn ? formatFn(val) : val.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function initLiveCounters() {
+            animateValue('cnt-comments', 0, 45935, 1800, v => v.toLocaleString());
+            animateValue('cnt-ugc', 0, 128540, 2000, v => v.toLocaleString());
+            animateValue('cnt-views', 0, 162750, 2200, v => v.toLocaleString());
+            animateValue('cnt-total', 0, 1374820, 2400, v => (v / 1000000).toFixed(2) + 'M');
+
+            // Live ingestion ticker simulation (adds subtle increments)
+            setInterval(() => {
+                const cEl = document.getElementById('cnt-comments');
+                if (cEl) {
+                    let cur = parseInt(cEl.innerText.replace(/,/g, '')) || 45935;
+                    cur += Math.floor(Math.random() * 3) + 1;
+                    cEl.innerText = cur.toLocaleString();
+                }
+            }, 3500);
+        }
+
+        // 3. Render Cockpit Interactive Asset Cards
+        function renderCockpitAssets() {
+            const container = document.getElementById('cockpit-assets-grid');
+            if (!container) return;
+
+            container.innerHTML = surveillanceAssets.map(asset => {
+                const pillClass = asset.platformType === 'yt' ? 'pill-yt' : 'pill-tiktok';
+                
+                const spectrumSegments = asset.clusters.map(c => 
+                    `<div class="spectrum-segment" style="width: ${c.pct}%; background: ${c.color};" title="${c.label}: ${c.pct}%"></div>`
+                ).join('');
+
+                const legendItems = asset.clusters.map(c => 
+                    `<div class="legend-item">
+                        <span class="legend-dot" style="background:${c.color};"></span>
+                        <span>${c.label}: <strong>${c.pct}%</strong></span>
+                    </div>`
+                ).join('');
+
+                return `
+                    <div class="interactive-asset-card">
+                        <div class="asset-top-row">
+                            <div class="asset-title">${asset.title}</div>
+                            <span class="asset-platform-pill ${pillClass}">${asset.platform}</span>
+                        </div>
+
+                        <div class="asset-stats-row">
+                            <span>${asset.metrics}</span>
+                            <span class="velocity-badge">${asset.velocity}</span>
+                        </div>
+
+                        <div class="sentiment-spectrum-box">
+                            <div class="sentiment-spectrum-header">
+                                <span>BEHAVIORAL SENTIMENT SPECTRUM</span>
+                                <span style="color:var(--accent-green);">96.4% CONFIDENCE</span>
+                            </div>
+                            <div class="sentiment-spectrum-bar">
+                                ${spectrumSegments}
+                            </div>
+                            <div class="sentiment-legend-grid">
+                                ${legendItems}
+                            </div>
+                        </div>
+
+                        <div class="action-prescriptive-box">
+                            <strong>AI Action:</strong> ${asset.action}
+                        </div>
+
+                        <div class="asset-actions-row">
+                            <button class="btn-card-action btn-inspect" onclick="openReasoningInspector('${asset.agentId}')">
+                                <span>🧠</span> Reasoning Trace
+                            </button>
+                            <button class="btn-card-action btn-script" onclick="triggerViralModal()">
+                                <span>✍️</span> 60s Script
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 4. Render Agent Telemetry Cards
         function renderAgentCards(agents) {
             const container = document.getElementById('agents-telemetry-container');
             if (!container || !agents) return;
@@ -808,7 +1258,7 @@
             }).join('');
         }
 
-        // 3. Render Alert Stream
+        // 5. Render Alert Stream
         function renderAlerts(alerts) {
             const container = document.getElementById('alerts-container');
             if (!container || !alerts) return;
@@ -827,7 +1277,7 @@
             }).join('');
         }
 
-        // 4. Interactive Topology Graph Canvas (8-Agent Enterprise Mesh)
+        // 6. Interactive Topology Graph Canvas (8-Agent Enterprise Mesh)
         const topologyCanvas = document.getElementById('topology-canvas');
         const ctx = topologyCanvas.getContext('2d');
         let particleOffset = 0;
@@ -855,6 +1305,7 @@
         ];
 
         function resizeTopologyCanvas() {
+            if (!topologyCanvas || !topologyCanvas.parentElement) return;
             topologyCanvas.width = topologyCanvas.parentElement.clientWidth - 32;
             topologyCanvas.height = 180;
         }
@@ -945,7 +1396,47 @@
             });
         });
 
-        // 5. Open Agent Reasoning Inspector
+        // 7. Tab Switcher Logic
+        function switchMainTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-btn-${tab}`).classList.add('active');
+
+            document.getElementById('tab-content-cockpit').style.display = tab === 'cockpit' ? 'flex' : 'none';
+            document.getElementById('tab-content-dossier').style.display = tab === 'dossier' ? 'block' : 'none';
+            document.getElementById('tab-content-reasoning').style.display = tab === 'reasoning' ? 'block' : 'none';
+        }
+
+        // 8. Render Reasoning Timeline Tab
+        function renderReasoningTimeline() {
+            const container = document.getElementById('reasoning-timeline-container');
+            if (!container || !currentTelemetry || !currentTelemetry.reasoning_logs) return;
+
+            const logs = currentTelemetry.reasoning_logs;
+            container.innerHTML = Object.keys(logs).map(k => {
+                const l = logs[k];
+                return `
+                    <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; padding:1.15rem; display:flex; flex-direction:column; gap:0.75rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.85rem; font-weight:700; color:var(--accent-cyan);">🤖 ${l.agent}</span>
+                            <span style="font-size:0.7rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">${l.timestamp}</span>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); padding:0.65rem; border-radius:6px; font-size:0.75rem;">
+                            <span style="color:var(--accent-gold); font-weight:700;">Tool Call:</span> <code style="color:#fff;">${l.tool_call}</code>
+                        </div>
+                        <div style="background:rgba(121,40,202,0.1); border:1px solid var(--accent-purple); padding:0.75rem; border-radius:6px; font-size:0.8rem; color:#fff; line-height:1.45;">
+                            <strong style="color:#c084fc;">🧠 Gemini 3.7 Flash Cognitive Reasoning:</strong><br/>
+                            "${l.gemini_reasoning}"
+                        </div>
+                        <div style="font-size:0.78rem; color:var(--accent-green); font-weight:600;">
+                            🎯 Decision: ${l.decision}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 9. Open Agent Reasoning Inspector Modal
         function openReasoningInspector(agentId) {
             if (!currentTelemetry || !currentTelemetry.reasoning_logs) return;
             const log = currentTelemetry.reasoning_logs[agentId];
@@ -986,7 +1477,15 @@
             document.getElementById('reasoning-modal-overlay').style.display = 'none';
         }
 
-        // 6. Draw Bottom Activity Waveform
+        function triggerViralModal() {
+            openReasoningInspector('viral_content');
+        }
+
+        function triggerCrisisModal() {
+            openReasoningInspector('pr_crisis');
+        }
+
+        // 10. Draw Bottom Activity Waveform
         function drawWaveform() {
             const canvas = document.getElementById('waveform-canvas');
             if (!canvas) return;
@@ -1020,7 +1519,7 @@
             wctx.fill();
         }
 
-        // 7. Load Master Intelligence Report
+        // 11. Load Master Intelligence Report
         async function loadReport(reportKey) {
             activeReportKey = reportKey;
             const contentEl = document.getElementById('report-markdown-content');
@@ -1071,7 +1570,7 @@
             }
         }
 
-        // 8. Trigger Autonomous Cycle Action
+        // 12. Trigger Autonomous Cycle Action
         async function triggerAutonomousCycle() {
             const btn = document.querySelector('.btn-trigger');
             const original = btn.innerHTML;
@@ -1096,12 +1595,9 @@
             }
         }
 
-        function closeAgentModal() {
-            document.getElementById('agent-modal-overlay').style.display = 'none';
-        }
-
         window.onload = () => {
             resizeTopologyCanvas();
+            initLiveCounters();
             fetchSwarmTelemetry();
             loadReport('realtime_24h');
             window.addEventListener('resize', () => {
