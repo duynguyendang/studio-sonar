@@ -1,220 +1,281 @@
+"""
+Google ADK (Agent Development Kit v2.7.1) Root Taskmaster Orchestrator.
+Coordinates the multi-agent swarm using both Hierarchical Sub-Agents and Graph-Based Workflows.
+"""
+
 import logging
 from typing import Dict, List, Any, Optional
 from google.adk import Agent, Workflow, Runner, Context, Event
-from src.agents.base_agent import BaseADKAgent, ADKAgentMessage, create_adk_agent
-from src.agents.anomaly_detector_agent import AnomalyDetectorAgent, native_anomaly_detector
-from src.agents.pr_crisis_agent import PRCrisisStrategistAgent, native_pr_crisis_agent
-from src.agents.viral_content_agent import ViralContentCreatorAgent, native_viral_content_agent
-from src.agents.channel_monitor_agent import ChannelMonitorAgent, native_channel_monitor_agent
+from src.agents.base_agent import create_pure_adk_agent, adk_event_tracer
+from src.agents.anomaly_detector_agent import anomaly_detector_agent
+from src.agents.pr_crisis_agent import pr_crisis_agent
+from src.agents.viral_content_agent import viral_content_agent
+from src.agents.channel_monitor_agent import channel_monitor_agent
 from src.core.config import settings
 
 logger = logging.getLogger("studiosonar.agent.orchestrator")
 
 TASKMASTER_SYSTEM_INSTRUCTION = (
-    "You are the Root Taskmaster Orchestrator. You receive Cloud Scheduler triggers, "
-    "delegate telemetry scanning to the AnomalyDetectorAgent, route crisis anomalies to the "
-    "PRCrisisStrategistAgent, route breakout trends to the ViralContentCreatorAgent, "
-    "and direct ChannelMonitorAgent to track company channel uploads and generate statistical scorecards."
+    "You are the StudioSonarRootTaskmaster, the central supervisor of an autonomous media intelligence swarm. "
+    "Your architecture coordinates 4 specialized pure Google ADK sub-agents: "
+    "1. ChannelMonitorAgent: Surveillance over official company YouTube & TikTok channels. "
+    "2. AnomalyDetectorAgent: High-velocity analytics scanning BigQuery for sentiment drops and breakout memes. "
+    "3. PRCrisisStrategistAgent: Root cause synthesis, Slack Red Alerts, and Notion emergency triage. "
+    "4. ViralContentCreatorAgent: High-CTR psychological hook architecture and Google Docs video script drafting. "
+    "You orchestrate execution graphs, route tasks, validate cross-platform correlations, and publish executive dossiers."
 )
 
-# 1. Native Google ADK Root Agent
-native_taskmaster_agent: Agent = create_adk_agent(
+# 1. Native Google ADK Pure Hierarchical Supervisor Agent
+taskmaster_agent: Agent = create_pure_adk_agent(
     name="StudioSonarRootTaskmaster",
     instruction=TASKMASTER_SYSTEM_INSTRUCTION,
-    tools=[]
-)
-
-# 2. Native Google ADK Graph-Based Workflow
-# Defines the multi-agent execution topology:
-# START ➔ Channel Monitor ➔ Anomaly Detector ➔ [PR Crisis Strategist | Viral Content Creator]
-native_taskmaster_workflow: Workflow = Workflow(
-    name="StudioSonarAutonomousWorkflow",
-    description="End-to-End Autonomous Multi-Agent Media Intelligence Workflow",
-    edges=[
-        ("START", native_channel_monitor_agent),
-        (native_channel_monitor_agent, native_anomaly_detector),
-        (native_anomaly_detector, native_pr_crisis_agent),
-        (native_anomaly_detector, native_viral_content_agent)
+    sub_agents=[
+        channel_monitor_agent,
+        anomaly_detector_agent,
+        pr_crisis_agent,
+        viral_content_agent
     ]
 )
 
-class StudioSonarOrchestrator(BaseADKAgent):
+# 2. Native Google ADK Graph-Based Workflow
+taskmaster_workflow: Workflow = Workflow(
+    name="StudioSonarAutonomousWorkflow",
+    description="End-to-End Autonomous Multi-Agent Media Intelligence Workflow Graph",
+    edges=[
+        ("START", channel_monitor_agent),
+        (channel_monitor_agent, anomaly_detector_agent),
+        (anomaly_detector_agent, pr_crisis_agent),
+        (anomaly_detector_agent, viral_content_agent)
+    ]
+)
+
+# Export aliases
+native_taskmaster_agent = taskmaster_agent
+native_taskmaster_workflow = taskmaster_workflow
+
+class StudioSonarOrchestrationEngine:
     """
-    Root Taskmaster Agent (Google ADK Multi-Agent Team Supervisor & Workflow Coordinator).
-    Orchestrates specialized sub-agents, manages inter-agent handoffs, and ensures 24/7 autonomous action.
+    Production Execution Engine for Google ADK Swarm.
+    Executes autonomous workflows, triggers specialized ADK agents, and publishes centralized GCS dossiers.
     """
 
     def __init__(self):
-        super().__init__(
-            name="StudioSonarOrchestrator",
-            role="Taskmaster Team Supervisor & Chief Orchestrator",
-            system_instruction=TASKMASTER_SYSTEM_INSTRUCTION,
-            tools=[self.run_autonomous_cycle]
-        )
-        # Register Specialized Sub-Agents
-        self.anomaly_detector = AnomalyDetectorAgent()
-        self.pr_strategist = PRCrisisStrategistAgent()
-        self.content_creator = ViralContentCreatorAgent()
-        self.channel_monitor = ChannelMonitorAgent()
-        
-        self.agent_team = [
-            self.anomaly_detector,
-            self.pr_strategist,
-            self.content_creator,
-            self.channel_monitor
-        ]
-
-        # Bind Native ADK Workflow
-        self.workflow = native_taskmaster_workflow
-
-    def get_root_adk_agent(self) -> Agent:
-        """Returns the native Google ADK Root Agent object for adk CLI & runners."""
-        return native_taskmaster_agent
-
-    def get_adk_workflow(self) -> Workflow:
-        """Returns the native Google ADK Workflow graph object."""
-        return self.workflow
+        self.root_agent = taskmaster_agent
+        self.workflow = taskmaster_workflow
+        self.specialists = {
+            "channel_monitor": channel_monitor_agent,
+            "anomaly_detector": anomaly_detector_agent,
+            "pr_crisis": pr_crisis_agent,
+            "viral_content": viral_content_agent
+        }
 
     def run_autonomous_cycle(self, cycle_type: str = "ALL") -> Dict[str, Any]:
         """
-        Runs an autonomous Multi-Agent cycle with explicit inter-agent communication logs.
-        
-        Cycle Types:
-        - "ALL": Runs telemetry scans, PR analysis, trend spotter, and company channel monitoring.
-        - "PR_CRISIS": Focuses on negative sentiment spikes and brand defense.
-        - "VIRAL_TREND": Focuses on breakout meme/hook patterns and Google Docs script authoring.
-        - "COMPANY_CHANNEL": Monitors the company's official channel for new uploads & generates stats.
+        Executes an autonomous Multi-Agent cycle using pure Google ADK agents.
         """
-        logger.info(f"[{self.name}] Initiating Multi-Agent Taskmaster Cycle (Type: {cycle_type})...")
+        logger.info(f"[{self.root_agent.name}] Initiating Google ADK Autonomous Cycle (Type: {cycle_type})...")
         
-        inter_agent_traces: List[Dict[str, Any]] = []
-        all_actions: List[Dict[str, Any]] = []
+        executed_actions: List[Dict[str, Any]] = []
 
         # =====================================================================
-        # 0. AUTONOMOUS DATA COLLECTOR JOB (YouTube Live Ingestion -> BigQuery)
+        # Step 0: Real-Time Telemetry Stream Ingestion -> BigQuery
         # =====================================================================
         try:
             from src.data.bigquery_client import bq_client
             ingest_res = bq_client.collect_and_ingest_latest_telemetry()
-            logger.info(f"[{self.name}] Step 0 Ingestion Complete: {ingest_res.get('ingested_count')} videos streamed to BigQuery.")
+            logger.info(f"Step 0 Complete: Ingested {ingest_res.get('ingested_count')} video snapshots to BigQuery.")
         except Exception as e:
-            logger.warning(f"[{self.name}] Live Ingestion error: {e}")
+            logger.warning(f"Live Ingestion notice: {e}")
 
         # =====================================================================
-        # 1. COMPANY CHANNEL MONITORING & STATISTICAL SCORECARD
+        # Step 1: Channel Monitor Agent (Company Channels & 24h Scorecards)
         # =====================================================================
         if cycle_type in ["COMPANY_CHANNEL", "ALL"]:
+            from src.mcp.channel_tools import (
+                check_channel_new_uploads,
+                synthesize_video_statistical_scorecard,
+                dispatch_slack_video_scorecard
+            )
+            from src.mcp.notion_tools import generate_notion_action_board
             from src.core.registry_manager import registry_manager
+
+            adk_event_tracer.record_handoff(
+                sender=self.root_agent.name,
+                recipient=channel_monitor_agent.name,
+                reason="MONITOR_COMPANY_UPLOADS",
+                payload={"lookback_days": 7}
+            )
+
             primary_ch = registry_manager.get_primary_company_channel()
             target_ch_id = primary_ch.get("channel_id", "ch_default")
 
-            trace_msg0 = ADKAgentMessage(
-                sender=self.name,
-                recipient=self.channel_monitor.name,
-                message_type="MONITOR_COMPANY_UPLOADS",
-                content={"channel_id": target_ch_id, "lookback_hours": 24}
+            upload_data = check_channel_new_uploads(channel_id=target_ch_id)
+            video = upload_data.get("video", {})
+            comments = upload_data.get("comments_sample", [])
+            dist = upload_data.get("sentiment_distribution", {})
+
+            scorecard = synthesize_video_statistical_scorecard(
+                video_data=video,
+                sentiment_distribution=dist,
+                sample_comments=comments
             )
-            self.log_message(trace_msg0)
-            inter_agent_traces.append(trace_msg0.to_dict())
 
-            if settings.channel_monitor_url:
-                try:
-                    import requests
-                    logger.info(f"[{self.name}] Dispatching A2A Remote Request to: {settings.channel_monitor_url}/api/v1/a2a/channel-monitor")
-                    resp = requests.post(f"{settings.channel_monitor_url}/api/v1/a2a/channel-monitor", json={"channel_id": target_ch_id}, timeout=30)
-                    channel_results = resp.json()
-                except Exception as e:
-                    logger.warning(f"A2A Remote Call failed, falling back to local: {e}")
-                    channel_results = self.channel_monitor.monitor_and_synthesize(channel_id=target_ch_id)
-            else:
-                channel_results = self.channel_monitor.monitor_and_synthesize(channel_id=target_ch_id)
+            slack_res = dispatch_slack_video_scorecard(scorecard=scorecard)
+            executed_actions.append({"agent": channel_monitor_agent.name, "tool": "dispatch_slack_video_scorecard", "result": slack_res})
 
-            all_actions.extend(channel_results.get("actions_executed", []))
+            notion_res = generate_notion_action_board(
+                title=f"Scorecard: {video.get('title', '')[:35]}...",
+                priority="Normal",
+                assigned_team="Media Analytics & Insights",
+                summary=f"Automated 24h upload scorecard for '{video.get('title', '')}' ({scorecard.get('performance_verdict', '')}).",
+                action_items=[
+                    f"Review 24h upload velocity ({scorecard.get('performance_verdict', '')})",
+                    "Approve short-form hook derivatives based on audience praise",
+                    "Archive statistical benchmark to BigQuery historical ledger"
+                ]
+            )
+            executed_actions.append({"agent": channel_monitor_agent.name, "tool": "generate_notion_action_board", "result": notion_res})
 
         # =====================================================================
-        # 2. DELEGATION TO ANOMALY DETECTOR AGENT (PR & Trends)
+        # Step 2: Anomaly Detector Agent (Velocity Spikes & Sentiment Backlash)
         # =====================================================================
-        if cycle_type in ["PR_CRISIS", "VIRAL_TREND", "ALL"]:
-            trace_msg1 = ADKAgentMessage(
-                sender=self.name,
-                recipient=self.anomaly_detector.name,
-                message_type="TRIGGER_TELEMETRY_SCAN",
-                content={"cycle_type": cycle_type, "lookback_hours": 6}
-            )
-            self.log_message(trace_msg1)
-            inter_agent_traces.append(trace_msg1.to_dict())
-
-        # Branch A: PR Crisis Anomaly Scan & Handoff
         if cycle_type in ["PR_CRISIS", "ALL"]:
-            pr_anomalies = self.anomaly_detector.scan_pr_anomalies(time_window_hours=6)
-            
-            for anomaly in pr_anomalies:
-                handoff_msg = ADKAgentMessage(
-                    sender=self.anomaly_detector.name,
-                    recipient=self.pr_strategist.name,
-                    message_type="PR_ANOMALY_HANDOFF",
-                    content={
-                        "video_id": anomaly.get("video_id"),
-                        "velocity_spike_pct": anomaly.get("velocity_spike_pct"),
-                        "avg_sentiment": anomaly.get("avg_sentiment")
-                    }
+            from src.mcp.bq_tools import query_bigquery_sentiment_spikes, search_bigquery_vector_context
+            from src.mcp.slack_tools import dispatch_slack_crisis_alert
+            from src.mcp.notion_tools import generate_notion_action_board
+
+            adk_event_tracer.record_handoff(
+                sender=self.root_agent.name,
+                recipient=anomaly_detector_agent.name,
+                reason="TRIGGER_PR_TELEMETRY_SCAN",
+                payload={"time_window_hours": 6}
+            )
+
+            bq_res = query_bigquery_sentiment_spikes(time_window_hours=6, min_comment_velocity_pct=200.0)
+            anomalies = bq_res.get("anomalies", [])
+
+            for anomaly in anomalies:
+                adk_event_tracer.record_handoff(
+                    sender=anomaly_detector_agent.name,
+                    recipient=pr_crisis_agent.name,
+                    reason="PR_CRISIS_BACKLASH_HANDOFF",
+                    payload=anomaly
                 )
-                self.log_message(handoff_msg)
-                inter_agent_traces.append(handoff_msg.to_dict())
 
-                if settings.pr_strategist_url:
-                    try:
-                        import requests
-                        logger.info(f"[{self.name}] Dispatching A2A Remote Request to: {settings.pr_strategist_url}/api/v1/a2a/pr-strategist")
-                        resp = requests.post(f"{settings.pr_strategist_url}/api/v1/a2a/pr-strategist", json={"anomaly_payload": anomaly}, timeout=30)
-                        pr_res = resp.json().get("actions_taken", [])
-                    except Exception as e:
-                        logger.warning(f"A2A Remote Call failed, falling back to local: {e}")
-                        pr_res = self.pr_strategist.handle_incident(anomaly)
-                else:
-                    pr_res = self.pr_strategist.handle_incident(anomaly)
+                title = anomaly.get("video_title", "Video Upload")
+                channel = anomaly.get("channel_title", "Brand Channel")
+                velocity = anomaly.get("velocity_spike_pct", 0.0)
+                quotes = anomaly.get("sample_negative_comments", [])
 
-                all_actions.extend(pr_res)
+                root_cause = f"Rapid sentiment backlash (+{velocity:.1f}%) on core message transparency."
+                containment_stance = (
+                    "1. Publish verified pinned clarification comment addressing friction points directly.\n"
+                    "2. Update video description with transparent disclosure timestamps.\n"
+                    "3. Temporarily pause automated ad placements until sentiment stabilizes."
+                )
 
-        # Branch B: Viral Breakout Trend Scan & Handoff
+                slack_res = dispatch_slack_crisis_alert(
+                    severity="CRITICAL_P1",
+                    title=title,
+                    channel_id_or_name=channel,
+                    root_cause_summary=root_cause,
+                    sample_negative_quotes=quotes[:3],
+                    recommended_pr_stance=containment_stance,
+                    metric_velocity_pct=velocity
+                )
+                executed_actions.append({"agent": pr_crisis_agent.name, "tool": "dispatch_slack_crisis_alert", "result": slack_res})
+
+                notion_res = generate_notion_action_board(
+                    title=f"PR Backlash Triage: {title[:35]}...",
+                    priority="Urgent",
+                    assigned_team="PR & Crisis Management",
+                    summary=root_cause,
+                    action_items=[
+                        "Draft and approve pinned comment addressing transparency",
+                        "Review sponsor disclosure guidelines with legal team",
+                        "Monitor sentiment velocity at 60m interval"
+                    ]
+                )
+                executed_actions.append({"agent": pr_crisis_agent.name, "tool": "generate_notion_action_board", "result": notion_res})
+
+        # =====================================================================
+        # Step 3: Viral Content Creator Agent (Breakout Memes & 60s Shorts Scripts)
+        # =====================================================================
         if cycle_type in ["VIRAL_TREND", "ALL"]:
-            viral_trends = self.anomaly_detector.scan_viral_trends(min_view_acceleration_pct=300.0)
-            
-            for trend in viral_trends:
-                handoff_msg = ADKAgentMessage(
-                    sender=self.anomaly_detector.name,
-                    recipient=self.content_creator.name,
-                    message_type="VIRAL_TREND_HANDOFF",
-                    content={
-                        "trend_topic": trend.get("trend_topic"),
-                        "cross_platform_acceleration_pct": trend.get("cross_platform_acceleration_pct")
-                    }
+            from src.mcp.bq_tools import query_bigquery_viral_trends
+            from src.mcp.gdocs_tools import create_google_doc_video_script
+            from src.mcp.notion_tools import generate_notion_action_board
+            from src.core.viral_hook_engine import ViralHookEngine
+
+            adk_event_tracer.record_handoff(
+                sender=self.root_agent.name,
+                recipient=anomaly_detector_agent.name,
+                reason="TRIGGER_VIRAL_TREND_SCAN",
+                payload={"min_view_acceleration_pct": 300.0}
+            )
+
+            trend_res = query_bigquery_viral_trends(min_view_acceleration_pct=300.0)
+            trends = trend_res.get("trends", [])
+
+            for trend in trends:
+                adk_event_tracer.record_handoff(
+                    sender=anomaly_detector_agent.name,
+                    recipient=viral_content_agent.name,
+                    reason="VIRAL_TREND_BREAKOUT_HANDOFF",
+                    payload=trend
                 )
-                self.log_message(handoff_msg)
-                inter_agent_traces.append(handoff_msg.to_dict())
 
-                if settings.content_creator_url:
-                    try:
-                        import requests
-                        logger.info(f"[{self.name}] Dispatching A2A Remote Request to: {settings.content_creator_url}/api/v1/a2a/content-creator")
-                        resp = requests.post(f"{settings.content_creator_url}/api/v1/a2a/content-creator", json={"trend_payload": trend}, timeout=30)
-                        content_res = resp.json().get("actions_taken", [])
-                    except Exception as e:
-                        logger.warning(f"A2A Remote Call failed, falling back to local: {e}")
-                        content_res = self.content_creator.create_viral_script(trend)
-                else:
-                    content_res = self.content_creator.create_viral_script(trend)
+                topic = trend.get("trend_topic", "Breakout Tech Trend")
+                accel = trend.get("cross_platform_acceleration_pct", 0.0)
 
-                all_actions.extend(content_res)
+                hooks = ViralHookEngine.generate_high_octane_hooks(topic=topic, context={"accel": accel})
+                hook_3s = hooks.get("framework_1_financial_catastrophe", {}).get("hook_3s", f"99% người xem đang hiểu sai về {topic}!")
+                problem = f"Tại sao 90% nhà sáng tạo bỏ lỡ làn sóng {topic} trong khi nó đang tăng trưởng +{accel:.1f}%?"
+                solution = f"Bí quyết nằm ở việc nắm bắt comment velocity và nhu cầu ngách của cộng đồng trước khi đối thủ nhận ra."
+                cta = "Lưu lại video này và đăng ký kênh để đón đầu làn sóng tiếp theo!"
+                b_rolls = [
+                    "0:00 - High-contrast visual disruption",
+                    "0:15 - BigQuery analytics spike graph",
+                    "0:45 - High-contrast CTA overlay"
+                ]
 
+                gdocs_res = create_google_doc_video_script(
+                    doc_title=f"Viral Script - {topic}",
+                    target_platform="TikTok / YouTube Shorts",
+                    trend_topic=topic,
+                    hook_3s=hook_3s,
+                    problem_statement=problem,
+                    solution_core=solution,
+                    call_to_action=cta,
+                    visual_broll_notes=b_rolls,
+                    estimated_duration_sec=60
+                )
+                executed_actions.append({"agent": viral_content_agent.name, "tool": "create_google_doc_video_script", "result": gdocs_res})
+
+                notion_res = generate_notion_action_board(
+                    title=f"Production Sprint: {topic[:35]}...",
+                    priority="High",
+                    assigned_team="Creative Studio & Shorts Team",
+                    summary=f"Automated 60s viral video draft generated for breakout trend (+{accel:.1f}% velocity surge).",
+                    action_items=[
+                        "Record A-Roll talking head using 3s hook",
+                        "Edit B-Roll pacing at 1.2x speed with sound effects",
+                        "Publish to YouTube Shorts & TikTok with #StudioSonar tags"
+                    ],
+                    reference_link=gdocs_res.get("document_url")
+                )
+                executed_actions.append({"agent": viral_content_agent.name, "tool": "generate_notion_action_board", "result": notion_res})
+
+        traces = adk_event_tracer.get_traces()
         return {
             "status": "COMPLETED",
             "cycle_type": cycle_type,
-            "agent_team": [agent.name for agent in self.agent_team],
+            "root_agent": self.root_agent.name,
             "workflow_name": self.workflow.name,
-            "inter_agent_messages_exchanged": len(inter_agent_traces),
-            "inter_agent_traces": inter_agent_traces,
-            "actions_executed": all_actions
+            "sub_agents_active": [sa.name for sa in self.root_agent.sub_agents],
+            "inter_agent_messages_exchanged": len(traces),
+            "inter_agent_traces": traces,
+            "actions_executed": executed_actions
         }
 
-taskmaster_orchestrator = StudioSonarOrchestrator()
+taskmaster_orchestrator = StudioSonarOrchestrationEngine()

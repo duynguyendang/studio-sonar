@@ -1,32 +1,61 @@
+"""
+Google ADK (Agent Development Kit v2.7.1) Core Module.
+Provides native Agent factory, Event tracing, and Context wrappers without custom abstraction overhead.
+"""
+
 import logging
 from typing import Dict, List, Any, Callable, Optional
-from google.adk import Agent, Context, Event, Workflow, Runner
+from google.adk import Agent, Workflow, Runner, Context, Event
 from src.core.config import settings
 
 logger = logging.getLogger("studiosonar.adk")
 
-def create_adk_agent(
+def create_pure_adk_agent(
     name: str,
     instruction: str,
     tools: Optional[List[Callable]] = None,
-    model: Optional[str] = None
+    sub_agents: Optional[List[Agent]] = None,
+    model: Optional[str] = None,
+    mode: str = "single_turn"
 ) -> Agent:
     """
-    Factory function to instantiate a native Google ADK Agent (v2.7.1).
-    Binds declarative tools and Vertex AI / Gemini Flash instruction schema directly.
+    Instantiates a 100% Pure Google ADK Agent (v2.7.1).
+    Directly binds tools and LLM instructions without any custom wrapper class.
+    Sets mode='single_turn' for native ADK Workflow graph node compatibility.
     """
     active_model = model or settings.gemini_model or "gemini-2.5-flash"
     return Agent(
         name=name,
         model=active_model,
         instruction=instruction,
-        tools=tools or []
+        tools=tools or [],
+        sub_agents=sub_agents or [],
+        mode=mode
     )
 
+class ADKEventTracer:
+    """Standardized event logging for Google ADK execution lifecycle."""
+    
+    def __init__(self):
+        self.events: List[Dict[str, Any]] = []
+
+    def record_handoff(self, sender: str, recipient: str, reason: str, payload: Dict[str, Any]):
+        event = {
+            "sender": sender,
+            "recipient": recipient,
+            "reason": reason,
+            "payload_keys": list(payload.keys())
+        }
+        self.events.append(event)
+        logger.info(f"⚡ [ADK A2A Event] {sender} ➔ {recipient} ({reason})")
+
+    def get_traces(self) -> List[Dict[str, Any]]:
+        return self.events
+
+adk_event_tracer = ADKEventTracer()
+
+# Legacy Compatibility Envelopes (for backwards compatibility with tools)
 class ADKAgentMessage:
-    """
-    Structured Agent Event/Handoff envelope aligned with ADK Event contracts.
-    """
     def __init__(self, sender: str, recipient: str, message_type: str, content: Dict[str, Any]):
         self.sender = sender
         self.recipient = recipient
@@ -42,46 +71,9 @@ class ADKAgentMessage:
         }
 
 class BaseADKAgent:
-    """
-    Standard Base Wrapper around Native Google ADK Agent (v2.7.1).
-    Provides native tool binding, lifecycle execution, and event tracing.
-    """
-
-    def __init__(
-        self,
-        name: str,
-        role: str,
-        system_instruction: str,
-        tools: Optional[List[Callable]] = None,
-        model: Optional[str] = None
-    ):
+    """Legacy compatibility bridge pointing to Pure ADK Agent."""
+    def __init__(self, name: str, role: str, system_instruction: str, tools: Optional[List[Callable]] = None):
         self.name = name
         self.role = role
         self.system_instruction = system_instruction
-        self.tools_list = tools or []
-        self.tools = {tool.__name__: tool for tool in self.tools_list}
-        self.message_log: List[ADKAgentMessage] = []
-        self.model = model or settings.gemini_model or "gemini-2.5-flash"
-        
-        # Native Google ADK Agent instance
-        self.adk_agent: Agent = create_adk_agent(
-            name=self.name,
-            instruction=f"{self.role}. {self.system_instruction}",
-            tools=self.tools_list,
-            model=self.model
-        )
-
-    def log_message(self, msg: ADKAgentMessage):
-        self.message_log.append(msg)
-        logger.info(f"[{msg.sender} ➔ {msg.recipient}] ({msg.message_type}): {list(msg.content.keys())}")
-
-    def execute_tool(self, tool_name: str, **kwargs) -> Dict[str, Any]:
-        """Executes a registered MCP tool within this agent's domain."""
-        if tool_name not in self.tools:
-            raise ValueError(f"Tool '{tool_name}' not registered in {self.name}")
-        tool_fn = self.tools[tool_name]
-        return tool_fn(**kwargs)
-
-    def as_native_agent(self) -> Agent:
-        """Returns the pure native Google ADK Agent instance."""
-        return self.adk_agent
+        self.adk_agent = create_pure_adk_agent(name=name, instruction=f"{role}: {system_instruction}", tools=tools)
