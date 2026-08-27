@@ -8,7 +8,6 @@ __pycache__
 *.log
 .env
 .env.*
-reports/
 docs/
 infra/
 scratch/

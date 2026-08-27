@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     gemini_model: str = Field(default="gemini-3.7-flash", env="GEMINI_MODEL")
     youtube_data_api_key: str = Field(default="", env="YOUTUBE_DATA_API_KEY")
     
-    # Execution Mode: "live" for production APIs, "mock" for isolated testing/demo
-    execution_mode: Literal["live", "mock"] = Field(default="mock", env="EXECUTION_MODE")
+    # Execution Mode: Default is 100% "live" for production APIs & BigQuery
+    execution_mode: Literal["live", "mock"] = Field(default="live", env="EXECUTION_MODE")
 
     
     # Distributed Google ADK A2A Microservice URLs

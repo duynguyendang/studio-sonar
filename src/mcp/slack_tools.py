@@ -20,7 +20,7 @@ def dispatch_slack_crisis_alert(
     Args:
         severity: Severity level (e.g., "CRITICAL_P1", "HIGH_P2", "MEDIUM_P3").
         title: Short title of the incident.
-        channel_id_or_name: Target channel or account (e.g. "@TechVision_Global").
+        channel_id_or_name: Target channel or account (e.g. "@business" or "@KiemDinhPhim9.0").
         root_cause_summary: Concise explanation of why the backlash is happening.
         sample_negative_quotes: Verbatim representative quotes from user comments.
         recommended_pr_stance: Concrete strategic recommendation for the PR/Executive team.
