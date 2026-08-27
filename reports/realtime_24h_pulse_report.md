@@ -112,107 +112,46 @@ flowchart LR
 
 ## 📊 Surveillance Assets Grouped by Subject & Campaign
 
+---
+
 ### 🎵 Subject Cluster A: Phương Mỹ Chi x DTAP — 'Dân Chơi Dân Ca' Album Campaign
+> **Campaign Objective:** Full-funnel cross-platform viral synergy between Master YouTube MV and TikTok UGC Sound Waves.
 
-#### 1. 📹 YouTube Master MV: 'Thiên Đường Với Người Thương' (Official MV)
-- **Asset ID:** `video_UH21OnJwxZE` | **Platform:** YouTube | **Views:** 14.08M+ | **24h Comments:** 25,382
-- **Velocity Spike:** `+310.0% Viral Retention Surge`
-- **Sentiment Breakdown:**
-  - 🟢 **Viral Chorus Replay Obsession: 74.2%** (Audience repeatedly loops playback due to the hyper-addictive melodic hook)
-  - 🔵 **Cultural Heritage & Visual Aesthetic: 17.8%** (High praise for traditional Vietnamese heritage aesthetics and costume design)
-  - 🟣 **Dance Practice & Choreography Inquiries: 6.1%** (Strong demand for official choreography breakdown and tutorial videos)
-  - ⚪ **Audio Balancing Inquiries: 1.9%** (Minor technical feedback regarding master audio loudness)
-- **AI Growth Action:** 🎬 Release official Dance Practice video and run remix contest on TikTok/Shorts to sustain #1 Trending.
-
-#### 2. 🎵 TikTok Viral Sound: 'Thiên Đường Với Người Thương' (Official Audio)
-- **Asset ID:** `video_tt_sound_pmc_thien_duong` | **Platform:** TikTok Sound | **UGC Videos:** 128.5K+ | **24h New Videos:** 14,200
-- **Velocity Spike:** `+420.0% Mega-Viral UGC Surge` (Top 1% FYP Audio in Vietnam)
-- **Sentiment Breakdown:**
-  - 🟢 **Dance Routine & Trend Creators: 78.4%** (Massive adoption from Gen Z dance teams and university clubs)
-  - 🔵 **Traditional Heritage Transformation: 16.2%** (Drop beat transition into traditional Ao Ba Ba & Yem Dao garments)
-  - 🟣 **Speed-Up & Nightcore Remix Requests: 5.4%** (Demand for official 120% speed-up audio)
-- **AI Growth Action:** 🔥 Partner with Top 50 TikTok dance creators and distribute official 120% Speed-Up Nightcore version.
-
-#### 3. 📹 YouTube Medley: Album 'Dân Chơi Dân Ca' (Official Highlight Medley)
-- **Asset ID:** `video_Rp6ZnP5WRgI` | **Platform:** YouTube | **Views:** 232.4K | **24h Comments:** 839
-- **Velocity Spike:** `+245.0% Viral Momentum`
-- **Sentiment Breakdown:**
-  - 🟢 **Folk Fusion Innovation Praise: 62.4%** (Acclaim for harmonizing pentatonic folk scales with modern DTAP electronic beats)
-  - 🔵 **Vocal Transformation Dynamics: 23.1%** (Commending vocal maturity and stylistic range evolution)
-  - 🟣 **Physical Album & Pre-order Inquiries: 11.5%** (Inquiries regarding physical CD box sets and Spotify/Apple Music release dates)
-  - ⚪ **Visual Pacing Feedback: 3.0%** (Constructive comments on rapid scene transitions)
-- **AI Growth Action:** 📌 Pin comment with direct Spotify/Apple Music Pre-save links and physical merchandise pre-order portal.
-
-#### 4. 🎵 TikTok Viral Sound: 'Dân Chơi Dân Ca' (Drop Beat Audio)
-- **Asset ID:** `video_tt_sound_dtap_dan_choi` | **Platform:** TikTok Sound | **UGC Videos:** 34.2K+ | **24h New Videos:** 4,850
-- **Velocity Spike:** `+280.0% Viral Acceleration`
-- **Sentiment Breakdown:**
-  - 🟢 **Bass Drop Transitions: 68.0%** (Creators utilizing the electronic drop for sudden camera zoom and outfit changes)
-  - 🔵 **Street Style Choreography: 24.5%** (Urban dance routines blending breaking with traditional hand gestures)
-  - 🟣 **Extended Sound Audio Inquiries: 7.5%** (Demand for full extended mix on Spotify)
-- **AI Growth Action:** 🎬 Release 15s street crew dance clips to drive album pre-orders on streaming platforms.
+| Monitored Asset & Platform | 24h Inflow & Velocity | Dominant Behavioral Micro-Clusters | Prescriptive Autonomous Growth Action |
+| :--- | :--- | :--- | :--- |
+| **1. 'Thiên Đường Với Người Thương'**<br/>📹 *YouTube Master MV*<br/>`video_UH21OnJwxZE` | 👁️ **14.08M Views**<br/>💬 **25,382 Comments**<br/>🚀 **+310.0% Viral Spike** | 🟢 **74.2%** Viral Chorus Replay Obsession<br/>🔵 **17.8%** Cultural Visual Aesthetic<br/>🟣 **6.1%** Dance Practice Requests<br/>⚪ **1.9%** Master Audio Balance | 🎬 **Release official Dance Practice video** & launch TikTok Remix Contest to sustain #1 Trending. |
+| **2. 'Thiên Đường Với Người Thương'**<br/>🎵 *TikTok Viral Sound*<br/>`video_tt_sound_pmc_thien_duong` | 🎵 **128.5K UGC Clips**<br/>⚡ **+14,200 New/24h**<br/>🔥 **+420.0% FYP Surge** | 🟢 **78.4%** Dance Routine & Trend Creators<br/>🔵 **16.2%** Ao Ba Ba Transition Drops<br/>🟣 **5.4%** Speed-Up / Nightcore Requests | 🔥 **Distribute official 120% Speed-Up Nightcore** audio & partner with Top 50 TikTok dance creators. |
+| **3. Album 'Dân Chơi Dân Ca' Medley**<br/>📹 *YouTube Highlight Medley*<br/>`video_Rp6ZnP5WRgI` | 👁️ **232.4K Views**<br/>💬 **839 Comments**<br/>📈 **+245.0% Momentum** | 🟢 **62.4%** Folk Fusion Innovation Praise<br/>🔵 **23.1%** Vocal Maturity Dynamics<br/>🟣 **11.5%** Physical Album Pre-orders | 📌 **Pin streaming pre-save links** (Spotify/Apple Music) & physical merchandise pre-order portal. |
+| **4. 'Dân Chơi Dân Ca' Drop Beat**<br/>🎵 *TikTok Viral Audio*<br/>`video_tt_sound_dtap_dan_choi` | 🎵 **34.2K UGC Clips**<br/>⚡ **+4,850 New/24h**<br/>🚀 **+280.0% Acceleration** | 🟢 **68.0%** Electronic Bass Drop Zoom Cuts<br/>🔵 **24.5%** Urban Street Choreography<br/>🟣 **7.5%** Extended Mix Inquiries | 🎬 **Release 15s street crew dance clips** to convert FYP hype into full streaming album pre-orders. |
 
 ---
 
 ### 🎶 Subject Cluster B: Thùy Chi — Western Vietnam Folk Music & Culture
+> **Campaign Objective:** Regional tourism soundtrack and vocal purity appreciation.
 
-#### 5. 📹 YouTube Master MV: Thùy Chi - Yêu Lắm Miền Tây (Official MV)
-- **Asset ID:** `video_R7Bf4l5VgO8` | **Platform:** YouTube | **Views:** 15.8K | **24h Comments:** 191
-- **Velocity Spike:** `+185.0% Inflow Surge`
-- **Sentiment Breakdown:**
-  - 🟢 **Vocal Tone & Crystal Melody Praise: 68.2%** (Praise for signature crystal-clear vocal timbre and Southern folk sweetness)
-  - 🔵 **Western Vietnam Scenery & Culture: 21.5%** (Admiration for serene river landscapes and rustic traditional Ao Ba Ba attire)
-  - 🟣 **Nostalgia & Hometown Connection: 8.4%** (Emotional resonance from diaspora and overseas viewers missing home)
-  - ⚪ **Arrangement & Sound Requests: 1.9%** (Suggestions to elevate acoustic folk instrument mix volume)
-- **AI Growth Action:** 📌 Produce 3 POV Travel Shorts spotlighting the vocal climax to capitalize on Western Vietnam travel trends.
+| Monitored Asset & Platform | 24h Inflow & Velocity | Dominant Behavioral Micro-Clusters | Prescriptive Autonomous Growth Action |
+| :--- | :--- | :--- | :--- |
+| **5. 'Yêu Lắm Miền Tây'**<br/>📹 *YouTube Official MV*<br/>`video_R7Bf4l5VgO8` | 👁️ **15.8K Views**<br/>💬 **191 Comments**<br/>🎶 **+185.0% Vocal Surge** | 🟢 **68.2%** Crystal Vocal Timbre Praise<br/>🔵 **21.5%** Western Scenery Admiration<br/>🟣 **8.4%** Diaspora Nostalgia Resonance<br/>⚪ **1.9%** Acoustic Balance Feedback | 📌 **Produce 3 POV Travel Shorts** highlighting vocal climax to ride Western tourism trends. |
 
 ---
 
 ### 🏭 Subject Cluster C: Ferrero Nutella — Industrial Transparency & Supply Chain
+> **Campaign Objective:** STEM engineering curiosity and corporate sourcing trust.
 
-#### 6. 📹 YouTube Documentary: How Ferrero Makes 365,000 Tons Of Nutella A Year
-- **Asset ID:** `video_TNl9diGdyPo` | **Platform:** YouTube | **Views:** 388.1K | **24h Comments:** 473
-- **Velocity Spike:** `+142.5% Factory Automation Discovery`
-- **Sentiment Breakdown:**
-  - 🟢 **Industrial Automation Fascination: 58.4%** (Fascination with high-speed laser optical hazelnut sorting robotics)
-  - 🟡 **Health & Palm Oil Inquiries: 24.2%** (Discussions regarding certified sustainable palm oil sourcing and sugar ratios)
-  - 🔵 **Brand Nostalgia & Loyalty: 12.6%** (Viewers reminiscing childhood breakfast memories with Nutella)
-  - ⚪ **Supply Chain Economics: 4.8%** (Inquiries regarding global cocoa trade logistics)
-- **AI Growth Action:** 🚀 Produce a 45s Short explaining how laser optical robots process 5 million jars daily to feed STEM curiosity.
+| Monitored Asset & Platform | 24h Inflow & Velocity | Dominant Behavioral Micro-Clusters | Prescriptive Autonomous Growth Action |
+| :--- | :--- | :--- | :--- |
+| **6. 'How Ferrero Makes 365,000 Tons'**<br/>📹 *YouTube Documentary*<br/>`video_TNl9diGdyPo` | 👁️ **388.1K Views**<br/>💬 **473 Comments**<br/>🏭 **+142.5% Discovery** | 🟢 **58.4%** Optical Sorting Robotics Wonder<br/>🟡 **24.2%** Sustainable Palm Oil Sourcing<br/>🔵 **12.6%** Brand Childhood Nostalgia<br/>⚪ **4.8%** Global Cocoa Economics | 🚀 **Produce a 45s Short** breaking down how laser robots sort 5M jars daily to feed STEM interest. |
 
 ---
 
 ### 📺 Subject Cluster D: Media Publishers & Creator Ecosystems
+> **Campaign Objective:** Cross-publisher community engagement and direct creator conversions.
 
-#### 7. 📺 YouTube Channel: Bloomberg Originals (@business)
-- **Asset ID:** `channel_bloomberg` | **Platform:** YouTube | **Subscribers:** 3.4M | **24h Comments:** 842
-- **Velocity Spike:** `+165.0% Global Distribution`
-- **Sentiment Breakdown:**
-  - 🟢 **Macroeconomic & Supply Chain Debates: 68.0%** (Technical debates on legacy 28nm semiconductor nodes and EV supply chain chokepoints)
-  - 🔵 **Data & Source Requests: 22.0%** (Requests for raw datasets and enterprise whitepaper links)
-  - 🟣 **Contrarian Geopolitical Takes: 8.0%** (Analysis questioning Western capex subsidies vs Chinese fab build speed)
-  - ⚪ **Editorial Delivery Feedback: 2.0%** (Praise for high-contrast data visualization motion graphics)
-- **AI Growth Action:** 🚀 Cross-post 45s Shorts focusing on why 28nm legacy chips power 90% of electric vehicles.
-
-#### 8. 📺 YouTube Channel: Kiểm Định Phim 9.0 (@KiemDinhPhim9.0)
-- **Asset ID:** `channel_kiemdinhphim` | **Platform:** YouTube | **Subscribers:** 48.4K | **24h Comments:** 240
-- **Velocity Spike:** `+45.2% Steady Engagement`
-- **Sentiment Breakdown:**
-  - 🟢 **Comedic Roasting & Satire Praise: 88.5%** (Viewers loving the witty, sarcastic critique of holiday movie plot holes)
-  - 🔵 **Next Episode & Film Suggestions: 5.0%** (Requests to review upcoming holiday blockbuster theatrical releases)
-  - 🟣 **Actor & Crew Defense: 6.0%** (Minor comments defending director and lead cast efforts)
-  - ⚪ **O De Awards Voting Inquiries: 0.5%** (Questions regarding annual satirical community voting categories)
-- **AI Growth Action:** 🎬 Open community voting poll for 'Worst Script of the Year' to sustain audience debate momentum.
-
-#### 9. 📺 TikTok Creator Channel: Thợ Chụp Ảnh Đà Lạt (@thochupanh.dalat)
-- **Asset ID:** `channel_thochupanh` | **Platform:** TikTok | **Subscribers:** 85.0K | **24h Comments:** 156
-- **Velocity Spike:** `+89.0% Travel Booking Inflow`
-- **Sentiment Breakdown:**
-  - 🟢 **Direct Booking & Pricing Inquiries: 65.0%** (Inquiries regarding photoshoot pricing at pink grass hills & sunset pine forests)
-  - 🔵 **Aesthetic & Photo Composition Praise: 25.0%** (High praise for vintage film color grading and natural lighting)
-  - 🟣 **Location & Shooting Angle Inquiries: 8.0%** (Questions asking for exact GPS coordinates of secret pine hill spots)
-  - ⚪ **Service & Package Feedback: 2.0%** (Past client positive reviews and recommendations)
-- **AI Growth Action:** 📸 Pin Google Form booking link and release preset color filter pack for travel followers.
+| Monitored Channel & Creator | Audience Base & 24h Activity | Dominant Audience Sentiment & Debates | Prescriptive Autonomous Growth Action |
+| :--- | :--- | :--- | :--- |
+| **7. Bloomberg Originals**<br/>📺 *YouTube Channel*<br/>`@business` | 👥 **3.4M Subscribers**<br/>💬 **842 Comments/24h**<br/>🌐 **+165.0% Inflow** | 🟢 **68.0%** Legacy 28nm Semiconductor Debates<br/>🔵 **22.0%** Enterprise Dataset Requests<br/>🟣 **8.0%** Geopolitical Capex Takes | 🚀 **Cross-post 45s Shorts** spotlighting why 28nm legacy chips power 90% of electric vehicles. |
+| **8. Kiểm Định Phim 9.0**<br/>📺 *YouTube Channel*<br/>`@KiemDinhPhim9.0` | 👥 **48.4K Subscribers**<br/>💬 **240 Comments/24h**<br/>⚡ **+45.2% Engagement** | 🟢 **88.5%** Holiday Movie Satire Praise<br/>🔵 **5.0%** Next Episode Film Requests<br/>🟣 **6.0%** Director & Cast Defense | 🎬 **Launch community poll** for 'Worst Holiday Movie Script' to maintain discussion momentum. |
+| **9. Thợ Chụp Ảnh Đà Lạt**<br/>📺 *TikTok Creator*<br/>`@thochupanh.dalat` | 👥 **85.0K Followers**<br/>💬 **156 Comments/24h**<br/>📸 **+89.0% Booking Lift** | 🟢 **65.0%** Pink Grass Hill Pricing Inquiries<br/>🔵 **25.0%** Film Preset Aesthetic Praise<br/>🟣 **8.0%** Secret Pine Hill GPS Requests | 📸 **Pin Google Form booking link** & release custom vintage film preset filter pack. |
 
 ---
 
