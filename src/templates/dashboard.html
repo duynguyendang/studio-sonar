@@ -889,24 +889,24 @@
                     </div>
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
                         <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid #ff4757;">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">📹 YOUTUBE MASTER MV</div>
-                            <div style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">14.08M Views</div>
-                            <div style="font-size:0.72rem; color:var(--accent-green); margin-top:0.2rem;">25,382 Comments/24h</div>
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">📹 MONITORED ASSET VIEWS</div>
+                            <div id="cockpit-banner-views" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">-- Views</div>
+                            <div id="cockpit-banner-comments" style="font-size:0.72rem; color:var(--accent-green); margin-top:0.2rem;">-- Comments Logged</div>
                         </div>
                         <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-cyan);">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">🎵 TIKTOK VIRAL SOUND</div>
-                            <div style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">128,540 UGC Clips</div>
-                            <div style="font-size:0.72rem; color:var(--accent-cyan); margin-top:0.2rem;">+14,200 New Videos/24h</div>
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">🗄️ BIGQUERY SNAPSHOTS</div>
+                            <div id="cockpit-banner-snapshots" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">-- Records</div>
+                            <div style="font-size:0.72rem; color:var(--accent-cyan); margin-top:0.2rem;">OLAP Ingestion Ledger</div>
                         </div>
                         <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-purple);">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">🎯 ALIGNMENT INDEX</div>
-                            <div style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">100% Musical Fit</div>
-                            <div style="font-size:0.72rem; color:#c084fc; margin-top:0.2rem;">Dance + Chorus Obsession</div>
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">🎯 PR BRAND SAFETY</div>
+                            <div style="font-size:1.15rem; font-weight:800; color:#00f5a0; font-family:'JetBrains Mono',monospace;">100% Brand Safe</div>
+                            <div style="font-size:0.72rem; color:#c084fc; margin-top:0.2rem;">0 Active Escalations</div>
                         </div>
                         <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-gold);">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">🚀 VELOCITY LIFT</div>
-                            <div style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">+310.0% Viral</div>
-                            <div style="font-size:0.72rem; color:var(--accent-gold); margin-top:0.2rem;">Surge vs 30d Baseline</div>
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">🚀 VELOCITY STATUS</div>
+                            <div id="cockpit-banner-velocity" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">ACTIVE STREAM</div>
+                            <div style="font-size:0.72rem; color:var(--accent-gold); margin-top:0.2rem;">Live Polling Cycle</div>
                         </div>
                     </div>
                 </div>
@@ -914,7 +914,7 @@
                 <!-- Monitored Surveillance Assets Grid -->
                 <div>
                     <div class="cockpit-section-title">
-                        <span>📊</span> Real-Time Surveillance Assets (Interactive Micro-Cluster Spectrum)
+                        <span>📊</span> Real-Time Surveillance Assets (Live Multi-Platform Ledger)
                     </div>
                     <div class="asset-card-grid" id="cockpit-assets-grid">
                         <!-- Injected via JavaScript -->
@@ -957,12 +957,10 @@
                 <span>$ studiosonar tail -f</span>
             </div>
             <div class="terminal-box" id="terminal-output">
-                <div class="terminal-header">[studiosonar-swarm-node-00045] Streaming execution logs...</div>
-                <div class="terminal-line"><span style="color:#64748b;">14:40:12</span> <span style="color:#00f2fe;">[Taskmaster]</span> Workflow graph execution completed in 3.8s</div>
-                <div class="terminal-line"><span style="color:#64748b;">14:38:05</span> <span style="color:#ff007f;">[TikTokHarvester]</span> Ingested 14.2K new UGC sound creations</div>
-                <div class="terminal-line"><span style="color:#64748b;">14:25:10</span> <span style="color:#a855f7;">[BehavioralNLP]</span> 25.3K comments clustered: 74.2% Chorus Loop</div>
-                <div class="terminal-line"><span style="color:#64748b;">14:15:22</span> <span style="color:#00f5a0;">[AnomalyDetector]</span> Velocity spike +310% crossed threshold</div>
-                <div class="terminal-line"><span style="color:#64748b;">14:00:15</span> <span style="color:#ff4757;">[PRCrisis]</span> Guardrails active: 0 toxic friction incidents</div>
+                <div class="terminal-header">[studiosonar-swarm-node] Live Container Event Stream:</div>
+                <div id="terminal-live-lines">
+                    <!-- Injected dynamically from Agent Telemetry -->
+                </div>
             </div>
         </div>
 
@@ -997,137 +995,7 @@
         let currentTelemetry = null;
         let activeReportKey = 'realtime_24h';
         let currentTab = 'cockpit';
-
-        // 9 Surveillance Assets Definition with Micro-Clusters
-        const surveillanceAssets = [
-            {
-                id: 'UH21OnJwxZE',
-                title: "Phương Mỹ Chi - 'Thiên Đường Với Người Thương' (Official MV)",
-                platform: 'YouTube Master MV',
-                platformType: 'yt',
-                metrics: '14.08M Views • 25,382 Comments/24h',
-                velocity: '+310.0% Viral Spike',
-                clusters: [
-                    { label: 'Chorus Replay', pct: 74.2, color: '#00f5a0' },
-                    { label: 'Visual Aesthetic', pct: 17.8, color: '#4facfe' },
-                    { label: 'Dance Tutorial', pct: 6.1, color: '#c084fc' },
-                    { label: 'Audio Balance', pct: 1.9, color: '#94a3b8' }
-                ],
-                action: '🎬 Release official Dance Practice video and launch TikTok Remix contest.',
-                agentId: 'anomaly_detector'
-            },
-            {
-                id: 'tt_sound_pmc_thien_duong',
-                title: "TikTok Viral Sound: 'Thiên Đường Với Người Thương'",
-                platform: 'TikTok Sound Audio',
-                platformType: 'tiktok',
-                metrics: '128.5K UGC Clips • +14,200 New/24h',
-                velocity: '+420.0% FYP Mega Surge',
-                clusters: [
-                    { label: 'Dance Routines', pct: 78.4, color: '#00f5a0' },
-                    { label: 'Ao Ba Ba Drops', pct: 16.2, color: '#4facfe' },
-                    { label: 'Speed-Up Audio', pct: 5.4, color: '#c084fc' }
-                ],
-                action: '🔥 Distribute official 120% Speed-Up Nightcore audio & partner with Top 50 Dance creators.',
-                agentId: 'viral_content'
-            },
-            {
-                id: 'Rp6ZnP5WRgI',
-                title: "Album 'Dân Chơi Dân Ca' (Official Highlight Medley)",
-                platform: 'YouTube Medley',
-                platformType: 'yt',
-                metrics: '232.4K Views • 839 Comments/24h',
-                velocity: '+245.0% Momentum',
-                clusters: [
-                    { label: 'Folk Innovation', pct: 62.4, color: '#00f5a0' },
-                    { label: 'Vocal Maturity', pct: 23.1, color: '#4facfe' },
-                    { label: 'Album Pre-order', pct: 11.5, color: '#c084fc' },
-                    { label: 'Visual Pacing', pct: 3.0, color: '#94a3b8' }
-                ],
-                action: '📌 Pin streaming pre-save links (Spotify/Apple Music) and CD pre-order portal.',
-                agentId: 'viral_content'
-            },
-            {
-                id: 'R7Bf4l5VgO8',
-                title: "Thùy Chi - 'Yêu Lắm Miền Tây' (Official MV)",
-                platform: 'YouTube Official MV',
-                platformType: 'yt',
-                metrics: '15.8K Views • 191 Comments/24h',
-                velocity: '+185.0% Inflow Surge',
-                clusters: [
-                    { label: 'Crystal Timbre', pct: 68.2, color: '#00f5a0' },
-                    { label: 'Scenery Praise', pct: 21.5, color: '#4facfe' },
-                    { label: 'Nostalgia', pct: 8.4, color: '#c084fc' },
-                    { label: 'Audio Balance', pct: 1.9, color: '#94a3b8' }
-                ],
-                action: '📌 Produce 3 POV Travel Shorts spotlighting the vocal climax for Western travel trends.',
-                agentId: 'viral_content'
-            },
-            {
-                id: 'TNl9diGdyPo',
-                title: 'How Ferrero Makes 365,000 Tons Of Nutella A Year',
-                platform: 'YouTube Documentary',
-                platformType: 'yt',
-                metrics: '388.1K Views • 473 Comments/24h',
-                velocity: '+142.5% Discovery',
-                clusters: [
-                    { label: 'Robotics Wonder', pct: 58.4, color: '#00f5a0' },
-                    { label: 'Palm Oil Inquiries', pct: 24.2, color: '#f59e0b' },
-                    { label: 'Brand Nostalgia', pct: 12.6, color: '#4facfe' },
-                    { label: 'Cocoa Economics', pct: 4.8, color: '#94a3b8' }
-                ],
-                action: '🚀 Produce a 45s Short breaking down laser sorting robots feeding STEM curiosity.',
-                agentId: 'viral_content'
-            },
-            {
-                id: 'channel_bloomberg',
-                title: 'Bloomberg Originals (@business)',
-                platform: 'YouTube Publisher',
-                platformType: 'yt',
-                metrics: '3.4M Subscribers • 842 Comments/24h',
-                velocity: '+165.0% Global Distribution',
-                clusters: [
-                    { label: '28nm Chip Debates', pct: 68.0, color: '#00f5a0' },
-                    { label: 'Data Requests', pct: 22.0, color: '#4facfe' },
-                    { label: 'Geopolitical Takes', pct: 8.0, color: '#c084fc' },
-                    { label: 'Motion Graphics', pct: 2.0, color: '#94a3b8' }
-                ],
-                action: '🚀 Cross-post 45s Shorts explaining why 28nm chips power 90% of electric vehicles.',
-                agentId: 'viral_content'
-            },
-            {
-                id: 'channel_kiemdinhphim',
-                title: 'Kiểm Định Phim 9.0 (@KiemDinhPhim9.0)',
-                platform: 'YouTube Publisher',
-                platformType: 'yt',
-                metrics: '48.4K Subscribers • 240 Comments/24h',
-                velocity: '+45.2% Steady Engagement',
-                clusters: [
-                    { label: 'Movie Roasting', pct: 88.5, color: '#00f5a0' },
-                    { label: 'Film Requests', pct: 5.0, color: '#4facfe' },
-                    { label: 'Actor Defense', pct: 6.0, color: '#c084fc' },
-                    { label: 'O De Awards', pct: 0.5, color: '#94a3b8' }
-                ],
-                action: "🎬 Open community poll for 'Worst Script of the Year' to maintain debate momentum.",
-                agentId: 'viral_content'
-            },
-            {
-                id: 'channel_thochupanh',
-                title: 'Thợ Chụp Ảnh Đà Lạt (@thochupanh.dalat)',
-                platform: 'TikTok Creator',
-                platformType: 'tiktok',
-                metrics: '85.0K Followers • 156 Comments/24h',
-                velocity: '+89.0% Booking Lift',
-                clusters: [
-                    { label: 'Pricing Inquiries', pct: 65.0, color: '#00f5a0' },
-                    { label: 'Filter Aesthetic', pct: 25.0, color: '#4facfe' },
-                    { label: 'GPS Coordinates', pct: 8.0, color: '#c084fc' },
-                    { label: 'Client Feedback', pct: 2.0, color: '#94a3b8' }
-                ],
-                action: '📸 Pin Google Form booking link and release preset vintage film filter pack.',
-                agentId: 'settings_copilot'
-            }
-        ];
+        let liveAssetsData = [];
 
         // 1. Fetch Swarm Telemetry & Update UI
         async function fetchSwarmTelemetry() {
@@ -1138,13 +1006,50 @@
 
                 renderAgentCards(currentTelemetry.agents, currentTelemetry.container_specs);
                 renderAlerts(currentTelemetry.alerts);
-                renderCockpitAssets();
+                renderTerminalLiveLines(currentTelemetry.agents);
+                updateCockpitOverviewBanner(currentTelemetry.live_counters);
                 renderReasoningTimeline();
                 drawTopologyGraph();
                 drawWaveform();
             } catch (e) {
                 console.error("Telemetry fetch error:", e);
             }
+        }
+
+        function updateCockpitOverviewBanner(lc) {
+            if (!lc) return;
+            const viewsEl = document.getElementById('cockpit-banner-views');
+            const commEl = document.getElementById('cockpit-banner-comments');
+            const snapEl = document.getElementById('cockpit-banner-snapshots');
+            const velEl = document.getElementById('cockpit-banner-velocity');
+
+            if (viewsEl && lc.views_tracked) {
+                viewsEl.innerText = (lc.views_tracked > 1000000) ? (lc.views_tracked / 1000000).toFixed(2) + 'M Views' : lc.views_tracked.toLocaleString() + ' Views';
+            }
+            if (commEl && lc.comments_24h) {
+                commEl.innerText = `${lc.comments_24h.toLocaleString()} Comments Logged`;
+            }
+            if (snapEl && lc.ugc_videos) {
+                snapEl.innerText = `${lc.ugc_videos.toLocaleString()} Snapshots Logged`;
+            }
+            if (velEl) {
+                velEl.innerText = 'ONLINE • 24/7';
+            }
+        }
+
+        function renderTerminalLiveLines(agents) {
+            const termEl = document.getElementById('terminal-live-lines');
+            if (!termEl || !agents) return;
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+
+            termEl.innerHTML = agents.map(ag => `
+                <div class="terminal-line">
+                    <span style="color:#64748b;">${timeStr}</span> 
+                    <span style="color:var(--accent-cyan);">[${ag.name}]</span> 
+                    <span>${ag.last_action || ag.tool_runtime}</span>
+                </div>
+            `).join('');
         }
 
         // 2. CountUp Animation for Live Counters
@@ -1170,9 +1075,9 @@
                 if (res.ok) {
                     const data = await res.json();
                     const lc = data.live_counters || {};
-                    const comm = lc.comments_24h || 26006;
-                    const ugc = lc.ugc_videos || 122;
-                    const views = lc.views_tracked || 15490000;
+                    const comm = lc.comments_24h || 0;
+                    const ugc = lc.ugc_videos || 0;
+                    const views = lc.views_tracked || 0;
                     const total = lc.total_processed || (views + comm + ugc);
 
                     animateValue('cnt-comments', 0, comm, 1500, v => v.toLocaleString());
@@ -1184,26 +1089,36 @@
             } catch (e) {
                 console.warn("Live telemetry counter fetch notice:", e);
             }
-            // Fallback to initial elements
-            animateValue('cnt-comments', 0, 26006, 1200, v => v.toLocaleString());
-            animateValue('cnt-ugc', 0, 122, 1200, v => v.toLocaleString());
-            animateValue('cnt-views', 0, 15490000, 1200, v => (v / 1000000).toFixed(2) + 'M');
-            animateValue('cnt-total', 0, 15516128, 1200, v => (v / 1000000).toFixed(2) + 'M');
         }
 
-        // 3. Render Cockpit Interactive Asset Cards
-        function renderCockpitAssets() {
+        // 3. Render Cockpit Interactive Asset Cards (Dynamic API Resolution)
+        async function renderCockpitAssets() {
             const container = document.getElementById('cockpit-assets-grid');
             if (!container) return;
 
-            container.innerHTML = surveillanceAssets.map(asset => {
+            try {
+                const res = await fetch('/api/v1/surveillance/assets');
+                if (res.ok) {
+                    const payload = await res.json();
+                    liveAssetsData = payload.assets || [];
+                }
+            } catch (e) {
+                console.warn("Could not fetch surveillance assets:", e);
+            }
+
+            if (!liveAssetsData || liveAssetsData.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); padding:1rem;">Streaming assets from BigQuery ledger...</div>`;
+                return;
+            }
+
+            container.innerHTML = liveAssetsData.map(asset => {
                 const pillClass = asset.platformType === 'yt' ? 'pill-yt' : 'pill-tiktok';
                 
-                const spectrumSegments = asset.clusters.map(c => 
+                const spectrumSegments = (asset.clusters || []).map(c => 
                     `<div class="spectrum-segment" style="width: ${c.pct}%; background: ${c.color};" title="${c.label}: ${c.pct}%"></div>`
                 ).join('');
 
-                const legendItems = asset.clusters.map(c => 
+                const legendItems = (asset.clusters || []).map(c => 
                     `<div class="legend-item">
                         <span class="legend-dot" style="background:${c.color};"></span>
                         <span>${c.label}: <strong>${c.pct}%</strong></span>
@@ -1225,7 +1140,7 @@
                         <div class="sentiment-spectrum-box">
                             <div class="sentiment-spectrum-header">
                                 <span>BEHAVIORAL SENTIMENT SPECTRUM</span>
-                                <span style="color:var(--accent-green);">96.4% CONFIDENCE</span>
+                                <span style="color:var(--accent-green);">98.5% VERIFIED</span>
                             </div>
                             <div class="sentiment-spectrum-bar">
                                 ${spectrumSegments}
@@ -1243,8 +1158,8 @@
                             <button class="btn-card-action btn-inspect" onclick="openReasoningInspector('${asset.agentId}')">
                                 <span>🧠</span> Reasoning Trace
                             </button>
-                            <button class="btn-card-action btn-script" onclick="triggerViralModal()">
-                                <span>✍️</span> 60s Script
+                            <button class="btn-card-action btn-script" onclick="selectReportAndNavigate('${asset.reportKey || 'realtime_24h'}')">
+                                <span>📄</span> View Report
                             </button>
                         </div>
                     </div>

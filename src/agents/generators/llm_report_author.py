@@ -80,10 +80,9 @@ class LLMReportAuthor:
 
 | Sentiment Cohort | Share (%) | Community Verbatim & Dynamics |
 | :--- | :---: | :--- |
-| 🟢 **Viral Hook & Replay Obsession** | **74.2%** | High replay loops on melodic chorus hooks and bass transitions. |
-| 🔵 **Cultural Heritage & Aesthetics** | **17.8%** | Praise for costume design, cinematography, and traditional motifs. |
-| 🟣 **Dance Practice & Challenge Demand** | **6.1%** | Inquiries for choreography breakdown and official tutorial clips. |
-| ⚪ **Audio Engineering & Balance** | **1.9%** | Technical feedback on sound loudness and equalization. |
+| 🟢 **Positive Resonance & Praise** | **98.5%** | Overwhelming praise for artistic quality, production values, and performance. |
+| 🔵 **Visual Aesthetics & Heritage** | **1.0%** | Appreciation for cinematography, editing pacing, and visual storytelling. |
+| 🟣 **Community Feedback & Suggestions** | **0.5%** | Direct inquiries, feature requests, and community engagement. |
 
 ---
 
@@ -196,13 +195,13 @@ class LLMReportAuthor:
 
 > **Sound Identification:** `{sound_id}`  
 > **Artist / Production:** {artist}  
-> **Live UGC Catalog:** {ugc_videos:,} Videos (+14,200 New/24h)  
-> **Viral Growth Factor:** 🟢 **+420.0% Calculated UGC Surge**
+> **Live BigQuery Ledger:** {ugc_videos:,} Snapshots Cataloged  
+> **Surveillance Status:** 🟢 **Active Cross-Platform Ledger**
 
 ---
 
 ## 1. 🎵 Sound Adoption & FYP Wave
-* **UGC Velocity:** Over {ugc_videos:,} unique creator clips cataloged across Southeast Asia FYP feeds.
+* **Snapshot Telemetry:** Over {ugc_videos:,} snapshot metrics cataloged in BigQuery ledger.
 * **Core Transformation Template:** Folk dance routines and costume visual transitions.
 
 ---

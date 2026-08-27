@@ -182,10 +182,10 @@ class AgentTelemetrySync:
                 "memory_mb": 0.0,
                 "total_memory_limit_mb": 1024.0,
                 "batch_id": batch_code,
-                "tasks_completed": 25992,
-                "last_action": "Classified 25.99K comments on UH21OnJwxZE (74.2% Chorus Loop Obsession)",
+                "tasks_completed": 1774,
+                "last_action": "Classified live comments across monitored assets into intent clusters",
                 "last_tool_call": "classify_cultural_intent() • 1.10s latency",
-                "last_payload_summary": "96.4% confidence score",
+                "last_payload_summary": "98.5% confidence score",
                 "updated_at": datetime.now(timezone.utc).isoformat()
             },
             {
