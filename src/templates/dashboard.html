@@ -646,7 +646,7 @@
         <div class="left-sidebar">
             <div class="section-header">
                 <span>🤖 Swarm Agents Telemetry</span>
-                <span style="font-family: 'JetBrains Mono', monospace;">5 DEPLOYED</span>
+                <span style="font-family: 'JetBrains Mono', monospace;" id="deployed-agents-count">8 DEPLOYED</span>
             </div>
 
             <div id="agents-telemetry-container">
@@ -773,13 +773,28 @@
             const container = document.getElementById('agents-telemetry-container');
             if (!container || !agents) return;
 
+            const agentIcons = {
+                taskmaster: '👑',
+                channel_monitor: '📡',
+                anomaly_detector: '🔍',
+                pr_crisis: '🚨',
+                viral_content: '✍️',
+                tiktok_harvester: '🎵',
+                behavioral_classifier: '🏷️',
+                settings_copilot: '🤖'
+            };
+
+            const countElem = document.getElementById('deployed-agents-count');
+            if (countElem) countElem.innerText = `${agents.length} DEPLOYED`;
+
             container.innerHTML = agents.map(ag => {
-                const statusClass = ag.status === 'ACTIVE' ? 'status-active' : (ag.status === 'SCANNING' ? 'status-scanning' : 'status-standby');
+                const statusClass = ag.status === 'ACTIVE' ? 'status-active' : (ag.status === 'SCANNING' ? 'status-scanning' : (ag.status === 'STREAMING' ? 'status-active' : 'status-standby'));
+                const icon = agentIcons[ag.id] || '🤖';
                 return `
                     <div class="agent-telemetry-item" onclick="openReasoningInspector('${ag.id}')">
                         <div class="agent-item-top">
                             <span class="agent-name">
-                                <span>${ag.id === 'taskmaster' ? '👑' : (ag.id === 'anomaly_detector' ? '🔍' : (ag.id === 'pr_crisis' ? '🚨' : (ag.id === 'viral_content' ? '✍️' : '📡')))}</span>
+                                <span>${icon}</span>
                                 ${ag.name}
                             </span>
                             <span class="status-badge ${statusClass}">${ag.status}</span>
@@ -812,24 +827,31 @@
             }).join('');
         }
 
-        // 4. Interactive Topology Graph Canvas
+        // 4. Interactive Topology Graph Canvas (8-Agent Enterprise Mesh)
         const topologyCanvas = document.getElementById('topology-canvas');
         const ctx = topologyCanvas.getContext('2d');
         let particleOffset = 0;
 
         const nodes = [
-            { id: 'taskmaster', name: 'Taskmaster (Root)', x: 80, y: 90, color: '#00f2fe' },
-            { id: 'channel_monitor', name: 'Channel Sentinel', x: 250, y: 90, color: '#4facfe' },
-            { id: 'anomaly_detector', name: 'Anomaly Detector', x: 440, y: 90, color: '#00f5a0' },
-            { id: 'pr_crisis', name: 'PR Crisis Strategist', x: 640, y: 45, color: '#ff4757' },
-            { id: 'viral_content', name: 'Viral Content Creator', x: 640, y: 135, color: '#c084fc' }
+            { id: 'taskmaster', name: 'Taskmaster (Root)', x: 60, y: 90, color: '#00f2fe' },
+            { id: 'channel_monitor', name: 'Channel Sentinel', x: 190, y: 45, color: '#4facfe' },
+            { id: 'tiktok_harvester', name: 'TikTok Harvester', x: 190, y: 135, color: '#ff007f' },
+            { id: 'behavioral_classifier', name: 'Behavioral NLP', x: 350, y: 45, color: '#a855f7' },
+            { id: 'anomaly_detector', name: 'Anomaly Detector', x: 350, y: 135, color: '#00f5a0' },
+            { id: 'pr_crisis', name: 'PR Crisis Strategist', x: 530, y: 45, color: '#ff4757' },
+            { id: 'viral_content', name: 'Viral Content Creator', x: 530, y: 135, color: '#c084fc' },
+            { id: 'settings_copilot', name: 'FinOps Copilot', x: 675, y: 90, color: '#f59e0b' }
         ];
 
         const edges = [
-            { from: 0, to: 1 },
-            { from: 1, to: 2 },
-            { from: 2, to: 3 },
-            { from: 2, to: 4 }
+            { from: 0, to: 1 }, // Taskmaster -> Channel Sentinel
+            { from: 0, to: 2 }, // Taskmaster -> TikTok Harvester
+            { from: 1, to: 3 }, // Channel Sentinel -> Behavioral NLP
+            { from: 2, to: 4 }, // TikTok Harvester -> Anomaly Detector
+            { from: 3, to: 4 }, // Behavioral NLP -> Anomaly Detector
+            { from: 4, to: 5 }, // Anomaly Detector -> PR Crisis
+            { from: 4, to: 6 }, // Anomaly Detector -> Viral Content
+            { from: 0, to: 7 }  // Taskmaster -> FinOps Copilot
         ];
 
         function resizeTopologyCanvas() {

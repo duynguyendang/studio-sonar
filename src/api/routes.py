@@ -117,11 +117,48 @@ def get_swarm_telemetry():
                 "tasks_completed": 64,
                 "last_action": "Authored 60s Shorts script for 'Thiên Đường Với Người Thương'",
                 "tools": ["create_google_doc_video_script", "generate_notion_action_board"]
+            },
+            {
+                "id": "tiktok_harvester",
+                "name": "TikTokHarvesterAgent",
+                "role": "Cross-Platform UGC Sound Sentinel",
+                "status": "STREAMING",
+                "cpu": "54%",
+                "memory": "3.8 / 6.0 GB",
+                "batch": "#2,180",
+                "tasks_completed": 240,
+                "last_action": "Cataloged 14,200 new UGC clips for 'Thiên Đường Với Người Thương'",
+                "tools": ["harvest_tiktok_sound_velocity", "ingest_ugc_metadata"]
+            },
+            {
+                "id": "behavioral_classifier",
+                "name": "BehavioralClassifierAgent",
+                "role": "Vietnamese Intent & Cultural NLP",
+                "status": "ACTIVE",
+                "cpu": "42%",
+                "memory": "2.8 / 4.0 GB",
+                "batch": "#3,890",
+                "tasks_completed": 295,
+                "last_action": "Classified 25.3K comments with 96.4% confidence across 5 clusters",
+                "tools": ["classify_cultural_intent", "cluster_semantic_embeddings"]
+            },
+            {
+                "id": "settings_copilot",
+                "name": "SettingsCopilotAgent",
+                "role": "FinOps & Dynamic Config Copilot",
+                "status": "READY",
+                "cpu": "8%",
+                "memory": "0.9 / 2.0 GB",
+                "batch": "#340",
+                "tasks_completed": 45,
+                "last_action": "Adjusted tracking window for TS. Lương Minh Thắng to 14 days",
+                "tools": ["update_video_tracking_duration", "add_channel", "generate_viral_hook"]
             }
         ],
         "alerts": [
             {"severity": "SUCCESS", "time": "14:40:12", "agent": "Taskmaster", "msg": "Autonomous Cycle #142 completed successfully in 3.8s"},
-            {"severity": "INFO", "time": "14:38:05", "agent": "ViralContent", "msg": "12,400 new UGC videos detected on TikTok sound 'Thiên Đường'"},
+            {"severity": "INFO", "time": "14:38:05", "agent": "TikTokHarvester", "msg": "14,200 new UGC clips cataloged on sound 'Thiên Đường' (+420% surge)"},
+            {"severity": "SUCCESS", "time": "14:25:10", "agent": "BehavioralNLP", "msg": "Classified 25.3K comments: 74.2% Chorus Replay, 0% PR risk"},
             {"severity": "WARNING", "time": "14:15:22", "agent": "AnomalyDetector", "msg": "Velocity spike +310% crossed threshold (+200%) on video UH21OnJwxZE"},
             {"severity": "SUCCESS", "time": "13:50:00", "agent": "ChannelSentinel", "msg": "24h statistical scorecard published to #company-channel-metrics"}
         ],
@@ -143,6 +180,33 @@ def get_swarm_telemetry():
                 "gemini_reasoning": "Synthesized 60s script utilizing 'Contrarian Truth & Curiosity Gap' psychological hook framework. Generated visual B-roll breakdown.",
                 "decision": "Published script draft & logged Notion sprint card for creative short-form video editors",
                 "payload": {"gdoc_url": "https://docs.google.com/document/d/gdoc_script_pmc_thien_duong", "notion_task": "Creative Shorts Sprint"}
+            },
+            "tiktok_harvester": {
+                "timestamp": "14:35:00 UTC",
+                "agent": "TikTokHarvesterAgent",
+                "tool_call": "harvest_tiktok_sound_velocity(sound_id='video_tt_sound_pmc_thien_duong')",
+                "result": "Cataloged 128,540 UGC videos (+14,200 in last 24h). Top 1% FYP audio sound in Vietnam.",
+                "gemini_reasoning": "UGC creation velocity grew by +420% in 24 hours with massive Gen Z dance team adoption. Sound wave has reached critical mass.",
+                "decision": "Dispatched UGC sound wave metrics to AnomalyDetectorAgent & ViralContentCreatorAgent",
+                "payload": {"ugc_count": 128540, "daily_velocity": "+420.0%"}
+            },
+            "behavioral_classifier": {
+                "timestamp": "14:22:00 UTC",
+                "agent": "BehavioralClassifierAgent",
+                "tool_call": "classify_cultural_intent(comments_batch=25382, locale='vi-VN')",
+                "result": "Cluster Distribution: 74.2% Chorus Loop, 17.8% Aesthetic, 6.1% Dance Practice, 1.9% Audio Loudness.",
+                "gemini_reasoning": "Audience emotional valence is overwhelmingly euphoric. 0% toxic PR friction detected. High intent identified for dance tutorial content.",
+                "decision": "Emitted classification vectors with 96.4% confidence score",
+                "payload": {"primary_cluster": "Chorus Replay Obsession", "intent_confidence": 0.964}
+            },
+            "settings_copilot": {
+                "timestamp": "14:05:00 UTC",
+                "agent": "SettingsCopilotAgent",
+                "tool_call": "process_chat_command(user_message='Chỉnh video TS. Lương Minh Thắng 14 ngày')",
+                "result": "Updated tracking duration for video ye3B8kPuTnc to 14 days.",
+                "gemini_reasoning": "Parsed natural language intent 'chỉnh video' + speaker matching 'Thắng' -> Video ID ye3B8kPuTnc. Applied FinOps cost saver policy.",
+                "decision": "Applied dynamic tracking configuration in memory & persistent store",
+                "payload": {"video_id": "ye3B8kPuTnc", "duration_days": 14}
             },
             "pr_crisis": {
                 "timestamp": "14:00:15 UTC",
