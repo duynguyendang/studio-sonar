@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudioSonar — Autonomous Media Intelligence & Action Command Center</title>
     
-    <!-- Google Fonts & Marked.js & KaTeX for Live Markdown & Math Formula Rendering -->
+    <!-- Google Fonts & Marked.js & KaTeX & Mermaid.js for Live Markdown, Math & Diagram Rendering -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
@@ -608,6 +609,31 @@
 
             // Render Markdown
             contentEl.innerHTML = marked.parse(bodyMarkdown);
+
+            // Convert Mermaid code blocks into <div class="mermaid"> containers
+            const mermaidBlocks = contentEl.querySelectorAll('pre code.language-mermaid');
+            mermaidBlocks.forEach(block => {
+                const pre = block.parentElement;
+                const div = document.createElement('div');
+                div.className = 'mermaid';
+                div.innerHTML = block.textContent;
+                div.style.background = 'rgba(0,0,0,0.2)';
+                div.style.padding = '1rem';
+                div.style.borderRadius = '10px';
+                div.style.marginBottom = '1.5rem';
+                div.style.overflowX = 'auto';
+                pre.parentNode.replaceChild(div, pre);
+            });
+
+            // Trigger Mermaid diagram rendering
+            if (window.mermaid) {
+                try {
+                    mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+                    mermaid.run({ nodes: contentEl.querySelectorAll('.mermaid') });
+                } catch (err) {
+                    console.warn("Mermaid render notice:", err);
+                }
+            }
 
             // Render Math formulas via KaTeX
             if (window.renderMathInElement) {
