@@ -82,16 +82,12 @@ def get_swarm_telemetry():
         telemetry_sync.sync_all_agents_current_cycle(executed_actions=[])
         bq_agents = telemetry_sync.fetch_live_telemetry_from_bigquery()
 
+    # Real System Container Resources from Linux Kernel
+    real_system_specs = telemetry_sync.get_real_container_resources()
+
     return {
         "status": "ONLINE",
-        "container_specs": {
-            "platform": "Google Cloud Run (Managed)",
-            "region": "us-central1",
-            "allocated_cpu": "1 vCPU",
-            "allocated_memory": "1024 MiB (1.0 GB)",
-            "process_rss_mb": f"{active_rss_mb} MB",
-            "persistence": "BigQuery partitioned table studiosonar_analytics.agent_telemetry"
-        },
+        "container_specs": real_system_specs,
         "live_counters": {
             "comments_24h": total_comments,
             "ugc_videos": 128540,
