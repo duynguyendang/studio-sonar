@@ -362,16 +362,20 @@ class StudioSonarOrchestrationEngine:
             if master_saved:
                 gcs_published_files.append("gs://studiosonar-dev-reports/realtime_24h_pulse_report.md")
 
-            # Synchronize and publish ALL 12 detailed surveillance reports to GCS
-            from src.core.report_publisher import report_publisher
-            live_stats_map = {}
-            for v in ingest_res.get("videos", []):
-                live_stats_map[v.get("video_id")] = v
-            all_published = report_publisher.publish_all_reports_to_gcs(live_video_stats=live_stats_map)
-            gcs_published_files = list(set(gcs_published_files + all_published))
-            logger.info(f"Successfully synchronized and published {len(gcs_published_files)} reports to GCS bucket")
+            # =================================================================
+            # Dynamic Agent-Authored Intelligence Reports Direct to GCS (Zero Static Files)
+            # =================================================================
+            from src.agents.generators.llm_report_author import llm_report_author
+            from src.core.registry_manager import registry_manager
+            
+            published_dossiers = llm_report_author.author_all_reports_parallel(
+                videos=ingest_res.get("videos", []),
+                channels=registry_manager.get_all_channels()
+            )
+            gcs_published_files = list(set(gcs_published_files + published_dossiers))
+            logger.info(f"Agents successfully authored and published {len(gcs_published_files)} live dossiers directly to GCS via Gemini Flash Parallel Engine")
         except Exception as e:
-            logger.error(f"Error publishing master dossier and detailed reports to GCS: {e}")
+            logger.error(f"Error in Agent LLM Report Authoring Pipeline: {e}")
 
         # =====================================================================
         # Step 5: BigQuery Telemetry Persistence (Save Swarm State to DB)
