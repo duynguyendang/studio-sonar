@@ -4,6 +4,8 @@ import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timezone
 
+from src.core.config import settings
+
 logger = logging.getLogger("studiosonar.registry")
 
 REGISTRY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "tracking_registry.json")
@@ -17,7 +19,36 @@ class TrackingRegistryManager:
 
     def __init__(self, registry_file: str = REGISTRY_PATH):
         self.registry_file = registry_file
+        self._bq_client = None
+        self._bq_available = False
         self._ensure_registry_exists()
+
+    def _get_bq_client(self):
+        """Lazily initializes the BigQuery client (single source of truth on Cloud Run)."""
+        if self._bq_client is not None:
+            return self._bq_client
+        try:
+            from google.cloud import bigquery
+            self._bq_client = bigquery.Client(project=settings.gcp_project_id)
+            self._bq_available = True
+        except Exception as e:
+            logger.warning(f"BigQuery registry client unavailable (strict BigQuery mode): {e}")
+            self._bq_client = None
+            self._bq_available = False
+        return self._bq_client
+
+    def _ensure_seeded(self):
+        """Seeds the canonical sample registry into BigQuery if tables lack rows."""
+        client = self._get_bq_client()
+        if not client:
+            return False
+        try:
+            from src.data.registry_seeder import ensure_registry_seeded
+            ensure_registry_seeded(client, settings.gcp_project_id, settings.bigquery_dataset)
+            return True
+        except Exception as e:
+            logger.warning(f"Registry seeding notice: {e}")
+            return False
 
     def _ensure_registry_exists(self):
         if not os.path.exists(self.registry_file):
@@ -42,44 +73,115 @@ class TrackingRegistryManager:
             logger.error(f"Failed to save tracking registry: {e}")
 
     def get_all_channels(self) -> List[Dict[str, Any]]:
-        """Returns all actively tracked channels."""
-        return self._load_data().get("channels", [])
+        """
+        Returns all actively tracked channels directly from BigQuery (tracked_channels).
+        Strict BigQuery source-of-truth: no JSON fallback. Seeds tables if empty.
+        """
+        client = self._get_bq_client()
+        if not client:
+            logger.warning("get_all_channels: BigQuery unavailable (strict mode) -> returning empty list.")
+            return []
+
+        dataset = settings.bigquery_dataset
+        channels = self._query_channels(client, dataset)
+
+        # Self-heal: if the table is empty, seed canonical sample and re-query.
+        if not channels:
+            self._ensure_seeded()
+            channels = self._query_channels(client, dataset)
+
+        return channels
+
+    def _query_channels(self, client, dataset: str) -> List[Dict[str, Any]]:
+        try:
+            query = f"""
+                SELECT channel_id, handle, platform, title, category, tracking_status,
+                       check_frequency_minutes, notification_channel,
+                       subscriber_count, total_video_count, created_at, last_checked_at
+                FROM `{client.project}.{dataset}.tracked_channels`
+                WHERE tracking_status = 'ACTIVE'
+                ORDER BY title
+            """
+            query_job = client.query(query)
+            default_categories = ["Praise & Loyalty", "Technical Inquiries", "Commercial Leads", "Complaints & Friction"]
+            result = []
+            for row in query_job.result():
+                result.append({
+                    "channel_id": row.channel_id,
+                    "report_key": f"channel_{row.handle.replace('@', '').replace('.', '_').lower()}",
+                    "handle": row.handle,
+                    "platform": row.platform or "youtube",
+                    "title": row.title or row.handle,
+                    "category": row.category or "General",
+                    "tracking_status": row.tracking_status or "ACTIVE",
+                    "check_frequency_minutes": row.check_frequency_minutes or 15,
+                    "video_lookback_days": 30,
+                    "custom_sentiment_categories": default_categories,
+                    "notification_channel": row.notification_channel or "#media-alerts",
+                    "snapshots": [{
+                        "timestamp": (row.created_at.isoformat() if row.created_at else datetime.now(timezone.utc).isoformat()),
+                        "subscriber_count": int(row.subscriber_count or 0),
+                        "total_video_count": int(row.total_video_count or 0),
+                        "average_views_per_video": 0.0
+                    }]
+                })
+            return result
+        except Exception as e:
+            logger.debug(f"BigQuery dynamic channel query fallback notice: {e}")
+            return []
 
     def get_all_videos(self) -> List[Dict[str, Any]]:
         """
-        Returns all actively tracked videos directly from Database (BigQuery).
-        If user deletes or adds a video in BigQuery, dashboard reflects immediately!
+        Returns all actively tracked videos (including TikTok sounds) directly from
+        BigQuery (videos). Strict BigQuery source-of-truth: no JSON fallback.
+        Seeds tables if empty.
         """
-        if not os.getenv("K_SERVICE") and not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-            return self._load_data().get("videos", [])
+        client = self._get_bq_client()
+        if not client:
+            logger.warning("get_all_videos: BigQuery unavailable (strict mode) -> returning empty list.")
+            return []
 
+        dataset = settings.bigquery_dataset
+        videos = self._query_videos(client, dataset)
+
+        # Self-heal: if the table is empty, seed canonical sample and re-query.
+        if not videos:
+            self._ensure_seeded()
+            videos = self._query_videos(client, dataset)
+
+        return videos
+
+    def _query_videos(self, client, dataset: str) -> List[Dict[str, Any]]:
         try:
-            from google.cloud import bigquery
-            client = bigquery.Client(project=os.getenv("GCP_PROJECT_ID", "studiosonar-dev"))
-            dataset = os.getenv("BIGQUERY_DATASET", "studiosonar_analytics")
-            query = f"SELECT video_id, channel_id, url, title, view_count, like_count, comment_count FROM `{client.project}.{dataset}.videos`"
+            query = f"""
+                SELECT video_id, channel_id, platform, url, title, published_at,
+                       monitoring_tier, tracking_status, view_count, like_count, comment_count
+                FROM `{client.project}.{dataset}.videos`
+                WHERE tracking_status = 'ACTIVE'
+                ORDER BY published_at DESC
+            """
             query_job = client.query(query)
-            bq_videos = []
+            result = []
             for row in query_job.result():
-                bq_videos.append({
+                result.append({
                     "video_id": row.video_id,
                     "channel_id": row.channel_id or "ch_music_vpop",
+                    "platform": row.platform or "youtube",
                     "url": row.url or f"https://www.youtube.com/watch?v={row.video_id}",
                     "title": row.title,
+                    "published_at": (row.published_at.isoformat() if row.published_at else datetime.now(timezone.utc).isoformat()),
                     "tracking_status": "ACTIVE",
+                    "monitoring_tier": row.monitoring_tier or "HIGH_PRIORITY_24H",
                     "snapshots": [{
-                        "views": row.view_count or 0,
-                        "likes": row.like_count or 0,
-                        "comments": row.comment_count or 0
+                        "views": int(row.view_count or 0),
+                        "likes": int(row.like_count or 0),
+                        "comments": int(row.comment_count or 0)
                     }]
                 })
-            if bq_videos:
-                return bq_videos
+            return result
         except Exception as e:
-            logger.debug(f"BigQuery dynamic video query fallback: {e}")
-
-        # Fallback to local JSON registry
-        return self._load_data().get("videos", [])
+            logger.debug(f"BigQuery dynamic video query fallback notice: {e}")
+            return []
 
 
     def get_monitored_video_ids(self) -> List[str]:

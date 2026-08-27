@@ -256,69 +256,100 @@ def get_surveillance_assets_live() -> Dict[str, Any]:
     from src.tools.youtube_live_client import youtube_live_client
     assets = []
     
-    # 1. Monitored YouTube Videos
-    for v in registry_manager.get_all_videos():
-        vid = v.get("video_id", "")
-        if not vid or vid.startswith("tt_"):
-            continue
-        
-        details = youtube_live_client.get_video_details(vid)
-        v_title = details.get("title", v.get("title", f"Video {vid}")) if details else v.get("title", f"Video {vid}")
-        v_views = details.get("views", 0) if details else 0
-        v_comments = details.get("comments_count", 0) if details else 0
-        
-        # Calculate velocity delta from BigQuery snapshots
-        vel_text = "🟢 Active Surveillance"
-        try:
-            from google.cloud import bigquery
-            client = bigquery.Client(project=settings.gcp_project_id)
-            q = f"SELECT count(*) as cnt FROM `{settings.gcp_project_id}.{settings.bigquery_dataset}.video_snapshots` WHERE video_id = '{vid}'"
-            r = list(client.query(q).result())
-            snap_count = r[0].cnt if r else 0
-            vel_text = f"{snap_count} Snapshots Logged in BigQuery"
-        except Exception:
-            pass
+    try:
+        # 1. Monitored Videos (YouTube MVs + TikTok Sounds) from BigQuery
+        for v in registry_manager.get_all_videos():
+            vid = v.get("video_id", "")
+            if not vid:
+                continue
 
-        assets.append({
-            "id": vid,
-            "title": v_title,
-            "platform": "YouTube Official MV / Upload",
-            "platformType": "yt",
-            "metrics": f"{v_views:,} Views • {v_comments:,} Comments",
-            "velocity": vel_text,
-            "clusters": [
-                {"label": "Positive Resonance", "pct": 98.5, "color": "#00f5a0"},
-                {"label": "Cultural Aesthetic", "pct": 1.0, "color": "#4facfe"},
-                {"label": "Community Feedback", "pct": 0.5, "color": "#c084fc"}
-            ],
-            "action": f"🎬 Autonomous surveillance active. Gemini 3.7 Flash monitoring engagement.",
-            "agentId": "anomaly_detector",
-            "reportKey": f"video_{vid}"
-        })
+            is_tiktok = vid.startswith("tt_") or v.get("platform") == "tiktok"
 
-    # 2. Monitored Channels
-    for ch in registry_manager.get_all_channels():
-        ch_id = ch.get("channel_id", "")
-        ch_title = ch.get("title", ch.get("name", ""))
-        ch_handle = ch.get("handle", ch.get("custom_url", ""))
-        rep_key = ch.get("report_key", f"channel_{ch_id}")
-        clean_h = ch_handle.replace("@", "").replace(".", "_").lower() if ch_handle else ch_id
+            if is_tiktok:
+                assets.append({
+                    "id": vid,
+                    "title": v.get("title", f"TikTok Sound {vid}"),
+                    "platform": "🎵 TikTok Viral Sound / UGC Sound Wave",
+                    "platformType": "tiktok",
+                    "metrics": f"{v.get('snapshots', [{}])[0].get('views', 0):,} UGC Videos • {v.get('snapshots', [{}])[0].get('comments', 0):,} Comments",
+                    "velocity": "🔊 UGC Sound Propagation Radar",
+                    "clusters": [
+                        {"label": "Sound Adoption", "pct": 98.0, "color": "#00f5a0"},
+                        {"label": "Dance Challenge", "pct": 1.5, "color": "#4facfe"},
+                        {"label": "Remix Inquiries", "pct": 0.5, "color": "#c084fc"}
+                    ],
+                    "action": "🎬 TikTokHarvesterAgent monitoring derivative UGC video creation velocity.",
+                    "agentId": "tiktok_harvester",
+                    "reportKey": "realtime_24h"
+                })
+                continue
 
-        assets.append({
-            "id": ch_id,
-            "title": f"{ch_title} ({ch_handle})",
-            "platform": f"Target Channel Sentinel ({ch.get('platform', 'YouTube').upper()})",
-            "platformType": "yt" if ch.get("platform") == "youtube" else "tiktok",
-            "metrics": f"24/7 Webhook & Polling Stream",
-            "velocity": "🟢 100% Brand Safe (0 Alerts)",
-            "clusters": [
-                {"label": "Brand Safety", "pct": 99.0, "color": "#00f5a0"},
-                {"label": "Audience Discourse", "pct": 1.0, "color": "#4facfe"}
-            ],
-            "action": "🛡️ ChannelMonitorAgent monitoring new uploads and audience sentiment health.",
-            "agentId": "channel_monitor",
-            "reportKey": f"channel_{clean_h}"
-        })
+            details = youtube_live_client.get_video_details(vid)
+            v_title = details.get("title", v.get("title", f"Video {vid}")) if details else v.get("title", f"Video {vid}")
+            v_views = details.get("views", 0) if details else v.get("snapshots", [{}])[0].get("views", 0)
+            v_comments = details.get("comments_count", 0) if details else v.get("snapshots", [{}])[0].get("comments", 0)
+            
+            # Calculate velocity delta from BigQuery snapshots
+            vel_text = "🟢 Active Surveillance"
+            try:
+                from google.cloud import bigquery
+                client = bigquery.Client(project=settings.gcp_project_id)
+                q = f"SELECT count(*) as cnt FROM `{settings.gcp_project_id}.{settings.bigquery_dataset}.video_snapshots` WHERE video_id = '{vid}'"
+                r = list(client.query(q).result())
+                snap_count = r[0].cnt if r else 0
+                vel_text = f"{snap_count} Snapshots Logged in BigQuery"
+            except Exception:
+                pass
+
+            assets.append({
+                "id": vid,
+                "title": v_title,
+                "platform": "YouTube Official MV / Upload",
+                "platformType": "yt",
+                "metrics": f"{v_views:,} Views • {v_comments:,} Comments",
+                "velocity": vel_text,
+                "clusters": [
+                    {"label": "Positive Resonance", "pct": 98.5, "color": "#00f5a0"},
+                    {"label": "Cultural Aesthetic", "pct": 1.0, "color": "#4facfe"},
+                    {"label": "Community Feedback", "pct": 0.5, "color": "#c084fc"}
+                ],
+                "action": f"🎬 Autonomous surveillance active. Gemini 3.7 Flash monitoring engagement.",
+                "agentId": "anomaly_detector",
+                "reportKey": f"video_{vid}"
+            })
+
+        # 2. Monitored Channels
+        for ch in registry_manager.get_all_channels():
+            ch_id = ch.get("channel_id", "")
+            ch_title = ch.get("title", ch.get("name", ""))
+            ch_handle = ch.get("handle", ch.get("custom_url", ""))
+            rep_key = ch.get("report_key", f"channel_{ch_id}")
+            clean_h = ch_handle.replace("@", "").replace(".", "_").lower() if ch_handle else ch_id
+
+            assets.append({
+                "id": ch_id,
+                "title": f"{ch_title} ({ch_handle})",
+                "platform": f"Target Channel Sentinel ({ch.get('platform', 'YouTube').upper()})",
+                "platformType": "yt" if ch.get("platform") == "youtube" else "tiktok",
+                "metrics": f"24/7 Webhook & Polling Stream",
+                "velocity": "🟢 100% Brand Safe (0 Alerts)",
+                "clusters": [
+                    {"label": "Brand Safety", "pct": 99.0, "color": "#00f5a0"},
+                    {"label": "Audience Discourse", "pct": 1.0, "color": "#4facfe"}
+                ],
+                "action": "🛡️ ChannelMonitorAgent monitoring new uploads and audience sentiment health.",
+                "agentId": "channel_monitor",
+                "reportKey": f"channel_{clean_h}"
+            })
+    except Exception as e:
+        import logging
+        logging.getLogger("studiosonar.routes").exception("Surveillance assets endpoint error")
+        return {
+            "status": "ERROR",
+            "detail": str(e),
+            "total_assets": 0,
+            "assets": []
+        }
 
     return {
         "status": "SUCCESS",
@@ -404,11 +435,27 @@ def trigger_scheduled_cycle(background_tasks: BackgroundTasks) -> Dict[str, Any]
     """
     Endpoint triggered by Google Cloud Scheduler / Eventarc.
     Runs a full background analysis and autonomous Multi-Agent cycle across all tracks.
+    The cycle executes asynchronously in the background so the long-running agent
+    pipeline (ingest + parallel Gemini authoring + GCS publish) is never cut short
+    by the Cloud Run request timeout.
     """
-    results = taskmaster_orchestrator.run_autonomous_cycle(cycle_type="ALL")
+    import logging as _logging
+    _log = _logging.getLogger("studiosonar.routes")
+
+    def _run_cycle():
+        try:
+            results = taskmaster_orchestrator.run_autonomous_cycle(cycle_type="ALL")
+            _log.info(f"Autonomous cycle completed in background: {len(results.get('actions_executed', []))} actions, "
+                      f"{len(results.get('gcs_published_reports', []))} reports published")
+        except Exception as e:
+            _log.exception("Autonomous background cycle failed: %s", e)
+
+    background_tasks.add_task(_run_cycle)
     return {
         "status": "TRIGGERED_SUCCESS",
-        "execution_summary": results
+        "execution": "ASYNCHRONOUS_BACKGROUND",
+        "detail": "Autonomous Multi-Agent cycle scheduled in the background.",
+        "run_id": None
     }
 
 @router.post("/api/v1/simulate/company-channel-upload")

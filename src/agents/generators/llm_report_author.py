@@ -59,6 +59,12 @@ class LLMReportAuthor:
         sys_inst = "You are a world-class Media Analytics & Cultural Intelligence AI Agent. Return clean, high-impact Markdown only."
         generated_md = llm_client.generate(prompt=prompt, system_instruction=sys_inst)
 
+        # Guard: never persist a truncated/incomplete dossier. If the model
+        # returned something too short or missing required sections, fall back
+        # to the complete structured template.
+        if not generated_md or len(generated_md) < 600 or ("## 2" not in generated_md and "## 3" not in generated_md):
+            generated_md = None
+
         if not generated_md:
             generated_md = f"""# 📹 Deep Intelligence Report: {title}
 
@@ -134,6 +140,9 @@ class LLMReportAuthor:
         sys_inst = "You are a Media Intelligence AI Agent. Return clean, polished Markdown."
         generated_md = llm_client.generate(prompt=prompt, system_instruction=sys_inst)
 
+        if not generated_md or len(generated_md) < 600 or ("## 2" not in generated_md and "## 3" not in generated_md):
+            generated_md = None
+
         if not generated_md:
             generated_md = f"""# 📡 Channel Intelligence Report: {title} ({handle or clean_name})
 
@@ -189,6 +198,9 @@ class LLMReportAuthor:
         """
         sys_inst = "You are a TikTok Virality & UGC Sound Strategist AI. Return clean Markdown."
         generated_md = llm_client.generate(prompt=prompt, system_instruction=sys_inst)
+
+        if not generated_md or len(generated_md) < 600 or ("## 2" not in generated_md and "## 3" not in generated_md):
+            generated_md = None
 
         if not generated_md:
             generated_md = f"""# 🎵 TikTok Sound Intelligence: {title}

@@ -419,11 +419,13 @@ class StudioSonarOrchestrationEngine:
                 continue
             details = youtube_live_client.get_video_details(v_id)
             title = details.get("title", vid.get("title", f"Video {v_id}")) if details else vid.get("title", f"Video {v_id}")
+            # Escape pipe chars so titles with '|' do not break the markdown table cells.
+            title_safe = title.replace("|", "\\|").replace("<", "&lt;").replace(">", "&gt;")
             views = details.get("views", 0) if details else 0
             comments = details.get("comments_count", 0) if details else 0
             
             asset_rows.append(
-                f"| **{title[:40]}...**<br/>`{v_id}` | **{views:,} views**<br/>{comments:,} comments | 🟢 **Active Surveillance** | 🟢 98.5% Positive Resonance<br/>🔵 1.0% Cultural Aesthetic | 🎬 Autonomous surveillance active. |"
+                f"| **{title_safe[:50]}...**<br/>`{v_id}` | **{views:,} views**<br/>{comments:,} comments | 🟢 **Active Surveillance** | 🟢 98.5% Positive Resonance<br/>🔵 1.0% Cultural Aesthetic | 🎬 Autonomous surveillance active. |"
             )
 
         matrix_table = "\n".join(asset_rows) if asset_rows else "| Monitored Properties | Live Telemetry Stream | Real-time BigQuery Ledger | 🟢 Safe | Continuous Monitoring |"

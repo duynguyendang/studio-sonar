@@ -268,6 +268,49 @@
             min-height: calc(100vh - 280px);
         }
 
+        /* Two-screen (Business / Tech Ops) split. Each screen is a flex column
+           that fills the remaining viewport height below the sticky header. */
+        .domain-switch-bar {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            padding: 0.55rem 1rem;
+            background: var(--bg-glass);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .domain-switch-bar .tab-btn {
+            font-size: 0.82rem;
+        }
+        .screen {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+        .screen .workspace {
+            min-height: 0;
+            flex: 1;
+        }
+        .screen .hero-mission-control {
+            flex: 0 0 auto;
+        }
+        .biz-workspace {
+            grid-template-columns: 1fr;
+        }
+        .biz-main {
+            display: flex;
+            flex: 1;
+            min-width: 0;
+            min-height: 0;
+            overflow-y: auto;
+        }
+        .biz-main .center-content {
+            border-right: none;
+            flex: 1;
+        }
+
         .left-sidebar, .right-sidebar {
             background: var(--bg-glass);
             border-right: 1px solid var(--border-color);
@@ -767,7 +810,84 @@
     </header>
 
     <!-- Hero Mission Control Section (Live Topology Graph + Live Ingestion Counters) -->
-    <div class="hero-mission-control">
+    <div class="domain-switch-bar">
+    <button class="tab-btn active" id="domain-biz" onclick="switchDomain('biz')"><span>💼</span> Business</button>
+    <button class="tab-btn" id="domain-tech" onclick="switchDomain('tech')"><span>⚙️</span> Tech Ops</button>
+</div>
+<div id="screen-biz" class="screen screen-active">
+    <div class="workspace biz-workspace">
+        <div class="biz-main">
+<div class="center-content">
+<div class="cockpit-tabs-bar">
+                <div class="tab-group">
+                    <button class="tab-btn active" id="tab-btn-cockpit" onclick="switchMainTab('cockpit')">
+                        <span>🎛️</span> Mission Cockpit
+                    </button>
+                    <button class="tab-btn" id="tab-btn-dossier" onclick="switchMainTab('dossier')">
+                        <span>📄</span> Intelligence Dossier
+                    </button>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <button class="tab-btn" style="border:1px solid var(--border-color);" onclick="triggerViralModal()">
+                        <span>✍️</span> 60s Script
+                    </button>
+                    <button class="tab-btn" style="border:1px solid var(--accent-red); color:#ff6b81;" onclick="triggerCrisisModal()">
+                        <span>🚨</span> PR Stance
+                    </button>
+                </div>
+            </div>
+<div id="tab-content-cockpit" class="cockpit-view-container">
+                
+                <!-- Cross-Platform Synergy Card -->
+                <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem;">
+                    <div class="cockpit-section-title">
+                        <span>⚡</span> Cross-Platform Campaign Synergy Radar
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid #ff4757;">
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">📹 MONITORED ASSET VIEWS</div>
+                            <div id="cockpit-banner-views" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">-- Views</div>
+                            <div id="cockpit-banner-comments" style="font-size:0.72rem; color:var(--accent-green); margin-top:0.2rem;">-- Comments Logged</div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-cyan);">
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">🗄️ BIGQUERY SNAPSHOTS</div>
+                            <div id="cockpit-banner-snapshots" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">-- Records</div>
+                            <div style="font-size:0.72rem; color:var(--accent-cyan); margin-top:0.2rem;">OLAP Ingestion Ledger</div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-purple);">
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">🎯 PR BRAND SAFETY</div>
+                            <div style="font-size:1.15rem; font-weight:800; color:#00f5a0; font-family:'JetBrains Mono',monospace;">100% Brand Safe</div>
+                            <div style="font-size:0.72rem; color:#c084fc; margin-top:0.2rem;">0 Active Escalations</div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-gold);">
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">🚀 VELOCITY STATUS</div>
+                            <div id="cockpit-banner-velocity" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">ACTIVE STREAM</div>
+                            <div style="font-size:0.72rem; color:var(--accent-gold); margin-top:0.2rem;">Live Polling Cycle</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monitored Surveillance Assets Grid -->
+                <div>
+                    <div class="cockpit-section-title">
+                        <span>📊</span> Real-Time Surveillance Assets (Live Multi-Platform Ledger)
+                    </div>
+                    <div class="asset-card-grid" id="cockpit-assets-grid">
+                        <!-- Injected via JavaScript -->
+                    </div>
+                </div>
+
+            </div>
+<div id="tab-content-dossier" style="display:none;">
+                <div class="markdown-body" id="report-markdown-content">
+                    <!-- Live Report Markdown content injected here -->
+                </div>
+            </div>
+</div>        </div>
+    </div>
+</div>
+<div id="screen-tech" class="screen" style="display:none;">
+<div class="hero-mission-control">
         
         <!-- Live Topology Graph Canvas -->
         <div class="topology-card">
@@ -829,12 +949,8 @@
         </div>
 
     </div>
-
-    <!-- 3-Column Main Workspace -->
     <div class="workspace">
-
-        <!-- Left Sidebar: Real-Time Agent Telemetry Cards -->
-        <div class="left-sidebar">
+<div class="left-sidebar">
             <div class="section-header">
                 <span>🤖 Swarm Agents Telemetry</span>
                 <span style="font-family: 'JetBrains Mono', monospace;" id="deployed-agents-count">8 DEPLOYED</span>
@@ -851,99 +967,15 @@
                 <!-- Dynamically loaded channels -->
             </div>
         </div>
-
-        <!-- Center Workspace: Cockpit View & Markdown Dossier Tabs -->
-        <div class="center-content">
-            
-            <!-- Cockpit Tab Navigation Bar -->
-            <div class="cockpit-tabs-bar">
-                <div class="tab-group">
-                    <button class="tab-btn active" id="tab-btn-cockpit" onclick="switchMainTab('cockpit')">
-                        <span>🎛️</span> Swarm Mission Cockpit
-                    </button>
-                    <button class="tab-btn" id="tab-btn-dossier" onclick="switchMainTab('dossier')">
-                        <span>📄</span> Intelligence Dossier (Report)
-                    </button>
-                    <button class="tab-btn" id="tab-btn-reasoning" onclick="switchMainTab('reasoning')">
-                        <span>🧠</span> Swarm Reasoning Trace
-                    </button>
-                </div>
-
-                <div style="display:flex; gap:0.5rem;">
-                    <button class="tab-btn" style="border:1px solid var(--border-color);" onclick="triggerViralModal()">
-                        <span>✍️</span> 60s Script
-                    </button>
-                    <button class="tab-btn" style="border:1px solid var(--accent-red); color:#ff6b81;" onclick="triggerCrisisModal()">
-                        <span>🚨</span> PR Stance
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tab 1: Swarm Mission Cockpit (Interactive Visual Widgets) -->
-            <div id="tab-content-cockpit" class="cockpit-view-container">
-                
-                <!-- Cross-Platform Synergy Card -->
-                <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem;">
-                    <div class="cockpit-section-title">
-                        <span>⚡</span> Cross-Platform Campaign Synergy Radar
-                    </div>
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
-                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid #ff4757;">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">📹 MONITORED ASSET VIEWS</div>
-                            <div id="cockpit-banner-views" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">-- Views</div>
-                            <div id="cockpit-banner-comments" style="font-size:0.72rem; color:var(--accent-green); margin-top:0.2rem;">-- Comments Logged</div>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-cyan);">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">🗄️ BIGQUERY SNAPSHOTS</div>
-                            <div id="cockpit-banner-snapshots" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">-- Records</div>
-                            <div style="font-size:0.72rem; color:var(--accent-cyan); margin-top:0.2rem;">OLAP Ingestion Ledger</div>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-purple);">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">🎯 PR BRAND SAFETY</div>
-                            <div style="font-size:1.15rem; font-weight:800; color:#00f5a0; font-family:'JetBrains Mono',monospace;">100% Brand Safe</div>
-                            <div style="font-size:0.72rem; color:#c084fc; margin-top:0.2rem;">0 Active Escalations</div>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-gold);">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">🚀 VELOCITY STATUS</div>
-                            <div id="cockpit-banner-velocity" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">ACTIVE STREAM</div>
-                            <div style="font-size:0.72rem; color:var(--accent-gold); margin-top:0.2rem;">Live Polling Cycle</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Monitored Surveillance Assets Grid -->
-                <div>
-                    <div class="cockpit-section-title">
-                        <span>📊</span> Real-Time Surveillance Assets (Live Multi-Platform Ledger)
-                    </div>
-                    <div class="asset-card-grid" id="cockpit-assets-grid">
-                        <!-- Injected via JavaScript -->
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Tab 2: Intelligence Dossier (Full Markdown Report) -->
-            <div id="tab-content-dossier" style="display:none;">
-                <div class="markdown-body" id="report-markdown-content">
-                    <!-- Live Report Markdown content injected here -->
-                </div>
-            </div>
-
-            <!-- Tab 3: Swarm Reasoning & Event Trace Inspector -->
-            <div id="tab-content-reasoning" style="display:none; padding:1.5rem;">
-                <div class="cockpit-section-title">
-                    <span>🧠</span> 24h Autonomous Agent Reasoning & Decision Log
-                </div>
-                <div id="reasoning-timeline-container" style="display:flex; flex-direction:column; gap:1rem;">
-                    <!-- Injected via JavaScript -->
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Right Sidebar: Live Alert Feed & Hacker Terminal -->
-        <div class="right-sidebar">
+<div class="center-content">
+    <div class="cockpit-section-title">
+        <span>🧠</span> 24h Autonomous Agent Reasoning &amp; Decision Log
+    </div>
+<div id="reasoning-timeline-container" style="display:flex; flex-direction:column; gap:1rem;">
+        <!-- Injected via JavaScript -->
+    </div>
+</div>
+<div class="right-sidebar">
             <div class="section-header">
                 <span>🚨 Real-Time Alert Stream</span>
                 <span class="status-badge status-active">LIVE</span>
@@ -963,22 +995,9 @@
                 </div>
             </div>
         </div>
-
     </div>
-
-    <!-- Bottom Activity Waveform Strip -->
-    <div class="bottom-timeline-strip">
-        <div style="font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
-            <span>📈</span> <strong>24h Activity Waveform:</strong> <span>Peak at 20:00 UTC (5,200 comments/h)</span>
-        </div>
-        <canvas id="waveform-canvas"></canvas>
-        <div style="font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
-            Latency: <strong style="color:var(--accent-green)">0.12s</strong> • SLA: <strong>99.2%</strong>
-        </div>
-    </div>
-
-    <!-- Agent Reasoning Inspector Modal -->
-    <div class="modal-overlay" id="reasoning-modal-overlay" onclick="closeReasoningModal()">
+</div>
+<div class="modal-overlay" id="reasoning-modal-overlay" onclick="closeReasoningModal()">
         <div class="modal-card" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h3 id="reasoning-agent-title" style="font-size: 1rem; color: #fff; font-weight: 700;">Agent Reasoning Inspector</h3>
@@ -1107,7 +1126,7 @@
             }
 
             if (!liveAssetsData || liveAssetsData.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-muted); padding:1rem;">Streaming assets from BigQuery ledger...</div>`;
+                container.innerHTML = `<div style="color:var(--text-muted); padding:1rem;">No assets in BigQuery yet — awaiting seed/ingestion cycle.</div>`;
                 return;
             }
 
@@ -1286,8 +1305,11 @@
         ];
 
         function resizeTopologyCanvas() {
-            if (!topologyCanvas || !topologyCanvas.parentElement) return;
-            topologyCanvas.width = topologyCanvas.parentElement.clientWidth - 32;
+            if (!topologyCanvas) return;
+            const parent = topologyCanvas.parentElement;
+            const w = parent ? parent.clientWidth : 0;
+            // Use a positive width: inside a hidden/zero-size container fall back to 750.
+            topologyCanvas.width = w > 0 ? w : 750;
             topologyCanvas.height = 180;
         }
 
@@ -1377,15 +1399,33 @@
             });
         });
 
-        // 7. Tab Switcher Logic
+        // 7. Top-level Business / Tech screen switcher
+        function switchDomain(domain) {
+            const biz = document.getElementById('screen-biz');
+            const tech = document.getElementById('screen-tech');
+            const bBtn = document.getElementById('domain-biz');
+            const tBtn = document.getElementById('domain-tech');
+            if (biz) biz.style.display = domain === 'tech' ? 'none' : 'flex';
+            if (tech) tech.style.display = domain === 'tech' ? 'flex' : 'none';
+            if (bBtn) { if (domain === 'tech') bBtn.classList.remove('active'); else bBtn.classList.add('active'); }
+            if (tBtn) { if (domain === 'tech') tBtn.classList.add('active'); else tBtn.classList.remove('active'); }
+            // The topology canvas must be re-sized AFTER the tech screen becomes
+            // visible (a hidden container reports 0 clientWidth -> distortion).
+            if (domain === 'tech') {
+                setTimeout(() => { resizeTopologyCanvas(); drawTopologyGraph(); }, 60);
+            }
+        }
+
+        // 7b. Business inner tab switcher (Cockpit / Dossier)
         function switchMainTab(tab) {
             currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#screen-biz .tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`tab-btn-${tab}`).classList.add('active');
 
-            document.getElementById('tab-content-cockpit').style.display = tab === 'cockpit' ? 'flex' : 'none';
-            document.getElementById('tab-content-dossier').style.display = tab === 'dossier' ? 'block' : 'none';
-            document.getElementById('tab-content-reasoning').style.display = tab === 'reasoning' ? 'block' : 'none';
+            const ck = document.getElementById('tab-content-cockpit');
+            const ds = document.getElementById('tab-content-dossier');
+            if (ck) ck.style.display = tab === 'cockpit' ? 'flex' : 'none';
+            if (ds) ds.style.display = tab === 'dossier' ? 'block' : 'none';
         }
 
         // 8. Render Reasoning Timeline Tab
@@ -1551,6 +1591,12 @@
             }
         }
 
+        // 11b. Navigate to the report dossier tab for a given asset report key
+        function selectReportAndNavigate(reportKey) {
+            switchMainTab('dossier');
+            loadReport(reportKey || 'realtime_24h');
+        }
+
         // 12. Trigger Autonomous Cycle Action
         async function triggerAutonomousCycle() {
             const btn = document.querySelector('.btn-trigger');
@@ -1565,7 +1611,9 @@
                     body: JSON.stringify({ cycle_type: 'ALL' })
                 });
                 const data = await res.json();
-                alert(`🎉 Autonomous Cycle Completed!\nRoot Agent: ${data.execution_summary?.root_agent || 'Taskmaster'}\nActions Executed: ${data.execution_summary?.actions_executed?.length || 6}`);
+                alert(data.execution === 'ASYNCHRONOUS_BACKGROUND'
+                    ? `🚀 Autonomous cycle scheduled in background!\nReports will refresh shortly.`
+                    : `🎉 Autonomous Cycle Completed!\nRoot Agent: ${data.execution_summary?.root_agent || 'Taskmaster'}\nActions Executed: ${data.execution_summary?.actions_executed?.length || 6}`);
                 fetchSwarmTelemetry();
                 loadReport('realtime_24h');
             } catch (e) {
@@ -1580,6 +1628,7 @@
             resizeTopologyCanvas();
             initLiveCounters();
             fetchSwarmTelemetry();
+            renderCockpitAssets();
             loadReport('realtime_24h');
             window.addEventListener('resize', () => {
                 resizeTopologyCanvas();

@@ -182,7 +182,15 @@ class StudioSonarBigQueryClient:
         from src.tools.youtube_live_client import youtube_live_client
         from src.core.registry_manager import registry_manager
         from datetime import datetime, timezone
-        
+
+        # Ensure the canonical sample registry is seeded (source of truth in BigQuery).
+        try:
+            from src.data.registry_seeder import ensure_registry_seeded
+            if self._bq_client:
+                ensure_registry_seeded(self._bq_client, self.project_id, self.dataset)
+        except Exception as e:
+            logger.warning(f"Registry seeding during ingestion notice: {e}")
+
         monitored_videos = registry_manager.get_monitored_video_ids()
         ingestion_results = []
 
@@ -208,6 +216,9 @@ class StudioSonarBigQueryClient:
                             logger.error(f"BigQuery snapshot insert error: {errors}")
                         else:
                             logger.info(f"Successfully ingested live snapshot for video {vid} into BigQuery!")
+
+                        # Upsert latest live metadata into the videos ledger table.
+                        self._upsert_video_metadata(vid, details)
                     except Exception as e:
                         logger.warning(f"BigQuery ingestion exception: {e}")
                 
@@ -224,6 +235,60 @@ class StudioSonarBigQueryClient:
             "ingested_count": len(ingestion_results),
             "videos": ingestion_results
         }
+
+    def _upsert_video_metadata(self, video_id: str, details: Dict[str, Any]) -> None:
+        """MERGE-inserts the latest live video metadata into the `videos` ledger table."""
+        from google.cloud import bigquery
+        from datetime import datetime, timezone
+
+        table_id = f"{self.project_id}.{self.dataset}.videos"
+        platform = "youtube"
+        if video_id.startswith("tt_sound_"):
+            platform = "tiktok"
+        url = details.get("url")
+        if not url:
+            url = (f"https://www.tiktok.com/music/"
+                   if platform == "tiktok"
+                   else "https://www.youtube.com/watch?v=") + video_id
+        published_at = details.get("published_at")
+        if published_at and published_at.endswith("Z"):
+            published_at = published_at.replace("Z", "+00:00")
+        if not published_at:
+            published_at = datetime.now(timezone.utc).isoformat()
+
+        query = f"""
+            MERGE `{table_id}` AS t
+            USING (SELECT
+                     @video_id AS video_id, @channel_id AS channel_id, @platform AS platform,
+                     @url AS url, @title AS title, @published_at AS published_at,
+                     @view_count AS view_count, @like_count AS like_count, @comment_count AS comment_count,
+                     @ingested_at AS ingested_at) AS s
+            ON t.video_id = s.video_id
+            WHEN MATCHED THEN UPDATE SET
+                t.title = s.title, t.published_at = s.published_at, t.ingested_at = s.ingested_at,
+                t.view_count = s.view_count, t.like_count = s.like_count, t.comment_count = s.comment_count
+            WHEN NOT MATCHED THEN INSERT
+                (video_id, channel_id, platform, url, title, published_at, ingested_at,
+                 monitoring_tier, tracking_status, view_count, like_count, comment_count)
+            VALUES
+                (s.video_id, s.channel_id, s.platform, s.url, s.title, s.published_at, s.ingested_at,
+                 'HIGH_PRIORITY_24H', 'ACTIVE', s.view_count, s.like_count, s.comment_count)
+        """
+        job_config = bigquery.QueryJobConfig(
+            query_parameters=[
+                bigquery.ScalarQueryParameter("video_id", "STRING", video_id),
+                bigquery.ScalarQueryParameter("channel_id", "STRING", details.get("channel_title", "ch_monitored")),
+                bigquery.ScalarQueryParameter("platform", "STRING", platform),
+                bigquery.ScalarQueryParameter("url", "STRING", url),
+                bigquery.ScalarQueryParameter("title", "STRING", details.get("title") or video_id),
+                bigquery.ScalarQueryParameter("published_at", "TIMESTAMP", published_at),
+                bigquery.ScalarQueryParameter("view_count", "INT64", int(details.get("views", 0))),
+                bigquery.ScalarQueryParameter("like_count", "INT64", int(details.get("likes", 0))),
+                bigquery.ScalarQueryParameter("comment_count", "INT64", int(details.get("comments_count", 0))),
+                bigquery.ScalarQueryParameter("ingested_at", "TIMESTAMP", datetime.now(timezone.utc).isoformat()),
+            ]
+        )
+        self._bq_client.query(query, job_config=job_config)
 
 bq_client = StudioSonarBigQueryClient()
 

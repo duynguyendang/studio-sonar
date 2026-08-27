@@ -14,12 +14,28 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 
+def _seed_registry_on_startup():
+    """Seeds the canonical sample surveillance registry into BigQuery at startup (idempotent)."""
+    try:
+        from src.core.config import settings as s
+        from google.cloud import bigquery
+        from src.data.registry_seeder import ensure_registry_seeded
+        client = bigquery.Client(project=s.gcp_project_id)
+        result = ensure_registry_seeded(client, s.gcp_project_id, s.bigquery_dataset)
+        logging.getLogger("studiosonar.main").info(
+            f"Startup BigQuery registry seed -> channels inserted: {result['inserted_channels']}, videos inserted: {result['inserted_videos']}"
+        )
+    except Exception as e:
+        logging.getLogger("studiosonar.main").warning(f"Startup BigQuery registry seed skipped: {e}")
+
 
 app = FastAPI(
     title="StudioSonar Taskmaster API & Dashboard",
     description="Autonomous Media Intelligence & Real-time Action Agent for Google Cloud",
     version="1.0.0"
 )
+
+_seed_registry_on_startup()
 
 # CORS middleware for local debugging
 app.add_middleware(
