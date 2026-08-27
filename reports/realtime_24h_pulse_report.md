@@ -57,12 +57,32 @@ Below is a live, transparent showcase proving how the AI Agent understands Vietn
 
 ### 1. Velocity Inflow & Hourly Spike Timeline
 ```mermaid
-timeline
-    title 24h Inflow Surges & Multi-Agent Reaction Milestones
-    00:00 - 06:00 : Baseline Inflow (450 comments/h) : Nighttime steady stream
-    06:00 - 12:00 : TikTok Sound Breakout (+420% surge) : Ingestion Agent scales up batch processing
-    12:00 - 18:00 : PMC 'Thien Duong' crosses 20K comments : Velocity Monitor flags Mega-Viral Surge
-    18:00 - 24:00 : Peak Prime Time Inflow (3,200 comments/h) : Viral Content Creator Agent authors 60s script
+flowchart LR
+    subgraph P1 ["⏱️ 00:00 - 06:00 (Early Dawn)"]
+        direction TB
+        E1["🌙 Baseline Inflow (450 comments/h)"]
+        E1_sub["• Nighttime steady stream cataloging"]
+    end
+
+    subgraph P2 ["⏱️ 06:00 - 12:00 (Morning Surge)"]
+        direction TB
+        E2["🎵 TikTok Sound Breakout (+420% surge)"]
+        E2_sub["• Ingestion Agent scales batch processing"]
+    end
+
+    subgraph P3 ["⏱️ 12:00 - 18:00 (Afternoon Peak)"]
+        direction TB
+        E3["🚀 PMC 'Thien Duong' crosses 20K comments"]
+        E3_sub["• Velocity Monitor flags Mega-Viral Surge"]
+    end
+
+    subgraph P4 ["⏱️ 18:00 - 24:00 (Prime Time Inflow)"]
+        direction TB
+        E4["✍️ Peak Inflow (5,200 comments/h)"]
+        E4_sub["• Viral Creator Agent authors 60s script"]
+    end
+
+    P1 --> P2 --> P3 --> P4
 ```
 
 ---
