@@ -55,9 +55,8 @@ class TikTokStreamHarvester:
             except Exception as e:
                 logger.warning(f"RapidAPI TikTok fetch notice: {e}")
 
-        # 2. Live Estimation via BigQuery UGC Cross-Platform Ledger if RapidAPI unavailable
+        # 2. Live Query via BigQuery UGC Cross-Platform Ledger if RapidAPI unavailable
         if not live_data_found:
-            # Dynamically derive velocity from BigQuery YouTube Shorts & Music ingestion baseline
             try:
                 from google.cloud import bigquery
                 client = bigquery.Client(project=settings.gcp_project_id)
@@ -65,19 +64,18 @@ class TikTokStreamHarvester:
                     SELECT count(*) as total_records,
                            AVG(sentiment_score) as avg_sent
                     FROM `{settings.gcp_project_id}.{settings.bigquery_dataset}.comments`
-                    WHERE timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
                 """
                 rows = list(client.query(q).result())
-                if rows and rows[0].total_records > 0:
-                    base_comments = rows[0].total_records
-                    ugc_count = int(base_comments * 4.95) + 128000
-                    velocity_pct = round((base_comments / max(1, base_comments - 150)) * 100 - 100 + 310.0, 1)
+                if rows:
+                    ugc_count = rows[0].total_records
+                    velocity_pct = 0.0
                 else:
-                    ugc_count = 128540
-                    velocity_pct = 310.0
-            except Exception:
-                ugc_count = 128540
-                velocity_pct = 310.0
+                    ugc_count = 0
+                    velocity_pct = 0.0
+            except Exception as e:
+                logger.warning(f"BigQuery record check notice: {e}")
+                ugc_count = 0
+                velocity_pct = 0.0
 
         return {
             "sound_id": sound_query,

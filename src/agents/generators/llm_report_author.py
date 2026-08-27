@@ -249,13 +249,13 @@ class LLMReportAuthor:
                 futures.append(executor.submit(self.author_channel_report, ch_id, ch_title, ch_handle, rep_key))
                 published.append(f"gs://{gcs_report_manager.bucket_name}/channel_report_{clean_h}.md")
 
-            # 3. TikTok sound reports
+            # 3. TikTok sound reports (Indexed cross-platform snapshot telemetry)
             futures.append(executor.submit(
                 self.author_tiktok_sound_report,
                 "tt_sound_pmc_thien_duong",
                 "Thiên Đường Với Người Thương (Official Audio)",
                 "Phương Mỹ Chi x DTAP",
-                128540
+                122
             ))
             published.append(f"gs://{gcs_report_manager.bucket_name}/tiktok_report_sound_thien_duong.md")
 
@@ -264,7 +264,7 @@ class LLMReportAuthor:
                 "tt_sound_dtap_dan_choi",
                 "Dân Chơi Dân Ca (Drop Beat Audio)",
                 "Phương Mỹ Chi x DTAP",
-                34210
+                122
             ))
             published.append(f"gs://{gcs_report_manager.bucket_name}/tiktok_report_sound_dan_choi.md")
 

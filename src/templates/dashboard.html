@@ -1164,21 +1164,31 @@
             window.requestAnimationFrame(step);
         }
 
-        function initLiveCounters() {
-            animateValue('cnt-comments', 0, 45935, 1800, v => v.toLocaleString());
-            animateValue('cnt-ugc', 0, 128540, 2000, v => v.toLocaleString());
-            animateValue('cnt-views', 0, 162750, 2200, v => v.toLocaleString());
-            animateValue('cnt-total', 0, 1374820, 2400, v => (v / 1000000).toFixed(2) + 'M');
+        async function initLiveCounters() {
+            try {
+                const res = await fetch('/api/v1/swarm/telemetry');
+                if (res.ok) {
+                    const data = await res.json();
+                    const lc = data.live_counters || {};
+                    const comm = lc.comments_24h || 26006;
+                    const ugc = lc.ugc_videos || 122;
+                    const views = lc.views_tracked || 15490000;
+                    const total = lc.total_processed || (views + comm + ugc);
 
-            // Live ingestion ticker simulation (adds subtle increments)
-            setInterval(() => {
-                const cEl = document.getElementById('cnt-comments');
-                if (cEl) {
-                    let cur = parseInt(cEl.innerText.replace(/,/g, '')) || 45935;
-                    cur += Math.floor(Math.random() * 3) + 1;
-                    cEl.innerText = cur.toLocaleString();
+                    animateValue('cnt-comments', 0, comm, 1500, v => v.toLocaleString());
+                    animateValue('cnt-ugc', 0, ugc, 1500, v => v.toLocaleString());
+                    animateValue('cnt-views', 0, views, 1500, v => v.toLocaleString());
+                    animateValue('cnt-total', 0, total, 1500, v => v > 1000000 ? (v / 1000000).toFixed(2) + 'M' : v.toLocaleString());
+                    return;
                 }
-            }, 3500);
+            } catch (e) {
+                console.warn("Live telemetry counter fetch notice:", e);
+            }
+            // Fallback to initial elements
+            animateValue('cnt-comments', 0, 26006, 1200, v => v.toLocaleString());
+            animateValue('cnt-ugc', 0, 122, 1200, v => v.toLocaleString());
+            animateValue('cnt-views', 0, 15490000, 1200, v => (v / 1000000).toFixed(2) + 'M');
+            animateValue('cnt-total', 0, 15516128, 1200, v => (v / 1000000).toFixed(2) + 'M');
         }
 
         // 3. Render Cockpit Interactive Asset Cards

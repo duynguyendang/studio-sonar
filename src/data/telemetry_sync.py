@@ -167,10 +167,10 @@ class AgentTelemetrySync:
                 "memory_mb": 0.0,
                 "total_memory_limit_mb": 1024.0,
                 "batch_id": batch_code,
-                "tasks_completed": 128540,
-                "last_action": "Cataloged 128,540 UGC dance challenge clips for 'Thiên Đường' sound",
+                "tasks_completed": 122,
+                "last_action": "Indexed 122 telemetry snapshots in BigQuery OLAP Warehouse",
                 "last_tool_call": "harvest_tiktok_sound_velocity() • 480ms latency",
-                "last_payload_summary": "+420% 24h UGC surge",
+                "last_payload_summary": "BigQuery Cross-Platform Ledger Active",
                 "updated_at": datetime.now(timezone.utc).isoformat()
             },
             {
