@@ -11,6 +11,7 @@ from src.tools.universal_hook_recommender import hook_recommender
 from src.tools.trending_harvester import trending_harvester
 from src.agents.settings_copilot_agent import settings_copilot
 from src.core.config import settings
+from src.data.real_stream_generator import RealStreamGenerator
 
 router = APIRouter()
 
@@ -75,7 +76,7 @@ def get_swarm_telemetry():
             from google.cloud import bigquery
             client = bigquery.Client(project=settings.gcp_project_id)
             q_bq_totals = f"""
-                SELECT SUM(views) as s_views, SUM(comments_count) as s_comments
+                SELECT SUM(view_count) as s_views, SUM(comment_count) as s_comments
                 FROM `{settings.gcp_project_id}.{settings.bigquery_dataset}.video_snapshots`
                 WHERE snapshot_timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
             """
