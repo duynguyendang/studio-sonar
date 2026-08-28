@@ -107,6 +107,40 @@ def get_swarm_telemetry():
             bq_total_snapshots = res_snap[0].cnt
     except Exception:
         bq_total_snapshots = len(monitored_vids) * 25
+    
+    # Monitored Streams for Tech Ops sidebar & Cross-Check Verification
+    monitored_streams = []
+    try:
+        import logging as logger
+        for ch in registry_manager.get_all_channels():
+            ch_id = ch.get("channel_id", "")
+            ch_handle = ch.get("handle", ch.get("custom_url", ""))
+            ch_platform = ch.get("platform", "youtube").lower()
+            ch_url = ch.get("url") or (f"https://www.youtube.com/{ch_handle}" if ch_platform == "youtube" else f"https://www.tiktok.com/{ch_handle}")
+            monitored_streams.append({
+                "type": "channel",
+                "id": ch_id,
+                "title": ch.get("title", ch_handle),
+                "handle": ch_handle,
+                "platform": ch_platform,
+                "url": ch_url,
+                "category": ch.get("category", "General"),
+                "status": ch.get("tracking_status", "ACTIVE")
+            })
+        for v in registry_manager.get_all_videos():
+            vid = v.get("video_id", "")
+            is_tiktok = vid.startswith("tt_") or v.get("platform") == "tiktok"
+            v_url = v.get("url") or (f"https://www.tiktok.com/music/{vid}" if is_tiktok else f"https://www.youtube.com/watch?v={vid}")
+            monitored_streams.append({
+                "type": "video" if not is_tiktok else "tiktok_sound",
+                "id": vid,
+                "title": v.get("title", f"Video {vid}"),
+                "platform": "tiktok" if is_tiktok else "youtube",
+                "url": v_url,
+                "status": v.get("tracking_status", "ACTIVE")
+            })
+    except Exception as e:
+        logger.debug(f"Monitored streams resolution notice: {e}")
 
     return {
         "status": "ONLINE",
@@ -118,6 +152,7 @@ def get_swarm_telemetry():
             "total_processed": total_views + total_comments + bq_total_snapshots
         },
         "agents": bq_agents if bq_agents else [],
+        "monitored_streams": monitored_streams,
         "alerts": [
             {"severity": "SUCCESS", "time": "Live", "agent": "Taskmaster", "msg": f"Multi-Agent Graph Cycle active across {len(monitored_vids)} monitored assets"},
             {"severity": "INFO", "time": "Live", "agent": "ChannelSentinel", "msg": "Live YouTube Data API telemetry streaming into BigQuery OLAP"},
@@ -178,25 +213,25 @@ def get_swarm_telemetry():
                 "result": "0 active critical incidents. Telemetry sentiment ratio: 98.8% positive.",
                 "gemini_reasoning": "All monitored assets maintained positive sentiment ratio > 98%. Brand safety guardrails active with 0 intervention needed.",
                 "decision": "Standby surveillance mode",
-                "payload": {"status": "GREEN_SAFE"}
+                "payload": {"active_alerts": 0, "safety_status": "ALL_CLEAR_GREEN"}
             },
             "channel_monitor": {
-                "timestamp": "13:45:00 UTC",
+                "timestamp": "14:00:00 UTC",
                 "agent": "ChannelMonitorAgent",
-                "tool_call": "check_channel_new_uploads(channel_id='@business')",
-                "result": "Scanned 2 official monitored channels. 1 upload within 7 days.",
-                "gemini_reasoning": "Calculated initial 24h performance ratio V_ratio = 1.65x vs 30-day baseline.",
-                "decision": "Published statistical scorecard to Slack channel #company-channel-metrics",
-                "payload": {"channel": "@business", "v_ratio": 1.65}
+                "tool_call": "evaluate_channel_baseline_velocity(lookback_days=30)",
+                "result": "Calculated 30-day baseline across monitored channels. Benchmark stable.",
+                "gemini_reasoning": "Average view velocity across primary catalog channels is normal with high fan retention.",
+                "decision": "Logged channel baseline and generated performance scorecard",
+                "payload": {"monitored_channels": len(registry_manager.get_all_channels()), "status": "BENCHMARKED"}
             },
             "taskmaster": {
-                "timestamp": "14:40:12 UTC",
+                "timestamp": "14:00:00 UTC",
                 "agent": "StudioSonarRootTaskmaster",
-                "tool_call": "Workflow.run(edges=[START -> ChannelMonitor -> AnomalyDetector -> (PRCrisis | ViralContent)])",
-                "result": "Workflow execution graph completed across 4 nodes. 5 A2A event traces recorded.",
-                "gemini_reasoning": "Coordinated topological data exchange and compiled centralized 24h pulse dossier to GCS.",
-                "decision": "Synced master report to gs://studiosonar-dev-reports/realtime_24h_pulse_report.md",
-                "payload": {"gcs_uri": "gs://studiosonar-dev-reports/realtime_24h_pulse_report.md"}
+                "tool_call": "orchestrate_google_adk_workflow(cycle_type='ALL')",
+                "result": "Completed 1-Hour Cloud Scheduler Autonomous Ingestion & Reasoning Cycle.",
+                "gemini_reasoning": "Executed multi-agent workflow graph: Channel Sentinel -> Anomaly Detector -> PR/Viral Specialist handoffs. Uploaded consolidated dossier to GCS.",
+                "decision": "Published updated Master Intelligence Dossier to GCS bucket gs://studiosonar-dev-reports",
+                "payload": {"workflow": "StudioSonarAutonomousWorkflow", "gcs_report": "realtime_24h_pulse_report.md"}
             }
         },
         "hourly_timeline": [
@@ -266,9 +301,11 @@ def get_surveillance_assets_live() -> Dict[str, Any]:
             is_tiktok = vid.startswith("tt_") or v.get("platform") == "tiktok"
 
             if is_tiktok:
+                sound_url = v.get("url") or f"https://www.tiktok.com/music/{vid}"
                 assets.append({
                     "id": vid,
                     "title": v.get("title", f"TikTok Sound {vid}"),
+                    "url": sound_url,
                     "platform": "🎵 TikTok Viral Sound / UGC Sound Wave",
                     "platformType": "tiktok",
                     "metrics": f"{v.get('snapshots', [{}])[0].get('views', 0):,} UGC Videos • {v.get('snapshots', [{}])[0].get('comments', 0):,} Comments",
@@ -288,6 +325,7 @@ def get_surveillance_assets_live() -> Dict[str, Any]:
             v_title = details.get("title", v.get("title", f"Video {vid}")) if details else v.get("title", f"Video {vid}")
             v_views = details.get("views", 0) if details else v.get("snapshots", [{}])[0].get("views", 0)
             v_comments = details.get("comments_count", 0) if details else v.get("snapshots", [{}])[0].get("comments", 0)
+            video_url = v.get("url") or f"https://www.youtube.com/watch?v={vid}"
             
             # Calculate velocity delta from BigQuery snapshots
             vel_text = "🟢 Active Surveillance"
@@ -304,6 +342,7 @@ def get_surveillance_assets_live() -> Dict[str, Any]:
             assets.append({
                 "id": vid,
                 "title": v_title,
+                "url": video_url,
                 "platform": "YouTube Official MV / Upload",
                 "platformType": "yt",
                 "metrics": f"{v_views:,} Views • {v_comments:,} Comments",
@@ -325,12 +364,15 @@ def get_surveillance_assets_live() -> Dict[str, Any]:
             ch_handle = ch.get("handle", ch.get("custom_url", ""))
             rep_key = ch.get("report_key", f"channel_{ch_id}")
             clean_h = ch_handle.replace("@", "").replace(".", "_").lower() if ch_handle else ch_id
+            ch_platform = ch.get("platform", "youtube").lower()
+            ch_url = ch.get("url") or (f"https://www.youtube.com/{ch_handle}" if ch_platform == "youtube" else f"https://www.tiktok.com/{ch_handle}")
 
             assets.append({
                 "id": ch_id,
                 "title": f"{ch_title} ({ch_handle})",
-                "platform": f"Target Channel Sentinel ({ch.get('platform', 'YouTube').upper()})",
-                "platformType": "yt" if ch.get("platform") == "youtube" else "tiktok",
+                "url": ch_url,
+                "platform": f"Target Channel Sentinel ({ch_platform.upper()})",
+                "platformType": "yt" if ch_platform == "youtube" else "tiktok",
                 "metrics": f"24/7 Webhook & Polling Stream",
                 "velocity": "🟢 100% Brand Safe (0 Alerts)",
                 "clusters": [

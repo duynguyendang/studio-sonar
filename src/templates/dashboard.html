@@ -268,21 +268,92 @@
             min-height: calc(100vh - 280px);
         }
 
-        /* Two-screen (Business / Tech Ops) split. Each screen is a flex column
-           that fills the remaining viewport height below the sticky header. */
-        .domain-switch-bar {
+        /* Unified Top-Level Navigation Bar (Mission Cockpit, Intelligence Dossier, Tech Ops) */
+        .main-nav-bar {
             display: flex;
-            gap: 0.5rem;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             flex: 0 0 auto;
-            padding: 0.55rem 1rem;
-            background: var(--bg-glass);
+            padding: 0.55rem 1.5rem;
+            background: rgba(8, 12, 28, 0.95);
+            backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 65px;
+            z-index: 25;
         }
-        .domain-switch-bar .tab-btn {
-            font-size: 0.82rem;
+
+        .nav-tabs-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
+
+        .nav-tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            font-size: 0.84rem;
+            font-weight: 600;
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-tab-btn.active {
+            background: rgba(0, 242, 254, 0.12);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
+        }
+
+        .nav-quick-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quick-action-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .btn-crisis-quick {
+            border-color: rgba(255, 71, 87, 0.4);
+            color: #ff6b81;
+        }
+
+        .btn-crisis-quick:hover {
+            background: rgba(255, 71, 87, 0.15);
+            border-color: var(--accent-red);
+            color: #fff;
+        }
+
         .screen {
             display: flex;
             flex-direction: column;
@@ -398,57 +469,12 @@
             text-overflow: ellipsis;
         }
 
-        /* Center Content & Cockpit Tabs */
+        /* Center Content & Cockpit Views */
         .center-content {
             background: var(--bg-secondary);
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-        }
-
-        .cockpit-tabs-bar {
-            height: 52px;
-            border-bottom: 1px solid var(--border-color);
-            background: rgba(4, 7, 17, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 20;
-        }
-
-        .tab-group {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 0.4rem 0.9rem;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .tab-btn.active {
-            background: rgba(0, 242, 254, 0.12);
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
-            box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
         }
 
         .cockpit-view-container {
@@ -597,6 +623,49 @@
             line-height: 1.4;
         }
 
+        .asset-title a.asset-title-link {
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: color 0.2s ease;
+        }
+        .asset-title a.asset-title-link:hover {
+            color: var(--accent-cyan);
+            text-decoration: underline;
+        }
+
+        .asset-url-row {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.68rem;
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 0.35rem 0.65rem;
+            overflow: hidden;
+        }
+
+        .asset-url-row a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .asset-url-row a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
         .asset-actions-row {
             display: flex;
             gap: 0.5rem;
@@ -615,6 +684,7 @@
             justify-content: center;
             gap: 0.3rem;
             transition: all 0.2s ease;
+            text-decoration: none;
         }
 
         .btn-inspect { background: rgba(0, 242, 254, 0.15); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
@@ -622,6 +692,55 @@
 
         .btn-script { background: rgba(121, 40, 202, 0.2); border: 1px solid var(--accent-purple); color: #c084fc; }
         .btn-script:hover { background: rgba(121, 40, 202, 0.4); }
+
+        .btn-crosscheck { background: rgba(0, 245, 160, 0.15); border: 1px solid rgba(0, 245, 160, 0.4); color: var(--accent-green); }
+        .btn-crosscheck:hover { background: rgba(0, 245, 160, 0.3); color: #fff; box-shadow: 0 0 10px rgba(0, 245, 160, 0.2); }
+
+        /* Monitored Streams in Tech Ops */
+        .monitored-stream-item {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 0.6rem 0.75rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.72rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            transition: all 0.2s ease;
+        }
+
+        .monitored-stream-item:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.1);
+        }
+
+        .monitored-stream-title {
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .monitored-stream-link {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .monitored-stream-link:hover {
+            text-decoration: underline;
+            color: #fff;
+        }
 
         /* Right Sidebar Alerts & Terminal */
         .alert-stream {
@@ -809,85 +928,112 @@
         </div>
     </header>
 
-    <!-- Hero Mission Control Section (Live Topology Graph + Live Ingestion Counters) -->
-    <div class="domain-switch-bar">
-    <button class="tab-btn active" id="domain-biz" onclick="switchDomain('biz')"><span>💼</span> Business</button>
-    <button class="tab-btn" id="domain-tech" onclick="switchDomain('tech')"><span>⚙️</span> Tech Ops</button>
-</div>
-<div id="screen-biz" class="screen screen-active">
-    <div class="workspace biz-workspace">
+    <!-- Main Unified Navigation Bar -->
+    <div class="main-nav-bar">
+        <div class="nav-tabs-group">
+            <button class="nav-tab-btn active" id="tab-btn-cockpit" onclick="switchNavTab('cockpit')">
+                <span>🎛️</span> Mission Cockpit
+            </button>
+            <button class="nav-tab-btn" id="tab-btn-dossier" onclick="switchNavTab('dossier')">
+                <span>📄</span> Intelligence Dossier
+            </button>
+            <button class="nav-tab-btn" id="tab-btn-tech" onclick="switchNavTab('tech')">
+                <span>⚙️</span> Tech Ops
+            </button>
+        </div>
+        <div class="nav-quick-actions">
+            <button class="quick-action-btn" onclick="triggerViralModal()">
+                <span>✍️</span> 60s Script
+            </button>
+            <button class="quick-action-btn btn-crisis-quick" onclick="triggerCrisisModal()">
+                <span>🚨</span> PR Stance
+            </button>
+        </div>
+    </div>
+
+    <!-- 1. Screen: Mission Cockpit -->
+    <div id="screen-cockpit" class="screen screen-active">
         <div class="biz-main">
-<div class="center-content">
-<div class="cockpit-tabs-bar">
-                <div class="tab-group">
-                    <button class="tab-btn active" id="tab-btn-cockpit" onclick="switchMainTab('cockpit')">
-                        <span>🎛️</span> Mission Cockpit
-                    </button>
-                    <button class="tab-btn" id="tab-btn-dossier" onclick="switchMainTab('dossier')">
-                        <span>📄</span> Intelligence Dossier
-                    </button>
-                </div>
-                <div style="display:flex; gap:0.5rem;">
-                    <button class="tab-btn" style="border:1px solid var(--border-color);" onclick="triggerViralModal()">
-                        <span>✍️</span> 60s Script
-                    </button>
-                    <button class="tab-btn" style="border:1px solid var(--accent-red); color:#ff6b81;" onclick="triggerCrisisModal()">
-                        <span>🚨</span> PR Stance
-                    </button>
+            <div class="center-content">
+                <div class="cockpit-view-container">
+                    
+                    <!-- Cross-Platform Synergy Card -->
+                    <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem;">
+                        <div class="cockpit-section-title">
+                            <span>⚡</span> Cross-Platform Campaign Synergy Radar
+                        </div>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+                            <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid #ff4757;">
+                                <div style="font-size:0.7rem; color:var(--text-secondary);">📹 MONITORED ASSET VIEWS</div>
+                                <div id="cockpit-banner-views" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">-- Views</div>
+                                <div id="cockpit-banner-comments" style="font-size:0.72rem; color:var(--accent-green); margin-top:0.2rem;">-- Comments Logged</div>
+                            </div>
+                            <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-cyan);">
+                                <div style="font-size:0.7rem; color:var(--text-secondary);">🗄️ BIGQUERY SNAPSHOTS</div>
+                                <div id="cockpit-banner-snapshots" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">-- Records</div>
+                                <div style="font-size:0.72rem; color:var(--accent-cyan); margin-top:0.2rem;">OLAP Ingestion Ledger</div>
+                            </div>
+                            <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-purple);">
+                                <div style="font-size:0.7rem; color:var(--text-secondary);">🎯 PR BRAND SAFETY</div>
+                                <div style="font-size:1.15rem; font-weight:800; color:#00f5a0; font-family:'JetBrains Mono',monospace;">100% Brand Safe</div>
+                                <div style="font-size:0.72rem; color:#c084fc; margin-top:0.2rem;">0 Active Escalations</div>
+                            </div>
+                            <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-gold);">
+                                <div style="font-size:0.7rem; color:var(--text-secondary);">🚀 VELOCITY STATUS</div>
+                                <div id="cockpit-banner-velocity" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">ACTIVE STREAM</div>
+                                <div style="font-size:0.72rem; color:var(--accent-gold); margin-top:0.2rem;">Live Polling Cycle</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monitored Surveillance Assets Grid -->
+                    <div>
+                        <div class="cockpit-section-title">
+                            <span>📊</span> Real-Time Surveillance Assets (Live Multi-Platform Ledger)
+                        </div>
+                        <div class="asset-card-grid" id="cockpit-assets-grid">
+                            <!-- Injected via JavaScript -->
+                        </div>
+                    </div>
+
                 </div>
             </div>
-<div id="tab-content-cockpit" class="cockpit-view-container">
-                
-                <!-- Cross-Platform Synergy Card -->
-                <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem;">
-                    <div class="cockpit-section-title">
-                        <span>⚡</span> Cross-Platform Campaign Synergy Radar
+        </div>
+    </div>
+
+    <!-- 2. Screen: Intelligence Dossier -->
+    <div id="screen-dossier" class="screen" style="display:none;">
+        <div class="biz-main">
+            <div class="center-content" style="padding: 1.5rem;">
+                <div class="dossier-control-bar" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; padding:0.75rem 1.25rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.75rem;">
+                    <div style="display:flex; align-items:center; gap:0.75rem;">
+                        <span style="font-size:0.85rem; font-weight:700; color:#fff;">📄 Active Intelligence Dossier:</span>
+                        <select id="dossier-report-select" onchange="loadReport(this.value)" style="background:rgba(0,0,0,0.4); color:var(--accent-cyan); border:1px solid var(--border-color); border-radius:6px; padding:0.4rem 0.8rem; font-size:0.82rem; font-weight:600; cursor:pointer;">
+                            <option value="realtime_24h">📊 Master 24h Pulse Dossier (All Channels)</option>
+                            <option value="thien_duong">🎵 Video: Thiên Đường Với Người Thương (PMC)</option>
+                            <option value="nutella">🏭 Video: Ferrero Nutella Factory Inside</option>
+                            <option value="bloomberg_originals">🏢 Channel: Bloomberg Originals</option>
+                            <option value="kiemdinhphim">🎬 Channel: Kiểm Định Phim</option>
+                            <option value="thochupanh_dalat">📸 Channel: Thợ Chụp Ảnh Đà Lạt</option>
+                        </select>
                     </div>
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
-                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid #ff4757;">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">📹 MONITORED ASSET VIEWS</div>
-                            <div id="cockpit-banner-views" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">-- Views</div>
-                            <div id="cockpit-banner-comments" style="font-size:0.72rem; color:var(--accent-green); margin-top:0.2rem;">-- Comments Logged</div>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-cyan);">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">🗄️ BIGQUERY SNAPSHOTS</div>
-                            <div id="cockpit-banner-snapshots" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">-- Records</div>
-                            <div style="font-size:0.72rem; color:var(--accent-cyan); margin-top:0.2rem;">OLAP Ingestion Ledger</div>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-purple);">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">🎯 PR BRAND SAFETY</div>
-                            <div style="font-size:1.15rem; font-weight:800; color:#00f5a0; font-family:'JetBrains Mono',monospace;">100% Brand Safe</div>
-                            <div style="font-size:0.72rem; color:#c084fc; margin-top:0.2rem;">0 Active Escalations</div>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:8px; border-left:3px solid var(--accent-gold);">
-                            <div style="font-size:0.7rem; color:var(--text-secondary);">🚀 VELOCITY STATUS</div>
-                            <div id="cockpit-banner-velocity" style="font-size:1.15rem; font-weight:800; color:#fff; font-family:'JetBrains Mono',monospace;">ACTIVE STREAM</div>
-                            <div style="font-size:0.72rem; color:var(--accent-gold); margin-top:0.2rem;">Live Polling Cycle</div>
-                        </div>
+                    <div style="display:flex; align-items:center; gap:0.6rem;">
+                        <span style="font-size:0.72rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">☁️ GCS Live Substrate</span>
+                        <button class="quick-action-btn" onclick="loadReport(activeReportKey)">
+                            <span>🔄</span> Refresh Dossier
+                        </button>
                     </div>
                 </div>
-
-                <!-- Monitored Surveillance Assets Grid -->
-                <div>
-                    <div class="cockpit-section-title">
-                        <span>📊</span> Real-Time Surveillance Assets (Live Multi-Platform Ledger)
-                    </div>
-                    <div class="asset-card-grid" id="cockpit-assets-grid">
-                        <!-- Injected via JavaScript -->
-                    </div>
-                </div>
-
-            </div>
-<div id="tab-content-dossier" style="display:none;">
-                <div class="markdown-body" id="report-markdown-content">
+                <div class="markdown-body" id="report-markdown-content" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:2rem;">
                     <!-- Live Report Markdown content injected here -->
                 </div>
             </div>
-</div>        </div>
+        </div>
     </div>
-</div>
-<div id="screen-tech" class="screen" style="display:none;">
-<div class="hero-mission-control">
+
+    <!-- 3. Screen: Tech Ops -->
+    <div id="screen-tech" class="screen" style="display:none;">
+    <div class="hero-mission-control">
         
         <!-- Live Topology Graph Canvas -->
         <div class="topology-card">
@@ -1024,6 +1170,7 @@
                 currentTelemetry = await res.json();
 
                 renderAgentCards(currentTelemetry.agents, currentTelemetry.container_specs);
+                renderMonitoredStreams(currentTelemetry.monitored_streams);
                 renderAlerts(currentTelemetry.alerts);
                 renderTerminalLiveLines(currentTelemetry.agents);
                 updateCockpitOverviewBanner(currentTelemetry.live_counters);
@@ -1033,6 +1180,42 @@
             } catch (e) {
                 console.error("Telemetry fetch error:", e);
             }
+        }
+
+        // Render Monitored Channels & Videos with Live Cross-Check URLs
+        function renderMonitoredStreams(streams) {
+            const container = document.getElementById('tracked-channels-container');
+            if (!container) return;
+            if (!streams || streams.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.7rem; padding:0.5rem;">Awaiting stream registry sync...</div>`;
+                return;
+            }
+
+            container.innerHTML = streams.map(s => {
+                const icon = s.platform === 'youtube' ? '📹' : '🎵';
+                const tag = s.type === 'channel' ? 'CHANNEL' : (s.type === 'tiktok_sound' ? 'SOUND' : 'VIDEO');
+                const badgeColor = s.platform === 'youtube' ? 'rgba(255, 71, 87, 0.2)' : 'rgba(0, 242, 254, 0.2)';
+                const textColor = s.platform === 'youtube' ? '#ff6b81' : 'var(--accent-cyan)';
+
+                return `
+                    <div class="monitored-stream-item">
+                        <div class="monitored-stream-title">
+                            <span style="display:flex; align-items:center; gap:0.35rem;">
+                                <span>${icon}</span>
+                                <strong>${s.title}</strong>
+                            </span>
+                            <span style="font-size:0.6rem; font-family:'JetBrains Mono',monospace; background:${badgeColor}; color:${textColor}; padding:0.1rem 0.35rem; border-radius:4px;">
+                                ${tag}
+                            </span>
+                        </div>
+                        <a href="${s.url || '#'}" target="_blank" rel="noopener noreferrer" class="monitored-stream-link" title="Open live cross-check URL: ${s.url}">
+                            <span>🔗</span>
+                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.url}</span>
+                            <span>↗</span>
+                        </a>
+                    </div>
+                `;
+            }).join('');
         }
 
         function updateCockpitOverviewBanner(lc) {
@@ -1147,8 +1330,20 @@
                 return `
                     <div class="interactive-asset-card">
                         <div class="asset-top-row">
-                            <div class="asset-title">${asset.title}</div>
+                            <div class="asset-title">
+                                <a href="${asset.url || '#'}" target="_blank" rel="noopener noreferrer" class="asset-title-link" title="Open live source on ${asset.platformType === 'yt' ? 'YouTube' : 'TikTok'}">
+                                    ${asset.title} ↗
+                                </a>
+                            </div>
                             <span class="asset-platform-pill ${pillClass}">${asset.platform}</span>
+                        </div>
+
+                        <div class="asset-url-row">
+                            <a href="${asset.url || '#'}" target="_blank" rel="noopener noreferrer" title="Cross-check direct URL: ${asset.url}">
+                                <span>🔗</span>
+                                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${asset.url || 'Live Stream Active'}</span>
+                                <span style="color:var(--accent-cyan); font-weight:700;">↗</span>
+                            </a>
                         </div>
 
                         <div class="asset-stats-row">
@@ -1175,11 +1370,14 @@
 
                         <div class="asset-actions-row">
                             <button class="btn-card-action btn-inspect" onclick="openReasoningInspector('${asset.agentId}')">
-                                <span>🧠</span> Reasoning Trace
+                                <span>🧠</span> Reasoning
                             </button>
                             <button class="btn-card-action btn-script" onclick="selectReportAndNavigate('${asset.reportKey || 'realtime_24h'}')">
-                                <span>📄</span> View Report
+                                <span>📄</span> Report
                             </button>
+                            <a class="btn-card-action btn-crosscheck" href="${asset.url || '#'}" target="_blank" rel="noopener noreferrer" title="Direct platform cross-check: ${asset.url}">
+                                <span>🔗</span> Cross Check ↗
+                            </a>
                         </div>
                     </div>
                 `;
@@ -1399,34 +1597,41 @@
             });
         });
 
-        // 7. Top-level Business / Tech screen switcher
-        function switchDomain(domain) {
-            const biz = document.getElementById('screen-biz');
+        // 7. Top-level Unified Tab Switcher (Mission Cockpit, Intelligence Dossier, Tech Ops)
+        function switchNavTab(tab) {
+            currentTab = tab;
+            
+            // Update active state on tab buttons
+            document.querySelectorAll('.main-nav-bar .nav-tab-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById(`tab-btn-${tab}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Show/hide respective screens
+            const cockpit = document.getElementById('screen-cockpit');
+            const dossier = document.getElementById('screen-dossier');
             const tech = document.getElementById('screen-tech');
-            const bBtn = document.getElementById('domain-biz');
-            const tBtn = document.getElementById('domain-tech');
-            if (biz) biz.style.display = domain === 'tech' ? 'none' : 'flex';
-            if (tech) tech.style.display = domain === 'tech' ? 'flex' : 'none';
-            if (bBtn) { if (domain === 'tech') bBtn.classList.remove('active'); else bBtn.classList.add('active'); }
-            if (tBtn) { if (domain === 'tech') tBtn.classList.add('active'); else tBtn.classList.remove('active'); }
-            // The topology canvas must be re-sized AFTER the tech screen becomes
-            // visible (a hidden container reports 0 clientWidth -> distortion).
-            if (domain === 'tech') {
-                setTimeout(() => { resizeTopologyCanvas(); drawTopologyGraph(); }, 60);
+
+            if (cockpit) cockpit.style.display = (tab === 'cockpit') ? 'flex' : 'none';
+            if (dossier) dossier.style.display = (tab === 'dossier') ? 'flex' : 'none';
+            if (tech) tech.style.display = (tab === 'tech') ? 'flex' : 'none';
+
+            if (tab === 'dossier') {
+                if (!activeReportKey) activeReportKey = 'realtime_24h';
+                loadReport(activeReportKey);
+            }
+
+            // The topology canvas must be re-sized AFTER the tech screen becomes visible
+            if (tab === 'tech') {
+                setTimeout(() => {
+                    resizeTopologyCanvas();
+                    drawTopologyGraph();
+                }, 60);
             }
         }
 
-        // 7b. Business inner tab switcher (Cockpit / Dossier)
-        function switchMainTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('#screen-biz .tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-btn-${tab}`).classList.add('active');
-
-            const ck = document.getElementById('tab-content-cockpit');
-            const ds = document.getElementById('tab-content-dossier');
-            if (ck) ck.style.display = tab === 'cockpit' ? 'flex' : 'none';
-            if (ds) ds.style.display = tab === 'dossier' ? 'block' : 'none';
-        }
+        // Backward-compatibility aliases
+        function switchDomain(domain) { switchNavTab(domain === 'tech' ? 'tech' : 'cockpit'); }
+        function switchMainTab(tab) { switchNavTab(tab); }
 
         // 8. Render Reasoning Timeline Tab
         function renderReasoningTimeline() {
@@ -1543,6 +1748,18 @@
         // 11. Load Master Intelligence Report
         async function loadReport(reportKey) {
             activeReportKey = reportKey;
+
+            // Sync dropdown if exists
+            const selectEl = document.getElementById('dossier-report-select');
+            if (selectEl) {
+                for (let opt of selectEl.options) {
+                    if (opt.value === reportKey || reportKey.includes(opt.value) || opt.value.includes(reportKey)) {
+                        selectEl.value = opt.value;
+                        break;
+                    }
+                }
+            }
+
             const contentEl = document.getElementById('report-markdown-content');
             contentEl.innerHTML = '<div style="color:var(--accent-cyan); padding:2rem;">⏳ Fetching live report from GCS...</div>';
 
@@ -1593,7 +1810,7 @@
 
         // 11b. Navigate to the report dossier tab for a given asset report key
         function selectReportAndNavigate(reportKey) {
-            switchMainTab('dossier');
+            switchNavTab('dossier');
             loadReport(reportKey || 'realtime_24h');
         }
 

@@ -78,7 +78,7 @@ def display_dashboard():
 def main():
     parser = argparse.ArgumentParser(description="StudioSonar Tracking CLI")
     parser.add_argument("--add-video", type=str, help="YouTube video URL or ID to track")
-    parser.add_argument("--add-channel", type=str, help="Channel handle (e.g. @atekco) to track")
+    parser.add_argument("--add-channel", type=str, help="Channel handle (e.g. @business) to track")
     parser.add_argument("--category", type=str, default="General", help="Category tag for channel")
     args = parser.parse_args()
 

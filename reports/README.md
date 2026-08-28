@@ -13,8 +13,10 @@ Welcome to the **StudioSonar Intelligence Reports Library**. Every report in thi
   * *Diagnostics:* Top 5 flagship videos, loss-aversion title mechanics, 15s shock-quote hooks, and 88.5% audience gratitude sentiment.
 * 📄 [`channel_report_thochupanh_dalat.md`](./channel_report_thochupanh_dalat.md): **Tho Chup Anh Da Lat (@thochupanh.dalat)**
   * *Diagnostics:* TikTok FYP algorithmic mechanics, top transformation videos, 25-35% save-to-like ratios, and direct booking lead generation.
-* 📄 [`channel_report_atekco.md`](./channel_report_atekco.md): **Atekco (@atekco)**
-  * *Diagnostics:* B2B administrative packaging bottlenecks vs. 6.6k-view high-signal thought leadership.
+* 📄 [`channel_report_google.md`](./channel_report_google.md): **Google (@Google)**
+  * *Diagnostics:* Gemini 3.7 Flash developer benchmarks, multimodal reasoning latency, and Android / Pixel ecosystem sentiment.
+* 📄 [`channel_report_theverge.md`](./channel_report_theverge.md): **The Verge (@TheVerge)**
+  * *Diagnostics:* Consumer hardware reviews, battery/camera benchmarks, and editorial authenticity.
 
 ---
 

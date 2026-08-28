@@ -1,7 +1,12 @@
-from google.adk import Agent
-from src.agents.orchestrator import taskmaster_orchestrator
+"""
+StudioSonar Standard Google ADK Root Agent Entrypoint.
+Required by `adk run`, `adk web`, and `adk deploy cloud_run`.
+"""
 
-# Standard Google ADK Root Agent Entrypoint
-# Required by `adk run`, `adk web`, and `adk deploy cloud_run`
-agent = taskmaster_orchestrator.get_root_adk_agent()
-root_agent = agent
+from google.adk import Agent, Workflow
+from src.agents.orchestrator import taskmaster_agent, taskmaster_workflow
+
+agent: Agent = taskmaster_agent
+root_agent: Agent = taskmaster_agent
+workflow: Workflow = taskmaster_workflow
+root_workflow: Workflow = taskmaster_workflow

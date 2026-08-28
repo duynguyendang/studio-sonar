@@ -86,25 +86,46 @@ SEED_CHANNELS: List[Dict[str, Any]] = [
         "average_views_per_video": 210000.0
     },
     {
-        "channel_id": "ch_atekco",
-        "report_key": "channel_atekco",
-        "handle": "@atekco",
+        "channel_id": "ch_google",
+        "report_key": "channel_google",
+        "handle": "@Google",
         "platform": "youtube",
-        "title": "Atekco",
-        "category": "Tech Leadership & Architecture",
+        "title": "Google",
+        "category": "Global Tech & AI Innovation",
         "tracking_status": "ACTIVE",
         "check_frequency_minutes": 15,
         "video_lookback_days": 30,
         "notification_channel": "#media-alerts",
         "custom_sentiment_categories": [
-            "Architecture Inquiries",
-            "Bug & Code Challenges",
-            "Recruitment & Careers",
-            "General Tech Praise"
+            "AI Innovation & Gemini",
+            "Android & Pixel Ecosystem",
+            "Developer Tools & Cloud",
+            "Product Feedback & Critique"
         ],
-        "subscriber_count": 1200,
-        "total_video_count": 45,
-        "average_views_per_video": 350.0
+        "subscriber_count": 11500000,
+        "total_video_count": 3200,
+        "average_views_per_video": 450000.0
+    },
+    {
+        "channel_id": "ch_theverge",
+        "report_key": "channel_theverge",
+        "handle": "@TheVerge",
+        "platform": "youtube",
+        "title": "The Verge",
+        "category": "Tech Journalism & Consumer Tech Reviews",
+        "tracking_status": "ACTIVE",
+        "check_frequency_minutes": 15,
+        "video_lookback_days": 30,
+        "notification_channel": "#media-alerts",
+        "custom_sentiment_categories": [
+            "Product Reviews & Gadgets",
+            "Tech Policy & Editorial",
+            "Reviewer Authenticity",
+            "Design & Hardware Critique"
+        ],
+        "subscriber_count": 3400000,
+        "total_video_count": 4500,
+        "average_views_per_video": 280000.0
     }
 ]
 

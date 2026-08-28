@@ -15,7 +15,7 @@ OPTIONS(
 -- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `studiosonar_analytics.tracked_channels` (
   channel_id STRING NOT NULL,
-  handle STRING NOT NULL, -- e.g. '@atekco', '@KiemDinhPhim9.0'
+  handle STRING NOT NULL, -- e.g. '@business', '@KiemDinhPhim9.0'
   platform STRING NOT NULL, -- 'youtube' | 'tiktok'
   title STRING NOT NULL,
   category STRING, -- 'Tech/Software', 'Entertainment/Film', 'Corporate'

@@ -1,23 +1,23 @@
 # 🎙️ StudioSonar: Autonomous Media Taskmaster Agent
 
 [![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Cloud%20Run%20%7C%20BigQuery%20%7C%20GCS-4285F4?logo=google-cloud&logoColor=white)](https://cloud.google.com/)
-[![Google ADK](https://img.shields.io/badge/Google%20ADK-Multi--Agent%20Mesh-34A853?logo=google&logoColor=white)](https://adk.dev/)
-[![Vertex AI](https://img.shields.io/badge/Vertex%20AI-Gemini%20Flash-8E75C2?logo=google&logoColor=white)](https://cloud.google.com/vertex-ai)
+[![Google ADK](https://img.shields.io/badge/Google%20ADK-Multi--Agent%20Mesh%20v2.7.1-34A853?logo=google&logoColor=white)](https://adk.dev/)
+[![Vertex AI](https://img.shields.io/badge/Vertex%20AI-Gemini%203.7%20Flash-8E75C2?logo=google&logoColor=white)](https://cloud.google.com/vertex-ai)
 [![Hackathon Track](https://img.shields.io/badge/Hackathon%20Track-The%20Taskmaster-FF6F00)](https://allthingsagentichackathon.devpost.com/)
 
 > **The 24/7 Autonomous Media Intelligence & Brand Defense Swarm.**  
-> StudioSonar is not a chatbot that waits for human questions. It is a **Zero-Prompt Autonomous Taskmaster** that operates around the clock in the background—continuously ingesting social telemetry into **Google BigQuery**, detecting mathematical velocity spikes and sentiment anomalies via **Vertex AI Gemini Flash**, persisting intelligence to **Google Cloud Storage**, and executing enterprise actions on **Slack, Notion, and Google Docs**.
+> StudioSonar is not a chatbot that waits for human questions. It is a **Zero-Prompt Autonomous Taskmaster** that operates around the clock in the background—continuously ingesting social telemetry into **Google BigQuery**, detecting mathematical velocity spikes and sentiment anomalies via **Vertex AI Gemini 3.7 Flash**, persisting intelligence to **Google Cloud Storage (GCS)**, and executing enterprise actions on **Slack, Notion, and Google Docs**.
 
 ---
 
 ## 🌐 Live Production Command Center
 
 * 👑 **Root Taskmaster & Web Dashboard:** [https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)
-* 📡 **Channel Sentinel Agent:** `https://studiosonar-channel-monitor-i7mjye6viq-uc.a.run.app`
-* 🔍 **Anomaly Detector Agent:** `https://studiosonar-anomaly-detector-i7mjye6viq-uc.a.run.app`
-* 🚨 **PR Crisis Strategist Agent:** `https://studiosonar-pr-strategist-i7mjye6viq-uc.a.run.app`
-* ✍️ **Viral Content Creator Agent:** `https://studiosonar-content-creator-i7mjye6viq-uc.a.run.app`
-* ⏱️ **Autonomous Scheduler Heartbeat:** 1-Hour Interval (`0 * * * *` via Cloud Scheduler)
+* 📡 **Channel Sentinel Agent:** `https://studiosonar-channel-monitor-598161588592.us-central1.run.app`
+* 🔍 **Anomaly Detector Agent:** `https://studiosonar-anomaly-detector-598161588592.us-central1.run.app`
+* 🚨 **PR Crisis Strategist Agent:** `https://studiosonar-pr-strategist-598161588592.us-central1.run.app`
+* ✍️ **Viral Content Creator Agent:** `https://studiosonar-content-creator-598161588592.us-central1.run.app`
+* ⏱️ **Autonomous Scheduler Heartbeat:** 1-Hour Interval (`0 * * * *` via Google Cloud Scheduler)
 * ☁️ **Intelligence Reports Storage:** `gs://studiosonar-dev-reports`
 
 ---
@@ -40,21 +40,49 @@ StudioSonar replaces manual monitoring with a **proactive, decentralized multi-a
 ```
        [ 24/7 Social Telemetry ]
                    │
-                   ▼ (Every 1 Hour)
+                   ▼ (Every 1 Hour via Cloud Scheduler)
        [ Google BigQuery OLAP ]
                    │
-                   ▼ (Mathematical Spike Detection)
+                   ▼ (Mathematical Velocity & Sentiment Radar)
    ┌───────────────────────────────────────────────────┐
-   │  🚨 Negative Backlash Spike (>150%)               │
+   │  🚨 Negative Backlash Spike (>150% Velocity)      │
    │  👉 Auto-Dispatches Slack Alert + Notion Triage   │
    ├───────────────────────────────────────────────────┤
-   │  🚀 Positive Viral Breakout (>200%)               │
+   │  🚀 Positive Viral Breakout (>200% Velocity)      │
    │  👉 Auto-Drafts 60s Shorts Script in Google Docs  │
    ├───────────────────────────────────────────────────┤
    │  📊 New Upload Detection within 24h               │
    │  👉 Auto-Generates Executive Performance Scorecard│
    └───────────────────────────────────────────────────┘
 ```
+
+---
+
+## 🎛️ Single Pane of Glass Command Center
+
+The StudioSonar Web Interface provides a streamlined, modern command center structured across **3 Core Views**:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ⚡ StudioSonar • AI MISSION CONTROL CENTER • GOOGLE ADK SWARM (Gemini 3.7)   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [ 🎛️ Mission Cockpit ]    [ 📄 Intelligence Dossier ]    [ ⚙️ Tech Ops ]     │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **🎛️ Mission Cockpit (Default Executive View):**
+   * **Cross-Platform Campaign Synergy Radar:** Real-time summary of views, BigQuery OLAP ingestion records, PR safety status, and polling velocity.
+   * **Real-Time Surveillance Assets Grid:** Live cards displaying YouTube MVs & TikTok audio footprint, 4D behavioral sentiment spectrums, and one-click actions (*Reasoning Trace, View Report*).
+
+2. **📄 Intelligence Dossier (Strategic Intelligence View):**
+   * Real-time markdown intelligence documents rendered directly from **Google Cloud Storage (`gs://studiosonar-dev-reports`)**.
+   * Interactive **Mermaid execution diagrams** and **KaTeX mathematical formulas**.
+   * Fast report switcher for Master 24h Pulse, Company Campaign Scorecards, and Breakout Trends.
+
+3. **⚙️ Tech Ops (Engineering & Swarm Observability View):**
+   * **Live Agent Swarm Topology Graph:** Interactive visual canvas of the Google ADK execution mesh with node-level LLM reasoning inspection.
+   * **4 Live Running Telemetry Counters:** Comments/24h, UGC Audio Videos, Views Tracked, and BigQuery OLAP Rows.
+   * **3-Column Observability:** Swarm Agent Telemetry & Monitored Asset Streams (Left), 24h Autonomous Agent Reasoning & Decision Log (Center), Real-Time Alert Stream & Live Container Terminal (Right).
 
 ---
 
@@ -83,7 +111,7 @@ Google ADK serves as the **central nervous system** that transforms isolated too
 ```
 
 1. **Native Agent-to-Agent (A2A) Handoff Protocol:** Unlike brittle REST APIs or hardcoded `if/else` scripts, ADK standardizes contextual state transfer. When the `AnomalyDetectorAgent` flags an alert, it packages full BigQuery telemetry and autonomously handoffs execution to the `PRCrisisStrategistAgent`.
-2. **Declarative Tool Sandboxing & Function Calling:** ADK converts deterministic Python I/O classes (`YouTubeLiveClient`, `TikTokHarvester`, `SlackDispatcher`) into strict JSON schemas for Vertex AI Gemini Flash, enforcing role-based tool access per agent.
+2. **Declarative Tool Sandboxing & Function Calling:** ADK converts deterministic Python I/O classes (`YouTubeLiveClient`, `TikTokHarvester`, `SlackDispatcher`) into strict JSON schemas for Vertex AI Gemini 3.7 Flash, enforcing role-based tool access per agent.
 3. **Enterprise Observability & Traceability:** ADK maintains structured execution traces, allowing enterprise stakeholders to audit *why* an agent made a decision, *how* it reasoned, and *what* downstream actions it triggered.
 
 ---
@@ -93,18 +121,17 @@ Google ADK serves as the **central nervous system** that transforms isolated too
 StudioSonar is deliberately deployed as **5 independent Google Cloud Run microservices** rather than a single monolithic container:
 
 1. **Asymmetric Workload Scaling & True Scale-to-Zero:**
-   - **Taskmaster Orchestrator:** Runs once per hour via Cloud Scheduler (`0 * * * *`).
-   - **Anomaly Detector:** Performs high-throughput batch queries on BigQuery.
-   - **PR Crisis & Viral Creator:** Remain at **0 instances** (Scale-to-Zero) until a viral surge or PR incident occurs.  
+   * **Taskmaster Orchestrator:** Runs once per hour via Cloud Scheduler (`0 * * * *`).
+   * **Anomaly Detector:** Performs high-throughput batch queries on BigQuery.
+   * **PR Crisis & Viral Creator:** Remain at **0 instances** (Scale-to-Zero) until a viral surge or PR incident occurs.  
    👉 **Cost Efficiency:** Reduces idle enterprise cloud costs by **>90%**.
 2. **Stateless Container Decoupling via GCS Report Substrate:**
-   - All executive intelligence markdown reports are persisted to **Google Cloud Storage (`gs://studiosonar-dev-reports`)**.
-   - Container images remain **100% Stateless** and ultra-lightweight (~69 KiB build context), enabling instant cold-starts (< 1s).
+   * All executive intelligence markdown reports are persisted to **Google Cloud Storage (`gs://studiosonar-dev-reports`)**.
+   * Container images remain **100% Stateless** and ultra-lightweight (~69 KiB build context), enabling instant cold-starts (< 1s).
 3. **Zero-Key Enterprise Security (Vertex AI IAM ADC):**
-   - Eliminates exposed API keys by leveraging Google Cloud IAM Service Account roles (`roles/aiplatform.user` & `roles/storage.objectAdmin`).
+   * Eliminates exposed API keys by leveraging Google Cloud IAM Service Account roles (`roles/aiplatform.user` & `roles/storage.objectAdmin`).
 
 ---
-
 
 ## 📈 Tangible Business ROI & Impact
 
@@ -142,7 +169,7 @@ StudioSonar divides responsibilities across **5 specialized, decoupled microserv
 | **👑 Taskmaster Root Orchestrator**<br>`studiosonar-taskmaster` | **Central Commander & Dispatcher**<br>Ingests verified telemetry, manages the swarm, and updates GCS reports. | Wakes on 1-hour Cloud Scheduler heartbeat (`0 * * * *`). Polls YouTube API v3 and routes tasks via A2A mesh. | ☁️ GCS Reports Bucket<br>🖥️ Real-Time Dashboard |
 | **📡 Channel Sentinel Agent**<br>`studiosonar-channel-monitor` | **Channel Watchdog & Performance Benchmark**<br>Tracks uploads on monitored channels within 24h against 30-day baseline. | Calculates velocity ratios against channel averages and generates scorecards. | 📊 Channel Intelligence<br>📈 Velocity Scorecard |
 | **🔍 Anomaly Detector Agent**<br>`studiosonar-anomaly-detector` | **Sentiment Radar & Mathematical Classifier**<br>Scans BigQuery comments to classify sentiment and detect velocity anomalies. | • **Backlash Spike (>150% neg surge)** ➔ Handoff to PR Crisis Agent.<br>• **Viral Breakout (>200% pos surge)** ➔ Handoff to Content Creator. | 🚨 Multi-Agent Mesh Handoff<br>⚡ 24h Sentiment Radar |
-| **🚨 PR Crisis Strategist Agent**<br>`studiosonar-pr-strategist` | **Rapid Crisis Mitigation & Brand Defense**<br>Synthesizes root causes with Gemini Flash and crafts official responses. | Triggered by negative sentiment spikes. Creates pinned comment prescriptions and mitigation checklists. | 📢 Slack `#media-alerts`<br>📋 Notion Action Board |
+| **🚨 PR Crisis Strategist Agent**<br>`studiosonar-pr-strategist` | **Rapid Crisis Mitigation & Brand Defense**<br>Synthesizes root causes with Gemini 3.7 Flash and crafts official responses. | Triggered by negative sentiment spikes. Creates pinned comment prescriptions and mitigation checklists. | 📢 Slack `#media-alerts`<br>📋 Notion Action Board |
 | **✍️ Viral Content Creator Agent**<br>`studiosonar-content-creator` | **Viral Growth Hacker & Derivative Scriptwriter**<br>Harvests viral hooks and produces 60s short-form video scripts. | Triggered by positive breakout engagement. Applies the Universal Viral Hook Playbook. | 📄 Google Docs Script Draft<br>💬 Slack Concept Pitch |
 
 ---
@@ -168,25 +195,13 @@ StudioSonar structures multi-platform intelligence by **Subject Entities & Campa
 
 ### 📺 Subject 4: Media Publishers & Creator Ecosystems
 *Monitors channel-wide publishing velocity, audience sentiment health, and booking conversions:*
-* 🌐 **YouTube Channel:** *Bloomberg Originals* (`@business` — 3.4M Subscribers • Semiconductor & Macroeconomics)
-* 🎬 **YouTube Channel:** *Kiểm Định Phim 9.0* (`@KiemDinhPhim9.0` — 48.4K Subscribers • Film Satire & Critique)
-* 📸 **TikTok Creator:** *Thợ Chụp Ảnh Đà Lạt* (`@thochupanh.dalat` — **85K Followers • 8.4% Save-to-View • 65% Bio Booking Inquiries**)
+* 🌐 **YouTube Channel:** *Bloomberg Originals* ([@business](https://www.youtube.com/@business) — 3.4M Subscribers • Semiconductor & Macroeconomics)
+* 🌐 **YouTube Channel:** *Google* ([@Google](https://www.youtube.com/@Google) — 11.5M Subscribers • Global Tech & AI Innovation)
+* 🌐 **YouTube Channel:** *The Verge* ([@TheVerge](https://www.youtube.com/@TheVerge) — 3.4M Subscribers • Consumer Tech Journalism & Hardware)
+* 🎬 **YouTube Channel:** *Kiểm Định Phim 9.0* ([@KiemDinhPhim9.0](https://www.youtube.com/@KiemDinhPhim9.0) — 48.4K Subscribers • Film Satire & Critique)
+* 📸 **TikTok Creator:** *Thợ Chụp Ảnh Đà Lạt* ([@thochupanh.dalat](https://www.tiktok.com/@thochupanh.dalat) — **85K Followers • 8.4% Save-to-View • 65% Bio Booking Inquiries**)
 
 ---
-
-### 🌐 Platform-Native Surveillance Philosophy (YouTube vs. TikTok)
-
-| Surveillance Vector | 📹 YouTube Surveillance Engine | 🎵 TikTok Surveillance Engine |
-| :--- | :--- | :--- |
-| **Core Value Metric** | **Comment Density & 4D Sentiment Breakdown** | **UGC Sound Propagation & Video Creation Footprint** |
-| **Data Accessibility** | Official Public Comments API (Long-form discussions) | Closed Comment API ➔ Replaced by **Derivative Video Count** |
-| **Audience Intent** | Macro debate, critique, analysis & timestamp feedback | **Creative Formats (Biến hình, Dance routine, Travel POV)** |
-| **Conversion Metric** | Watch-time retention & Community Tab Poll votes | **Save/Bookmark Rate (8.4%) & Bio Booking Inflow** |
-
----
-
-
-
 
 ## ⚡ Quickstart & Local Run
 
