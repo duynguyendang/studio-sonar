@@ -16,6 +16,7 @@ from typing import Dict, Any, Optional, List
 
 from src.core.llm_client import llm_client
 from src.core.gcs_report_manager import gcs_report_manager
+from src.core.registry_manager import registry_manager
 from src.core.report_schema import (
     SCHEMA_VIDEO,
     SCHEMA_CHANNEL,
