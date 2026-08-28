@@ -34,7 +34,7 @@ class RealStreamGenerator:
                     AVG(sentiment_score) as avg_sentiment,
                     COUNTIF(sentiment_score < -0.6) as negative_count
                 FROM `{settings.gcp_project_id}.{settings.bigquery_dataset}.comments`
-                WHERE timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
+                WHERE published_at >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
                 GROUP BY video_id
                 HAVING negative_count > 10 AND avg_sentiment < -0.6
                 ORDER BY negative_count DESC

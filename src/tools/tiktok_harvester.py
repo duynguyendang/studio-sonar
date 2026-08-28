@@ -63,7 +63,7 @@ class TikTokStreamHarvester:
                 q = f"""
                     SELECT 
                         count(*) as total_records,
-                        COUNTIF(timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)) as records_24h,
+                        COUNTIF(published_at >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)) as records_24h,
                         AVG(sentiment_score) as avg_sent
                     FROM `{settings.gcp_project_id}.{settings.bigquery_dataset}.comments`
                 """

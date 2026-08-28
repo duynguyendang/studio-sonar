@@ -39,7 +39,7 @@ class StudioSonarBigQueryClient:
                         COUNT(*) as baseline_volume,
                         0.0 as velocity_spike_pct
                     FROM `{self.project_id}.{self.dataset}.comments`
-                    WHERE timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL @window_hours HOUR)
+                    WHERE published_at >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL @window_hours HOUR)
                     GROUP BY video_id
                     HAVING negative_comments > 5
                     ORDER BY negative_comments DESC
