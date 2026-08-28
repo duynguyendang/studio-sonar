@@ -142,21 +142,21 @@ StudioSonar is deliberately deployed as **5 independent Google Cloud Run microse
 | **Weekly Reporting Overhead** | 40+ Hours / Channel | **0 Hours (Autonomous)** | Eliminates manual slide preparation; delivers real-time GCS dashboards. |
 | **Data Verifiability** | Anecdotal / Sampled | **100% Verified Telemetry** | Backed by BigQuery OLAP storage and mathematical velocity metrics. |
 
----
+## 🌟 Industry-Agnostic Applications
 
-## 🌟 Real-World Industry Use Cases
+StudioSonar is architected as a **universal autonomous intelligence engine** adaptable across diverse media domains:
 
-### 1. 🎵 Music Studios & Record Labels (e.g., Phương Mỹ Chi, Thùy Chi)
-* **Goal:** Maximize album release momentum and fan engagement.
-* **Autonomous Taskmaster Action:** When *'Thiên Đường Với Người Thương'* hits a **+310.0% Viral Retention Surge** with 74.2% of comments obsessing over the chorus melody, the swarm automatically drafts a TikTok Dance Challenge script and outlines pre-order merchandise links.
+### 1. 🎵 Entertainment Studios & Music Labels
+* **Goal:** Maximize release momentum, detect viral audio propagation, and protect artist brand safety.
+* **Taskmaster Flow:** Detects algorithmic velocity surges on YouTube MVs and derivative TikTok audio trends, auto-synthesizing short-form challenge hooks and community engagement playbooks.
 
-### 2. 🏭 Global Brands & Consumer Goods (e.g., Ferrero Nutella Factory)
-* **Goal:** Monitor industrial transparency and consumer health sentiment.
-* **Autonomous Taskmaster Action:** When industrial automation curiosity rises (+142.5%), but palm oil inquiries emerge (24.2%), the swarm automatically alerts the communications team with an FAQ prescription and proposes a 45s educational Short explaining laser hazelnut sorting.
+### 2. 🏭 Consumer Brands & Enterprise Product Teams
+* **Goal:** Monitor industrial transparency, product launches, customer sentiment friction, and brand trust.
+* **Taskmaster Flow:** Continuously benchmarks audience commentary against historical baselines, surfacing product perception shifts and drafting crisis response FAQs in real time.
 
-### 3. 🎬 Media Publishers & Film Critics (e.g., Bloomberg Originals, Kiểm Định Phim)
-* **Goal:** Protect editorial integrity and maintain community debate.
-* **Autonomous Taskmaster Action:** Detects macro supply chain debates vs. comedic roasting themes, generating real-time community engagement strategies without human intervention.
+### 3. 🎬 Digital Media Networks & Creator Collectives
+* **Goal:** Benchmark multi-channel publishing velocity, editorial sentiment health, and audience conversion.
+* **Taskmaster Flow:** Automates weekly channel scorecards, pinpoints high-CTR packaging opportunities, and routes action items directly into enterprise Notion and Slack workflows.
 
 ---
 
@@ -174,32 +174,26 @@ StudioSonar divides responsibilities across **5 specialized, decoupled microserv
 
 ---
 
-## 📹 Monitored Entities Grouped by Subject & Campaign
+## 📡 Dynamic Entity Monitoring & Extensible Taxonomy
 
-StudioSonar structures multi-platform intelligence by **Subject Entities & Campaigns**, connecting original video productions with their downstream TikTok UGC sound waves:
+StudioSonar operates with **Zero Hardcoded Entities**. Channels, videos, and UGC audio streams are registered dynamically at runtime:
 
-### 🎵 Subject 1: Phương Mỹ Chi x DTAP — 'Dân Chơi Dân Ca' Album Campaign
-*Tracks the full release cycle from official YouTube master videos to derivative TikTok dance trends:*
-* 📹 **YouTube Master MV:** *'Thiên Đường Với Người Thương'* (`UH21OnJwxZE` — 14.08M Views • +310.0% Viral Retention Surge)
-* 🎵 **TikTok Viral Sound:** *'Thiên Đường Với Người Thương' Official Audio* (`tt_sound_pmc_thien_duong` — **128,540 UGC Videos • +420% Sound Surge**)
-* 📹 **YouTube Highlight Medley:** *Album 'Dân Chơi Dân Ca'* (`Rp6ZnP5WRgI` — 232K Views • +245% Momentum)
-* 🎵 **TikTok Viral Sound:** *'Dân Chơi Dân Ca' (Drop Beat)* (`tt_sound_dtap_dan_choi` — **34,210 UGC Videos • +280% Velocity**)
+1. **Multi-Platform Support:** Ingests official YouTube Channels (`@handle` or Channel ID), individual YouTube Videos/Shorts, and TikTok UGC Sound Waves.
+2. **Custom Sentiment & Intent Taxonomies:** Each tracked entity supports custom behavioral classification dimensions (e.g., *Brand Loyalty, Product Feedback, Technical Inquiries, Viral Adoption*).
+3. **Flexible Lookback Windows & Cost Governance:** Configure 7-day, 14-day, or 30-day surveillance windows to optimize API quota and BigQuery compute.
+4. **Multi-Interface Registration:**
+   * **Web Cockpit UI:** One-click registration via the Command Center modal.
+   * **Natural Language Copilot:** Chat commands like *"Track channel @TheVerge with 14-day lookback"*.
+   * **Interactive CLI:** Run `python3 -m src.demo.tracking_manager_cli` for terminal-based management.
+   * **REST API:** Programmatic CRUD endpoints at `/api/v1/registry/tracking`.
 
-### 🎶 Subject 2: Thùy Chi — Western Vietnam Folk Music & Culture
-*Monitors organic vocal appreciation and scenic travel integration:*
-* 📹 **YouTube Master MV:** *'Yêu Lắm Miền Tây'* (`R7Bf4l5VgO8` — 15.8K Views • +185.0% Inflow Surge • 99.1% Positive Resonance)
+---
 
-### 🏭 Subject 3: Ferrero Nutella — Industrial Transparency & Supply Chain
-*Monitors consumer brand trust, engineering curiosity, and ingredient safety sentiment:*
-* 📹 **YouTube Documentary:** *How Ferrero Makes 365,000 Tons Of Nutella A Year* (`TNl9diGdyPo` — 388K Views • +142.5% Engineering Discovery)
+## 📊 Sample Reports vs. Real-Time Intelligence
 
-### 📺 Subject 4: Media Publishers & Creator Ecosystems
-*Monitors channel-wide publishing velocity, audience sentiment health, and booking conversions:*
-* 🌐 **YouTube Channel:** *Bloomberg Originals* ([@business](https://www.youtube.com/@business) — 3.4M Subscribers • Semiconductor & Macroeconomics)
-* 🌐 **YouTube Channel:** *Google* ([@Google](https://www.youtube.com/@Google) — 11.5M Subscribers • Global Tech & AI Innovation)
-* 🌐 **YouTube Channel:** *The Verge* ([@TheVerge](https://www.youtube.com/@TheVerge) — 3.4M Subscribers • Consumer Tech Journalism & Hardware)
-* 🎬 **YouTube Channel:** *Kiểm Định Phim 9.0* ([@KiemDinhPhim9.0](https://www.youtube.com/@KiemDinhPhim9.0) — 48.4K Subscribers • Film Satire & Critique)
-* 📸 **TikTok Creator:** *Thợ Chụp Ảnh Đà Lạt* ([@thochupanh.dalat](https://www.tiktok.com/@thochupanh.dalat) — **85K Followers • 8.4% Save-to-View • 65% Bio Booking Inquiries**)
+* 📁 **Pre-Generated Sample Reports:** The [`reports/`](reports/) folder contains canonical reference intelligence dossiers demonstrating the standardized 7-section channel audit and 6-section video performance architectures produced by Gemini 3.7 Flash.
+* 🌐 **Live Dynamic Dossiers:** For real-time, zero-cache intelligence dossiers generated dynamically from live BigQuery telemetry and stored in GCS (`gs://studiosonar-dev-reports`), visit the production command center:  
+  👉 [**https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app**](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)
 
 ---
 

@@ -465,7 +465,7 @@ flowchart LR
 
 ---
 
-## 📊 2. Multi-Subject Surveillance Matrix (Live Telemetry Ledger)
+## 📊 2. Cross-Platform Surveillance Matrix (Live Telemetry Ledger)
 
 | Asset / Platform | Views / Volume | Ingestion Status | Behavioral Sentiment Breakdown | AI Prescriptive Action |
 |---|---|---|---|---|
