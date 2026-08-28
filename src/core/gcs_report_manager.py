@@ -133,4 +133,37 @@ class GCSReportManager:
 
         return False
 
+    # ------------------------------------------------------------------ cycle ledger
+    # A small JSON ledger in GCS lets the dashboard stay IN SYNC with the
+    # async/job cycle: the UI polls until `completed_at` advances, then
+    # refreshes telemetry + reports knowing the data is fresh.
+
+    def save_cycle_ledger(self, ledger: dict) -> bool:
+        import json
+        payload = json.dumps(ledger, ensure_ascii=False, indent=2)
+        try:
+            bucket = self._get_bucket()
+            if bucket:
+                blob = bucket.blob("cycle_ledger.json")
+                blob.upload_from_string(payload, content_type="application/json")
+                logger.info(f"Cycle ledger updated: {ledger}")
+                return True
+        except Exception as e:
+            logger.warning(f"Failed to save cycle ledger: {e}")
+        return False
+
+    def fetch_cycle_ledger(self) -> dict:
+        import json
+        default = {"status": "UNKNOWN", "started_at": None, "completed_at": None}
+        try:
+            bucket = self._get_bucket()
+            if bucket:
+                blob = bucket.blob("cycle_ledger.json")
+                if blob.exists():
+                    data = json.loads(blob.download_as_text(encoding="utf-8"))
+                    return {**default, **data}
+        except Exception as e:
+            logger.debug(f"Cycle ledger fetch notice: {e}")
+        return default
+
 gcs_report_manager = GCSReportManager()

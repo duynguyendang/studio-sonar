@@ -430,6 +430,13 @@ def generate_quick_video_report(req: VideoAnalysisRequest) -> Dict[str, Any]:
         "report": report
     }
 
+@router.get("/api/v1/cycle/status")
+def get_cycle_status() -> Dict[str, Any]:
+    """Returns the current autonomous cycle ledger so the dashboard can stay in
+    sync with async/job executions (poll until completed_at advances)."""
+    ledger = gcs_report_manager.fetch_cycle_ledger()
+    return {"status": "SUCCESS", "ledger": ledger}
+
 @router.post("/api/v1/trigger-cycle")
 def trigger_scheduled_cycle(background_tasks: BackgroundTasks) -> Dict[str, Any]:
     """
@@ -437,17 +444,42 @@ def trigger_scheduled_cycle(background_tasks: BackgroundTasks) -> Dict[str, Any]
     Runs a full background analysis and autonomous Multi-Agent cycle across all tracks.
     The cycle executes asynchronously in the background so the long-running agent
     pipeline (ingest + parallel Gemini authoring + GCS publish) is never cut short
-    by the Cloud Run request timeout.
+    by the Cloud Run request timeout. A cycle ledger marks the run as RUNNING and,
+    on completion, records `completed_at` so the UI can refresh in sync.
     """
     import logging as _logging
+    from datetime import datetime, timezone as _tz
     _log = _logging.getLogger("studiosonar.routes")
+
+    now_iso = datetime.now(_tz.utc).isoformat()
+    gcs_report_manager.save_cycle_ledger({
+        "status": "RUNNING",
+        "started_at": now_iso,
+        "completed_at": None,
+        "source": "web_trigger",
+    })
 
     def _run_cycle():
         try:
             results = taskmaster_orchestrator.run_autonomous_cycle(cycle_type="ALL")
+            gcs_report_manager.save_cycle_ledger({
+                "status": "COMPLETED",
+                "started_at": now_iso,
+                "completed_at": datetime.now(_tz.utc).isoformat(),
+                "source": "web_trigger",
+                "reports_published": len(results.get("gcs_published_reports", [])),
+                "actions_executed": len(results.get("actions_executed", [])),
+            })
             _log.info(f"Autonomous cycle completed in background: {len(results.get('actions_executed', []))} actions, "
                       f"{len(results.get('gcs_published_reports', []))} reports published")
         except Exception as e:
+            gcs_report_manager.save_cycle_ledger({
+                "status": "FAILED",
+                "started_at": now_iso,
+                "completed_at": datetime.now(_tz.utc).isoformat(),
+                "source": "web_trigger",
+                "error": str(e),
+            })
             _log.exception("Autonomous background cycle failed: %s", e)
 
     background_tasks.add_task(_run_cycle)

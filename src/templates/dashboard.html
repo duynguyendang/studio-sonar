@@ -1597,7 +1597,7 @@
             loadReport(reportKey || 'realtime_24h');
         }
 
-        // 12. Trigger Autonomous Cycle Action
+        // 12. Trigger Autonomous Cycle Action (stays in sync with async cycle via ledger)
         async function triggerAutonomousCycle() {
             const btn = document.querySelector('.btn-trigger');
             const original = btn.innerHTML;
@@ -1605,16 +1605,44 @@
             btn.disabled = true;
 
             try {
+                // Capture the last completed cycle before firing.
+                const before = await fetch('/api/v1/cycle/status').then(r => r.json()).catch(() => null);
+                const beforeCompleted = before?.ledger?.completed_at || null;
+
                 const res = await fetch('/api/v1/trigger-cycle', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cycle_type: 'ALL' })
                 });
-                const data = await res.json();
-                alert(data.execution === 'ASYNCHRONOUS_BACKGROUND'
-                    ? `🚀 Autonomous cycle scheduled in background!\nReports will refresh shortly.`
-                    : `🎉 Autonomous Cycle Completed!\nRoot Agent: ${data.execution_summary?.root_agent || 'Taskmaster'}\nActions Executed: ${data.execution_summary?.actions_executed?.length || 6}`);
+                await res.json();
+
+                // Poll the cycle ledger until the cycle completes (newer completed_at).
+                const started = Date.now();
+                const timeoutMs = 15 * 60 * 1000; // allow up to 15 min
+                let done = false;
+                let statusText = '';
+                while (Date.now() - started < timeoutMs) {
+                    await new Promise(r => setTimeout(r, 8000));
+                    const st = await fetch('/api/v1/cycle/status').then(r => r.json()).catch(() => null);
+                    const ledger = st?.ledger || {};
+                    statusText = ledger.status || 'UNKNOWN';
+                    if (ledger.completed_at && ledger.completed_at !== beforeCompleted) {
+                        done = true;
+                        break;
+                    }
+                    if (ledger.status === 'FAILED') break;
+                }
+
+                if (done) {
+                    alert(`🎉 Autonomous Cycle Completed!\nStatus: ${statusText}\nRefreshing dashboard with fresh data...`);
+                } else {
+                    alert(statusText === 'FAILED'
+                        ? '⚠️ Autonomous cycle FAILED. Check Cloud Run logs.'
+                        : '⏳ Cycle still running — dashboard will keep showing latest refreshed data.');
+                }
+                // Refresh all views with the (now latest) data.
                 fetchSwarmTelemetry();
+                renderCockpitAssets();
                 loadReport('realtime_24h');
             } catch (e) {
                 alert("Trigger error: " + e.message);
