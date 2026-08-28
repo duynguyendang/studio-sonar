@@ -9,8 +9,14 @@ from src.models.tracking_models import (
     ChannelSnapshot,
     VideoMetricSnapshot
 )
-from src.tools.youtube_video_analyzer import extract_youtube_id, analyze_youtube_video_target
 from src.tools.video_report_generator import VideoReportGenerator
+
+def extract_youtube_id(url_or_id: str) -> str:
+    """Extracts 11-character YouTube video ID from URL or raw ID."""
+    match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", url_or_id)
+    if match:
+        return match.group(1)
+    return url_or_id
 
 STORAGE_FILE = "src/data/tracking_registry.json"
 
