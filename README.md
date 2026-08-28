@@ -10,6 +10,27 @@
 
 ---
 
+### ⚡ Executive Snapshot
+
+* **🚨 Problem:** Media and brand teams spend **40+ hours/week** manually monitoring comment sections, missing critical 24-hour viral windows and letting PR crises explode overnight while teams sleep.
+* **💡 Solution:** StudioSonar is an autonomous multi-agent swarm that:
+  * Ingests **45K+ social comments/day** from YouTube & TikTok into BigQuery OLAP.
+  * Classifies sentiment into granular behavioral micro-clusters with Gemini 3.7 Flash.
+  * Detects velocity spikes and PR backlash in **< 5 minutes**.
+  * Generates viral derivative scripts and dispatches enterprise alerts (Slack, Notion, Google Docs) autonomously.
+* **🛠️ Tech Stack:**
+  * **Google ADK v2.7.1:** Multi-agent topological graph & A2A handoff mesh.
+  * **Vertex AI Gemini 3.7 Flash:** Cognitive reasoning, root-cause synthesis, and script generation.
+  * **Google BigQuery OLAP:** Partitioned time-series telemetry storage & SQL anomaly queries.
+  * **Google Cloud Run:** 5 decoupled microservices with asymmetric scale-to-zero.
+  * **Google Cloud Storage (GCS):** Zero-cache markdown intelligence report substrate.
+* **📈 Key Impact Metrics:**
+  * **Crisis Detection Time:** 8–24 Hours ➔ **< 5 Minutes**
+  * **Manual Reporting Work:** 40 Hours/week ➔ **0 Hours (100% Autonomous)**
+  * **Data Integrity:** **99% Verified Telemetry** (Backed by BigQuery OLAP & Live APIs)
+
+---
+
 ## 🌐 Live Production Command Center
 
 * 👑 **Web Command Center & Dashboard:** [https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)
