@@ -145,9 +145,9 @@ class AgentTelemetrySync:
                 "total_memory_limit_mb": 1024.0,
                 "batch_id": batch_code,
                 "tasks_completed": snapshot_count,
-                "last_action": f"Analyzed {snapshot_count} partitioned BigQuery snapshots (UH21OnJwxZE: 15.48M views)",
+                "last_action": f"Analyzed {snapshot_count} partitioned BigQuery snapshots across active streams",
                 "last_tool_call": f"query_bigquery_sentiment_spikes() • {bq_duration_ms:.0f}ms measured",
-                "last_payload_summary": "+310% velocity surge detected",
+                "last_payload_summary": "Surveillance ledger active",
                 "updated_at": datetime.now(timezone.utc).isoformat()
             },
             {
@@ -175,7 +175,7 @@ class AgentTelemetrySync:
                 "total_memory_limit_mb": 1024.0,
                 "batch_id": batch_code,
                 "tasks_completed": 1,
-                "last_action": "Synthesized 60s viral Shorts script for 'Thiên Đường Với Người Thương'",
+                "last_action": "Synthesized 60s viral Shorts script for active trend leader",
                 "last_tool_call": "create_google_doc_video_script() • Vertex AI Reasoning",
                 "last_payload_summary": "Contrarian Truth Hook Framework",
                 "updated_at": datetime.now(timezone.utc).isoformat()

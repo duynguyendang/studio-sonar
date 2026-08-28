@@ -142,6 +142,12 @@ def get_swarm_telemetry():
     except Exception as e:
         logger.debug(f"Monitored streams resolution notice: {e}")
 
+    top_trend = RealStreamGenerator.get_real_viral_trend_leader()
+    top_title = top_trend.get("title", "High-Retention Video Stream")
+    top_vid_id = top_trend.get("video_id", "active_stream")
+    tiktok_sounds = [v for v in monitored_streams if v.get("platform") == "tiktok"]
+    top_sound_id = tiktok_sounds[0].get("id", "tt_sound_ugc") if tiktok_sounds else "tt_sound_ugc"
+
     return {
         "status": "ONLINE",
         "container_specs": real_system_specs,
@@ -173,7 +179,7 @@ def get_swarm_telemetry():
             "viral_content": {
                 "timestamp": "Live Query",
                 "agent": "ViralContentCreatorAgent",
-                "tool_call": "create_google_doc_video_script(topic='Thiên Đường Với Người Thương', duration=60s)",
+                "tool_call": f"create_google_doc_video_script(topic='{top_title[:35]}...', duration=60s)",
                 "result": "Autonomous 60s Shorts script synthesized by Gemini 3.7 Flash Engine",
                 "gemini_reasoning": "Synthesized 60s short-form script utilizing Cultural Heritage and Folk-Pop hook dynamics.",
                 "decision": "Published script draft & logged Notion sprint card for creative editors",
@@ -182,7 +188,7 @@ def get_swarm_telemetry():
             "tiktok_harvester": {
                 "timestamp": "Live Query",
                 "agent": "TikTokHarvesterAgent",
-                "tool_call": "harvest_tiktok_sound_velocity(sound_id='tt_sound_pmc_thien_duong')",
+                "tool_call": f"harvest_tiktok_sound_velocity(sound_id='{top_sound_id}')",
                 "result": f"Indexed {bq_total_snapshots} snapshots in BigQuery ledger. Live RapidAPI bridge connected.",
                 "gemini_reasoning": "Cross-platform audio resonance detected in Southeast Asia FYP feeds with high dance challenge adoption.",
                 "decision": "Synchronized sound telemetry to BigQuery table `video_snapshots`",

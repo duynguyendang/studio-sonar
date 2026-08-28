@@ -28,24 +28,17 @@ class SettingsCopilotAgent:
                         "reply": f"✅ Đã cập nhật thời gian theo dõi video **{updated.title[:40]}...** thành **{days} ngày** (FinOps Cost Saver kích hoạt)."
                     }
 
-        # Match by speaker/name in video
-        if "thắng" in msg_lower or "ye3b8" in msg_lower:
-            tracking_service.update_video_tracking_duration("ye3B8kPuTnc", days)
-            return {
-                "action_executed": "UPDATE_VIDEO_DURATION",
-                "video_id": "ye3B8kPuTnc",
-                "new_duration_days": days,
-                "reply": f"✅ Đã điều chỉnh thời gian theo dõi video **TS. Lương Minh Thắng (Momentum EP07)** thành **{days} ngày**."
-            }
-
-        if "quốc" in msg_lower or "kqbk" in msg_lower:
-            tracking_service.update_video_tracking_duration("kqBKKSV50es", days)
-            return {
-                "action_executed": "UPDATE_VIDEO_DURATION",
-                "video_id": "kqBKKSV50es",
-                "new_duration_days": days,
-                "reply": f"✅ Đã điều chỉnh thời gian theo dõi video **TS. Lê Viết Quốc (Momentum EP05)** thành **{days} ngày**."
-            }
+        # Dynamic fuzzy match against all actively tracked videos
+        for vid, v in tracking_service.videos.items():
+            title_words = [w.lower() for w in re.findall(r'\w+', v.title)]
+            if any(w in msg_lower for w in title_words if len(w) > 3):
+                updated = tracking_service.update_video_tracking_duration(vid, days)
+                return {
+                    "action_executed": "UPDATE_VIDEO_DURATION",
+                    "video_id": vid,
+                    "new_duration_days": days,
+                    "reply": f"✅ Đã điều chỉnh thời gian theo dõi video **{v.title[:40]}...** thành **{days} ngày**."
+                }
 
         # 2. Intent: Add Channel
         if any(kw in msg_lower for kw in ["thêm kênh", "follow kênh", "track channel", "add channel"]):

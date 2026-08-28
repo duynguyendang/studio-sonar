@@ -101,27 +101,33 @@ class TikTokStreamHarvester:
         }
 
     def get_sound_telemetry(self, sound_id: str) -> Optional[Dict[str, Any]]:
-        """Retrieves verified telemetry for a tracked TikTok sound."""
-        if "thien_duong" in sound_id:
-            return self.fetch_live_sound_metrics(
-                sound_query="tt_sound_pmc_thien_duong",
-                default_title="Thiên Đường Với Người Thương (Official Audio)",
-                artist="Phương Mỹ Chi x DTAP"
-            )
-        elif "dan_choi" in sound_id:
-            return self.fetch_live_sound_metrics(
-                sound_query="tt_sound_dtap_dan_choi",
-                default_title="Dân Chơi Dân Ca (Drop Beat Audio)",
-                artist="Phương Mỹ Chi x DTAP"
-            )
-        return None
+        """Retrieves verified telemetry dynamically for a tracked TikTok sound from registry."""
+        from src.core.registry_manager import registry_manager
+        videos = registry_manager.get_all_videos()
+        for v in videos:
+            if v.get("video_id") == sound_id or sound_id in v.get("video_id", ""):
+                return self.fetch_live_sound_metrics(
+                    sound_query=v.get("video_id", sound_id),
+                    default_title=v.get("title", f"Sound {sound_id}"),
+                    artist=v.get("channel_id", "Creator")
+                )
+        return self.fetch_live_sound_metrics(
+            sound_query=sound_id,
+            default_title=f"TikTok Sound {sound_id}",
+            artist="Tracked Sound Stream"
+        )
 
     def get_all_tracked_sounds(self) -> List[Dict[str, Any]]:
-        """Lists all actively monitored TikTok sounds."""
-        return [
-            self.get_sound_telemetry("tt_sound_pmc_thien_duong"),
-            self.get_sound_telemetry("tt_sound_dtap_dan_choi")
-        ]
+        """Lists all actively monitored TikTok sounds dynamically from registry."""
+        from src.core.registry_manager import registry_manager
+        videos = registry_manager.get_all_videos()
+        tiktok_vids = [v for v in videos if v.get("platform") == "tiktok" or v.get("video_id", "").startswith("tt_")]
+        results = []
+        for v in tiktok_vids:
+            sound = self.get_sound_telemetry(v.get("video_id"))
+            if sound:
+                results.append(sound)
+        return results if results else [self.fetch_live_sound_metrics("tt_sound_ugc", "UGC Sound Stream", "Creator")]
 
     def process_incoming_webhook(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Processes real-time webhook events from TikTok Business API."""

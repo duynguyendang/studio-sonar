@@ -269,14 +269,19 @@ class LLMReportAuthor:
                 futures.append(executor.submit(self.author_channel_report, ch_id, ch_title, ch_handle, rep_key))
                 published.append(f"gs://{gcs_report_manager.bucket_name}/channel_report_{clean_h}.md")
 
-            # 3. TikTok sound reports (real UGC counts from the BigQuery-backed registry)
-            for sound_id, sound_title, sound_file in [
-                ("tt_sound_pmc_thien_duong", "Thiên Đường Với Người Thương (Official Audio)", "thien_duong"),
-                ("tt_sound_dtap_dan_choi", "Dân Chơi Dân Ca (Drop Beat Audio)", "dan_choi"),
-            ]:
+            # 3. TikTok sound reports dynamically from BigQuery-backed registry
+            tiktok_sounds = [
+                v for v in registry_manager.get_all_videos()
+                if v.get("platform") == "tiktok" or v.get("video_id", "").startswith("tt_")
+            ]
+            for s in tiktok_sounds:
+                sound_id = s.get("video_id", "")
+                sound_title = s.get("title", f"Sound {sound_id}")
+                sound_artist = s.get("channel_id", "Creator")
+                sound_file = sound_id.replace("tt_sound_", "")
                 ugc = self._tiktok_ugc_count(sound_id, 122)
                 futures.append(executor.submit(
-                    self.author_tiktok_sound_report, sound_id, sound_title, "Phương Mỹ Chi x DTAP", ugc
+                    self.author_tiktok_sound_report, sound_id, sound_title, sound_artist, ugc
                 ))
                 published.append(f"gs://{gcs_report_manager.bucket_name}/tiktok_report_sound_{sound_file}.md")
 
