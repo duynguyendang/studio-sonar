@@ -262,9 +262,9 @@ $$V_{\text{ratio}} = \frac{V_{\text{new, 24h}}}{V_{\text{baseline}}}$$
 ### 4.5 Comment Inflow Velocity ($V_{\text{comment}}$) & Incremental Baseline Substrate
 To eliminate the overhead of re-fetching historical comments on viral videos (e.g. videos with 26K+ comments), StudioSonar uses BigQuery `video_snapshots` as an **Incremental Time-Cursor Baseline**:
 
-$$V_{\text{comment}} = \frac{\Delta \text{Comments}}{\Delta t} = \frac{\text{Comments}(t_{\text{now}}) - \text{Comments}(t_{\text{previous}})}{t_{\text{now}} - t_{\text{previous}}}$$
+$$V_{\text{comment}} = \frac{\Delta \text{Comments}}{\Delta t} = \frac{\text{Comments}(t_{\text{now}}) - \text{Comments}(t_{\text{prev}})}{t_{\text{now}} - t_{\text{prev}}}$$
 
-* **Incremental Ingestion:** The system only fetches newly published comments where $\text{published\_at} > t_{\text{previous}}$, achieving 99% API quota reduction.
+* **Incremental Ingestion:** The system only fetches newly published comments where `published_at` $> t_{\text{prev}}$, achieving 99% API quota reduction.
 
 ---
 
@@ -273,9 +273,9 @@ Measures the transition speed from positive audience discourse to negative backl
 
 $$\Delta V_{\text{neg}} = \frac{S_{\text{neg}}(t_{\text{now}}) - S_{\text{neg}}(t_{\text{baseline}})}{\Delta t}$$
 
-$$\text{Leading-Edge Friction Ratio} = \frac{\text{Negative Comments in } [t_{\text{prev}}, t_{\text{now}}]}{\text{Total Incremental Comments in } [t_{\text{prev}}, t_{\text{now}}]}$$
+$$\text{Friction Ratio} = \frac{\text{Negative Comments in } [t_{\text{prev}}, t_{\text{now}}]}{\text{Total Incremental Comments in } [t_{\text{prev}}, t_{\text{now}}]}$$
 
-* **Early-Warning Threshold:** If $\text{Leading-Edge Friction Ratio} \ge 25\%$ or $\Delta V_{\text{neg}} > 150\%$, the multi-agent graph triggers immediate P1 escalation before the overall historical rating is diluted.
+* **Early-Warning Threshold:** If $\text{Friction Ratio} \ge 25\%$ or $\Delta V_{\text{neg}} > 150\%$, the multi-agent graph triggers immediate P1 escalation before the overall historical rating is diluted.
 
 ---
 
