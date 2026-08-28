@@ -48,127 +48,51 @@ class TrackingManagerService:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
     def _seed_default_tracked_entities(self):
-        """Seeds initial target channels and videos analyzed in the project."""
-        # 1. Seed Channels
-        # Pre-seed target channels with industry-specific tailored taxonomies
-        self.channels["ch_business"] = TrackedChannel(
-            channel_id="ch_business",
-            handle="@business",
-            platform="youtube",
-            title="Bloomberg Originals",
-            category="Global Business & Documentaries",
-            tracking_status="ACTIVE",
-            check_frequency_minutes=15,
-            video_lookback_days=30,
-            custom_sentiment_categories=["Macroeconomic Debates", "Data & Source Requests", "Contrarian Perspectives", "Editorial Praise"],
-            notification_channel="#media-alerts",
-            snapshots=[ChannelSnapshot(subscriber_count=3400000, total_video_count=1850, average_views_per_video=650000.0)]
-        )
+        """Seeds initial target channels and videos from canonical seeder module."""
+        from src.data.registry_seeder import SEED_CHANNELS, SEED_VIDEOS
 
-        self.channels["ch_kiemdinhphim90"] = TrackedChannel(
-            channel_id="ch_kiemdinhphim90",
-            handle="@KiemDinhPhim9.0",
-            platform="youtube",
-            title="Kiểm Định Phim 9.0",
-            category="Film Criticism & Satire",
-            tracking_status="ACTIVE",
-            check_frequency_minutes=15,
-            video_lookback_days=30,
-            custom_sentiment_categories=["Comedic Roasting Praise", "Actor & Drama Defense", "Next Episode Suggestions", "Awards Voting"],
-            notification_channel="#media-alerts",
-            snapshots=[ChannelSnapshot(subscriber_count=48400, total_video_count=65, average_views_per_video=55000.0)]
-        )
+        for c in SEED_CHANNELS:
+            self.channels[c["channel_id"]] = TrackedChannel(
+                channel_id=c["channel_id"],
+                handle=c["handle"],
+                platform=c.get("platform", "youtube"),
+                title=c.get("title", c["handle"]),
+                category=c.get("category", "General"),
+                tracking_status=c.get("tracking_status", "ACTIVE"),
+                check_frequency_minutes=c.get("check_frequency_minutes", 15),
+                video_lookback_days=c.get("video_lookback_days", 30),
+                custom_sentiment_categories=c.get("custom_sentiment_categories", [
+                    "Praise & Loyalty", "Technical Inquiries", "Commercial Leads", "Complaints & Friction"
+                ]),
+                notification_channel=c.get("notification_channel", "#media-alerts"),
+                snapshots=[ChannelSnapshot(
+                    subscriber_count=c.get("subscriber_count", 0),
+                    total_video_count=c.get("total_video_count", 0),
+                    average_views_per_video=c.get("average_views_per_video", 0.0)
+                )]
+            )
 
-        self.channels["ch_thochupanhdalat"] = TrackedChannel(
-            channel_id="ch_thochupanhdalat",
-            handle="@thochupanh.dalat",
-            platform="tiktok",
-            title="Thợ Chụp Ảnh Đà Lạt",
-            category="Travel & Photography",
-            tracking_status="ACTIVE",
-            check_frequency_minutes=15,
-            video_lookback_days=30,
-            custom_sentiment_categories=["Direct Booking & Pricing", "Aesthetic & Photo Praise", "Location Inquiries", "Service Feedback"],
-            notification_channel="#media-alerts",
-            snapshots=[ChannelSnapshot(subscriber_count=85000, total_video_count=120, average_views_per_video=210000.0)]
-        )
-
-        self.channels["ch_google"] = TrackedChannel(
-            channel_id="ch_google",
-            handle="@Google",
-            platform="youtube",
-            title="Google",
-            category="Global Tech & AI Innovation",
-            tracking_status="ACTIVE",
-            check_frequency_minutes=15,
-            video_lookback_days=30,
-            custom_sentiment_categories=["AI Innovation & Gemini", "Android & Pixel Ecosystem", "Developer Tools & Cloud", "Product Feedback & Critique"],
-            notification_channel="#media-alerts",
-            snapshots=[ChannelSnapshot(subscriber_count=11500000, total_video_count=3200, average_views_per_video=450000.0)]
-        )
-
-        self.channels["ch_theverge"] = TrackedChannel(
-            channel_id="ch_theverge",
-            handle="@TheVerge",
-            platform="youtube",
-            title="The Verge",
-            category="Tech Journalism & Consumer Tech Reviews",
-            tracking_status="ACTIVE",
-            check_frequency_minutes=15,
-            video_lookback_days=30,
-            custom_sentiment_categories=["Product Reviews & Gadgets", "Tech Policy & Editorial", "Reviewer Authenticity", "Design & Hardware Critique"],
-            notification_channel="#media-alerts",
-            snapshots=[ChannelSnapshot(subscriber_count=3400000, total_video_count=4500, average_views_per_video=280000.0)]
-        )
-
-        # Pre-seed target priority videos
-        self.videos["ye3B8kPuTnc"] = TrackedVideo(
-            video_id="ye3B8kPuTnc",
-            channel_id="ch_momentum",
-            url="https://www.youtube.com/watch?v=ye3B8kPuTnc",
-            title="Dr. Luong Minh Thang: From Google Translate to the Superhuman AI Race | Momentum EP7",
-            published_at="2026-08-20T10:00:00Z",
-            tracking_duration_days=30,
-            custom_sentiment_categories=["National Pride & Inspiration", "Luong Attention & AlphaProof Inquiries", "Scholarship & Mentorship", "Audio & Pacing Feedback"],
-            monitoring_tier="HIGH_PRIORITY_24H",
-            tracking_status="ACTIVE",
-            generated_report_path="reports/video_report_ye3B8kPuTnc.md",
-            snapshots=[
-                VideoMetricSnapshot(
-                    hours_since_publish=18.5,
-                    views=58400,
-                    likes=4200,
-                    comments=386,
-                    velocity_views_per_hour=312.5,
-                    sentiment_positive_pct=96.8,
-                    sentiment_negative_pct=0.4
-                )
-            ]
-        )
-
-        self.videos["kqBKKSV50es"] = TrackedVideo(
-            video_id="kqBKKSV50es",
-            channel_id="ch_momentum",
-            url="https://www.youtube.com/watch?v=kqBKKSV50es",
-            title="Từ SCIENTIST đến INNOVATOR: Google tạo bệ phóng để TS. Lê Viết Quốc đi xa thế nào? | MOMENTUM EP05",
-            published_at="2026-08-22T10:00:00Z",
-            tracking_duration_days=30,
-            custom_sentiment_categories=["Reverence for Scientific Humility", "Seq2Seq & Neural Architecture Inquiries", "Startup Founder Collaboration", "Title Packaging Feedback"],
-            monitoring_tier="HIGH_PRIORITY_24H",
-            tracking_status="ACTIVE",
-            generated_report_path="reports/video_report_kqBKKSV50es.md",
-            snapshots=[
-                VideoMetricSnapshot(
+        for v in SEED_VIDEOS:
+            self.videos[v["video_id"]] = TrackedVideo(
+                video_id=v["video_id"],
+                channel_id=v.get("channel_id", "unknown"),
+                url=v.get("url", f"https://www.youtube.com/watch?v={v['video_id']}"),
+                title=v.get("title", f"Video {v['video_id']}"),
+                published_at=v.get("published_at", datetime.now(timezone.utc).isoformat()),
+                tracking_duration_days=30,
+                custom_sentiment_categories=["National Pride & Inspiration", "Technical Innovation", "Audience Engagement"],
+                monitoring_tier=v.get("monitoring_tier", "HIGH_PRIORITY_24H"),
+                tracking_status=v.get("tracking_status", "ACTIVE"),
+                snapshots=[VideoMetricSnapshot(
                     hours_since_publish=24.0,
-                    views=10317,
-                    likes=680,
-                    comments=192,
-                    velocity_views_per_hour=85.0,
-                    sentiment_positive_pct=98.2,
-                    sentiment_negative_pct=0.2
-                )
-            ]
-        )
+                    views=v.get("view_count", 0),
+                    likes=v.get("like_count", 0),
+                    comments=v.get("comment_count", 0),
+                    velocity_views_per_hour=120.0,
+                    sentiment_positive_pct=96.0,
+                    sentiment_negative_pct=1.0
+                )]
+            )
         self._save_storage()
 
     # --- CHANNEL MANAGEMENT ---
