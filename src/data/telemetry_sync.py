@@ -69,14 +69,6 @@ class AgentTelemetrySync:
         if not client:
             return
 
-        # Query real task metrics from BigQuery
-        snapshot_count = 0
-        try:
-            q = f"SELECT count(*) as cnt FROM `{self.project_id}.{self.dataset}.video_snapshots` WHERE snapshot_timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)"
-            rows = list(client.query(q).result())
-            if rows:
-                snapshot_count = rows[0].cnt
-        except Exception:
         import time
 
         # Measure real BigQuery & Channel Query latencies dynamically
