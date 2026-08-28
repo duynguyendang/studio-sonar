@@ -485,15 +485,15 @@ gcloud scheduler jobs update http studiosonar-taskmaster-heartbeat \
 
 ---
 
-## 8. Live Production Infrastructure & Endpoints
+## 8. Production Mesh Topology & Architecture Resources
 
-| Microservice / Component | Live URL / Resource Path | Role |
+| Microservice / Component | Resource / Endpoint | Role |
 | :--- | :--- | :--- |
 | 👑 **Root Taskmaster & Dashboard** | `https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app` | Central Commander & UI |
-| 📡 **Channel Sentinel Agent** | `https://studiosonar-channel-monitor-598161588592.us-central1.run.app` | Watchdog & Benchmarks |
-| 🔍 **Anomaly Detector Agent** | `https://studiosonar-anomaly-detector-598161588592.us-central1.run.app` | BigQuery Math Radar |
-| 🚨 **PR Crisis Strategist Agent** | `https://studiosonar-pr-strategist-598161588592.us-central1.run.app` | Brand Defense & Slack Alerts |
-| ✍️ **Viral Content Creator Agent** | `https://studiosonar-content-creator-598161588592.us-central1.run.app` | 60s Video Scripts & GDocs |
-| ⏱️ **Cloud Scheduler Heartbeat** | `projects/studiosonar-dev/locations/us-central1/jobs/studiosonar-taskmaster-heartbeat` | 1-Hour Cron (`0 * * * *`) |
-| ☁️ **GCS Reports Storage** | `gs://studiosonar-dev-reports` | Markdown Dossier Substrate |
-| 📊 **BigQuery OLAP Dataset** | `studiosonar-dev.studiosonar_analytics` | Historical Telemetry Ledger |
+| 📡 **Channel Sentinel Agent** | `Internal Cloud Run Mesh` | Watchdog & Benchmarks |
+| 🔍 **Anomaly Detector Agent** | `Internal Cloud Run Mesh` | BigQuery Math Radar |
+| 🚨 **PR Crisis Strategist Agent** | `Internal Cloud Run Mesh` | Brand Defense & Slack Alerts |
+| ✍️ **Viral Content Creator Agent** | `Internal Cloud Run Mesh` | 60s Video Scripts & GDocs |
+| ⏱️ **Cloud Scheduler Heartbeat** | `Google Cloud Scheduler` | 1-Hour Cron (`0 * * * *`) |
+| ☁️ **GCS Reports Storage** | `Google Cloud Storage Substrate` | Markdown Dossier Substrate |
+| 📊 **BigQuery OLAP Dataset** | `BigQuery Time-Series Partitions` | Historical Telemetry Ledger |

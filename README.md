@@ -12,13 +12,8 @@
 
 ## 🌐 Live Production Command Center
 
-* 👑 **Root Taskmaster & Web Dashboard:** [https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)
-* 📡 **Channel Sentinel Agent:** `https://studiosonar-channel-monitor-598161588592.us-central1.run.app`
-* 🔍 **Anomaly Detector Agent:** `https://studiosonar-anomaly-detector-598161588592.us-central1.run.app`
-* 🚨 **PR Crisis Strategist Agent:** `https://studiosonar-pr-strategist-598161588592.us-central1.run.app`
-* ✍️ **Viral Content Creator Agent:** `https://studiosonar-content-creator-598161588592.us-central1.run.app`
+* 👑 **Web Command Center & Dashboard:** [https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)
 * ⏱️ **Autonomous Scheduler Heartbeat:** 1-Hour Interval (`0 * * * *` via Google Cloud Scheduler)
-* ☁️ **Intelligence Reports Storage:** `gs://studiosonar-dev-reports`
 
 ---
 
