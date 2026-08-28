@@ -12,22 +12,21 @@
 
 ### ⚡ Executive Snapshot
 
-* **🚨 Problem:** Media and brand teams spend **40+ hours/week** manually monitoring comment sections, missing critical 24-hour viral windows and letting PR crises explode overnight while teams sleep.
+* **🚨 Problem:** Media and brand teams spend tens of hours every week manually sifting through comment sections, missing critical 24-hour algorithmic windows and letting PR crises explode overnight while teams sleep.
 * **💡 Solution:** StudioSonar is an autonomous multi-agent swarm that:
-  * Ingests **45K+ social comments/day** from YouTube & TikTok into BigQuery OLAP.
-  * Classifies sentiment into granular behavioral micro-clusters with Gemini 3.7 Flash.
-  * Detects velocity spikes and PR backlash in **< 5 minutes**.
-  * Generates viral derivative scripts and dispatches enterprise alerts (Slack, Notion, Google Docs) autonomously.
+  * **Understands Semantics at Scale:** Continuously ingests and deeply parses high-velocity comment streams from YouTube & TikTok on demand into behavioral micro-clusters.
+  * **Acts Autonomously in Real Time:** Detects mathematical velocity spikes and PR backlash in minutes with zero human prompting.
+  * **Executes Enterprise Workflows:** Automatically drafts ready-to-produce 60s viral scripts and dispatches containment playbooks across Slack, Notion, and Google Docs.
 * **🛠️ Tech Stack:**
   * **Google ADK v2.7.1:** Multi-agent topological graph & A2A handoff mesh.
-  * **Vertex AI Gemini 3.7 Flash:** Cognitive reasoning, root-cause synthesis, and script generation.
+  * **Vertex AI Gemini 3.7 Flash:** Cognitive reasoning, deep semantic comprehension, and creative synthesis.
   * **Google BigQuery OLAP:** Partitioned time-series telemetry storage & SQL anomaly queries.
-  * **Google Cloud Run:** 5 decoupled microservices with asymmetric scale-to-zero.
+  * **Google Cloud Run:** 5 decoupled microservices with serverless scale-to-zero.
   * **Google Cloud Storage (GCS):** Zero-cache markdown intelligence report substrate.
-* **📈 Key Impact Metrics:**
-  * **Crisis Detection Time:** 8–24 Hours ➔ **< 5 Minutes**
-  * **Manual Reporting Work:** 40 Hours/week ➔ **0 Hours (100% Autonomous)**
-  * **Data Integrity:** **99% Verified Telemetry** (Backed by BigQuery OLAP & Live APIs)
+* **📈 Core Superpowers:**
+  * **Deep Semantic Comprehension:** Goes far beyond keyword matching to parse cultural nuances, audience obsession hooks, and brand friction.
+  * **100% Autonomous Taskmaster:** Self-initiating multi-agent swarm that reasons, decides, and executes without waiting for prompts.
+  * **Enterprise Data Sovereignty:** 100% private data stored and queried in your own BigQuery OLAP and GCS buckets.
 
 ---
 
@@ -151,29 +150,31 @@ StudioSonar is deliberately deployed as **5 independent Google Cloud Run microse
 
 ## 🚀 Outstanding AI-Powered Capabilities & Business Impact
 
-StudioSonar operates as an **Autonomous Taskmaster Workforce** powered by Google ADK and Vertex AI Gemini 3.7 Flash:
+StudioSonar operates as a **Zero-Prompt Autonomous Taskmaster Swarm** powered by Google ADK and Vertex AI Gemini 3.7 Flash:
 
-| Core Metric | Autonomous Swarm Performance | Enterprise Impact |
-| :--- | :---: | :--- |
-| **🚨 Crisis Detection & Containment** | **< 5 Minutes** | Detects negative sentiment spikes and drafts containment playbooks before news escalation. |
-| **✍️ Derivative Content Turnaround** | **< 15 Minutes** | Captures the peak 24-hour algorithmic window with ready-to-produce 60s viral scripts. |
-| **📊 Weekly Reporting Overhead** | **0 Hours (100% Autonomous)** | Eliminates manual slide preparation; delivers real-time GCS dossiers and live dashboard. |
-| **🛡️ Data Verifiability & Sovereignty** | **99% Verified Telemetry** | 100% private data stored in your Google BigQuery & GCS with zero vendor lock-in. |
+| Core Pillar | Autonomous Swarm Architecture | Enterprise Impact |
+| :--- | :--- | :--- |
+| **🧠 Deep Semantic Understanding at Scale** | Continuously streams & parses high-velocity comments into behavioral micro-clusters on demand. | Goes far beyond primitive polarity to uncover root causes and creative hooks. |
+| **⚡ Autonomous Taskmaster Execution** | Self-initiating multi-agent graph triggers real-time actions with zero human prompting. | Eliminates human latency in capturing viral peaks or containing crises. |
+| **✍️ Instant 60s Script Synthesis** | Detects algorithmic momentum and auto-drafts production-ready short-form scripts. | Captures the peak algorithmic FYP window across YouTube Shorts & TikTok. |
+| **🚨 Predictive PR Crisis Containment** | Evaluates mathematical negative velocity spikes and formulates root-cause containment plans. | Prevents brand damage before external public relations escalation. |
+| **☁️ Serverless Scale-to-Zero & Sovereignty** | Elastic microservices scale on demand and sleep when idle; 100% private BigQuery & GCS storage. | Maximum cloud efficiency with complete enterprise data privacy and zero vendor lock-in. |
 
 ---
 
-### 💎 Key AI Innovations
+### 💎 The 5 Superpowers of StudioSonar
 
-1. **⚡ Autonomous 60s Short-Form Script Synthesis (Universal Viral Hook Engine):**
-   * Detects positive velocity breakouts on YouTube MVs and TikTok UGC audio streams.
-   * Gemini 3.7 Flash automatically synthesizes ready-to-film 60s short-form video scripts (Shorts/TikTok/Reels) using the *Universal Viral Hook Playbook* (Pattern Interrupt, Contrarian Truth, Aesthetic Pacing) and exports directly into Google Docs and Slack.
-2. **🚨 Predictive PR Crisis Containment & Root-Cause Diagnosis:**
-   * Continuously monitors negative comment velocity ($\Delta V_{\text{neg}} > 150\%$) on BigQuery OLAP.
-   * Gemini 3.7 Flash synthesizes the exact root cause behind audience backlash in under 5 minutes, auto-generating a mitigation checklist, official pinned comment response, and Notion emergency triage board.
-3. **🧠 Continuous Deep Comment Understanding & Behavioral Micro-Clustering:**
-   * Ingests 45,000+ social comments/day and parses nuanced Vietnamese/English vernacular into **behavioral micro-clusters** (e.g., *Chorus Replay Obsession, Aesthetic Appreciation, Technical Inquiries, Toxic Friction*), providing actionable creative feedback beyond primitive positive/negative scores.
-4. **☁️ Cloud Run Asymmetric Scale-to-Zero (>90% FinOps Efficiency):**
-   * The 5 microservices scale down to **0 instances** when idle. Heavy compute only executes during active hourly batch cycles or event triggers, reducing operational cloud cost to **~$30 – $100/month**.
+1. **🧠 Continuous Deep Semantic Understanding at Massive Scale (Scale on Demand):**
+   * Continuously ingests unstructured, high-velocity social comment streams from YouTube and TikTok without human bottleneck.
+   * Leverages Gemini 3.7 Flash to decipher nuanced multilingual vernacular, sarcasm, slang, and cultural subtext into **actionable behavioral micro-clusters** (e.g., *Chorus Replay Obsession, Visual Aesthetic Appreciation, Technical Inquiries, Toxic Backlash*), providing rich creative and strategic direction far beyond primitive positive/negative scores.
+2. **⚡ Autonomous 60s Short-Form Script Synthesis (Universal Viral Hook Engine):**
+   * Automatically detects viral velocity breakouts on master videos and derivative audio waves.
+   * Synthesizes ready-to-produce 60s video drafts (Shorts/TikTok/Reels) using the *Universal Viral Hook Playbook* (Pattern Interrupt, Contrarian Truth, Aesthetic Pacing) and exports directly into Google Docs and Slack with zero manual prompting.
+3. **🚨 Predictive PR Crisis Containment & Root-Cause Diagnosis:**
+   * Continuously benchmarks negative comment velocity against historical baselines on BigQuery OLAP.
+   * Autonomously diagnoses the underlying root cause of audience friction in minutes, generating a comprehensive mitigation checklist, official pinned comment responses, and Notion emergency triage boards.
+4. **☁️ Cloud-Native Elastic Scale-to-Zero Architecture:**
+   * Built on 5 decoupled Google Cloud Run microservices that automatically scale on demand to handle viral traffic surges seamlessly, and scale back down to zero instances during idle periods for maximum cloud efficiency.
 5. **🛡️ 100% Enterprise Data Sovereignty & Zero-Key Security:**
    * All raw comments, time-series metrics, and intelligence reports remain securely housed inside your enterprise's private **Google BigQuery** partitions and **GCS buckets** (`gs://studiosonar-dev-reports`), governed by Vertex AI IAM Workload Identity with zero exposed API keys.
 
