@@ -259,19 +259,32 @@ $$V_{\text{ratio}} = \frac{V_{\text{new, 24h}}}{V_{\text{baseline}}}$$
 
 ---
 
-### 4.5 Comment Conversion Density ($\text{CVR}$) & Hourly Inflow ($V_{\text{comment}}$)
-Measures active engagement and audience discourse density:
+### 4.5 Comment Inflow Velocity ($V_{\text{comment}}$) & Incremental Baseline Substrate
+To eliminate the overhead of re-fetching historical comments on viral videos (e.g. videos with 26K+ comments), StudioSonar uses BigQuery `video_snapshots` as an **Incremental Time-Cursor Baseline**:
 
-$$\text{CVR} = \left( \frac{\text{Total Comments}}{\text{Total Views}} \right) \times 100\% \qquad\qquad V_{\text{comment}} = \frac{\Delta \text{Comments}}{\Delta t \text{ (hours)}}$$
+$$V_{\text{comment}} = \frac{\Delta \text{Comments}}{\Delta t} = \frac{\text{Comments}(t_{\text{now}}) - \text{Comments}(t_{\text{previous}})}{t_{\text{now}} - t_{\text{previous}}}$$
+
+* **Incremental Ingestion:** The system only fetches newly published comments where $\text{published\_at} > t_{\text{previous}}$, achieving 99% API quota reduction.
 
 ---
 
-### 4.6 Routing Decision Matrix
+### 4.6 Sentiment Inversion Velocity & Friction Delta ($\Delta V_{\text{neg}}$)
+Measures the transition speed from positive audience discourse to negative backlash:
+
+$$\Delta V_{\text{neg}} = \frac{S_{\text{neg}}(t_{\text{now}}) - S_{\text{neg}}(t_{\text{baseline}})}{\Delta t}$$
+
+$$\text{Leading-Edge Friction Ratio} = \frac{\text{Negative Comments in } [t_{\text{prev}}, t_{\text{now}}]}{\text{Total Incremental Comments in } [t_{\text{prev}}, t_{\text{now}}]}$$
+
+* **Early-Warning Threshold:** If $\text{Leading-Edge Friction Ratio} \ge 25\%$ or $\Delta V_{\text{neg}} > 150\%$, the multi-agent graph triggers immediate P1 escalation before the overall historical rating is diluted.
+
+---
+
+### 4.7 Routing Decision Matrix
 
 | Mathematical Condition | Qualitative Tag | Swarm Action & Handoff |
 | :--- | :--- | :--- |
 | $\Delta \text{Velocity} \% > +200\%$ AND Positive Sentiment $\ge 95\%$ | 🚀 **Viral Retention Surge** | Handoff to `ViralContentCreatorAgent` $\to$ Draft 60s Script in Google Docs. |
-| $\Delta \text{Velocity} \% > +150\%$ AND Negative Sentiment $\ge 20\%$ | 🚨 **PR Backlash Surge** | Handoff to `PRCrisisStrategistAgent` $\to$ Dispatch Slack Alert P1 & Notion Triage. |
+| $\Delta V_{\text{neg}} > +150\%$ OR Friction Ratio $\ge 25\%$ | 🚨 **PR Backlash Surge** | Handoff to `PRCrisisStrategistAgent` $\to$ Dispatch Slack Alert P1 & Notion Triage. |
 | $-20\% \le \Delta \text{Velocity} \% \le +50\%$ | 🟢 **Steady Engagement** | Update real-time GCS Dossier; continue regular 1h surveillance. |
 
 ---
