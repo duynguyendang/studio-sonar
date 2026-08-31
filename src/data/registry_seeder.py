@@ -44,27 +44,6 @@ SEED_CHANNELS: List[Dict[str, Any]] = [
         "average_views_per_video": 650000.0
     },
     {
-        "channel_id": "ch_kiemdinhphim90",
-        "report_key": "channel_kiemdinhphim",
-        "handle": "@KiemDinhPhim9.0",
-        "platform": "youtube",
-        "title": "Kiểm Định Phim 9.0",
-        "category": "Film Criticism & Satire",
-        "tracking_status": "ACTIVE",
-        "check_frequency_minutes": 15,
-        "video_lookback_days": 30,
-        "notification_channel": "#media-alerts",
-        "custom_sentiment_categories": [
-            "Comedic Roasting Praise",
-            "Actor & Drama Defense",
-            "Next Episode Suggestions",
-            "Awards Voting"
-        ],
-        "subscriber_count": 48400,
-        "total_video_count": 65,
-        "average_views_per_video": 55000.0
-    },
-    {
         "channel_id": "ch_thochupanhdalat",
         "report_key": "channel_thochupanh",
         "handle": "@thochupanh.dalat",
@@ -224,25 +203,6 @@ SEED_VIDEOS: List[Dict[str, Any]] = [
         "view_count": 15842,
         "like_count": 1278,
         "comment_count": 191
-    },
-    {
-        "video_id": "TNl9diGdyPo",
-        "channel_id": "ch_business",
-        "platform": "youtube",
-        "url": "https://www.youtube.com/watch?v=TNl9diGdyPo",
-        "title": "How Ferrero Makes 365,000 Tons Of Nutella A Year | Big Business | Business Insider",
-        "published_at": "2026-08-24T12:00:00Z",
-        "monitoring_tier": "HIGH_PRIORITY_24H",
-        "tracking_status": "ACTIVE",
-        "custom_sentiment_categories": [
-            "Industrial Automation Fascination",
-            "Raw Ingredient Quality & Palm Oil",
-            "Factory Engineering Praise",
-            "Commercial Scale Inquiries"
-        ],
-        "view_count": 388149,
-        "like_count": 4830,
-        "comment_count": 473
     }
 ]
 

@@ -1,4 +1,5 @@
 import os
+import time
 import logging
 import threading
 from typing import Optional
@@ -13,14 +14,17 @@ AGENT_PLATFORM_OPENAPI_PATH = (
 
 class GeminiLLMClient:
     """
-    Unified Google Gemini LLM Client for Google ADK Multi-Agent System.
+    Unified Google Gemini LLM Client for the Google ADK Multi-Agent System.
 
-    Resolution order:
-      1. Gemini Enterprise Agent Platform (AI platform OpenAI-compatible global
-         endpoint) using Application Default Credentials - supports gemini-3.x.
-      2. Google AI Studio API Key (fast gateway).
-      3. Google Cloud Vertex AI (per-region) ADC.
+    STRICT single-model policy: every call targets ONE model (gemini-3.7-flash).
+    There is no cross-model fallback. Transport resolution:
+      1. Gemini Enterprise Agent Platform (OpenAI-compatible global endpoint) via
+         Application Default Credentials - this is how gemini-3.x is served.
+      2. google-genai SDK (API-key gateway) - same model only.
     """
+
+    MAX_RETRIES = 4
+    BACKOFF_BASE = 1.5  # seconds; grows exponentially per attempt
 
     def __init__(self):
         self.api_key = settings.gemini_api_key or os.getenv("GEMINI_API_KEY")
@@ -33,6 +37,10 @@ class GeminiLLMClient:
         self._token_lock = threading.RLock()
         self._init_agent_platform()
         self._init_client()
+
+    def _sleep_backoff(self, attempt: int) -> None:
+        # Exponential backoff to ride out transient 429/5xx without switching model.
+        time.sleep(min(self.BACKOFF_BASE * (2 ** attempt), 20))
 
     # ------------------------------------------------------------------ agent platform
     def _init_agent_platform(self):
@@ -124,45 +132,59 @@ class GeminiLLMClient:
             logger.warning(f"Failed to initialize google.genai Client: {e}")
 
     def generate(self, prompt: str, system_instruction: Optional[str] = None) -> Optional[str]:
-        """Generates a completion, preferring Gemini Enterprise Agent Platform (3.x) with ADC."""
-        # Prefer Agent Platform (supports gemini-3.x models).
-        if self._agent_platform_ready:
-            models_to_try = [self.model_name, "gemini-3.7-flash", "gemini-3.6-flash", "gemini-2.5-flash", "gemini-2.5-flash"]
-            for m in models_to_try:
-                for _ in range(2):
-                    text = self._generate_agent_platform(prompt, system_instruction, m)
-                    if text:
-                        return text
+        """
+        Generate a completion. STRICTLY uses the configured model (gemini-3.7-flash)
+        for every call so outputs stay consistent — it NEVER falls back to another
+        model. Transient failures (429/5xx/empty) are retried on the SAME model with
+        exponential backoff; if all retries fail we return None and let the caller
+        use its deterministic fallback rather than a different model.
 
+        Transport policy:
+          - On Cloud Run the Gemini Enterprise Agent Platform (global endpoint via
+            ADC) is the authoritative transport and is the ONLY one that serves
+            gemini-3.x. If it is available we use it exclusively and NEVER fall
+            through to the per-region Vertex :generateContent path (which returns
+            404 for 3.x and only wastes calls/time).
+          - The google-genai client is used solely when Agent Platform is NOT
+            available (e.g. local dev with a valid generativelanguage API key).
+        """
+        model = self.model_name or "gemini-3.7-flash"
+
+        # Authoritative transport: Agent Platform global OpenAI-compatible endpoint.
+        if self._agent_platform_ready:
+            for attempt in range(self.MAX_RETRIES):
+                text = self._generate_agent_platform(prompt, system_instruction, model)
+                if text:
+                    return text
+                self._sleep_backoff(attempt)
+            logger.warning(f"generate() exhausted all Agent Platform retries for {model}")
+            return None
+
+        # Fallback transport (only when Agent Platform is unavailable): google-genai SDK.
         if not self._client:
             self._init_client()
-
         if self._client:
-            models_to_try = [self.model_name, "gemini-3.7-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
-            for m in models_to_try:
-                for attempt in range(3):
-                    try:
-                        from google.genai import types
-                        config = types.GenerateContentConfig(
-                            system_instruction=system_instruction,
-                            temperature=0.3,
-                            max_output_tokens=2048
-                        ) if system_instruction else types.GenerateContentConfig(
-                            temperature=0.3,
-                            max_output_tokens=2048
-                        )
+            for attempt in range(self.MAX_RETRIES):
+                try:
+                    from google.genai import types
+                    config = types.GenerateContentConfig(
+                        system_instruction=system_instruction,
+                        temperature=0.3,
+                        max_output_tokens=2048,
+                    ) if system_instruction else types.GenerateContentConfig(
+                        temperature=0.3, max_output_tokens=2048
+                    )
+                    res = self._client.models.generate_content(
+                        model=model, contents=prompt, config=config
+                    )
+                    if res and res.text:
+                        return res.text.strip()
+                    logger.debug(f"Model {model} attempt {attempt}: empty response")
+                except Exception as e:
+                    logger.debug(f"Model {model} attempt {attempt} notice: {e}")
+                self._sleep_backoff(attempt)
 
-                        res = self._client.models.generate_content(
-                            model=m,
-                            contents=prompt,
-                            config=config
-                        )
-                        if res and res.text:
-                            return res.text.strip()
-                        logger.debug(f"Model {m} attempt {attempt}: empty response")
-                    except Exception as e:
-                        logger.debug(f"Model {m} attempt {attempt} notice: {e}")
-
+        logger.warning(f"generate() exhausted all retries for model {model} (no cross-model fallback)")
         return None
 
 llm_client = GeminiLLMClient()

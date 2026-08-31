@@ -33,38 +33,6 @@
       ]
     },
     {
-      "channel_id": "ch_kiemdinhphim90",
-      "report_key": "channel_kiemdinhphim",
-      "handle": "@KiemDinhPhim9.0",
-      "platform": "youtube",
-      "title": "Kiểm Định Phim 9.0",
-      "category": "Film Criticism & Satire",
-      "tracking_status": "ACTIVE",
-      "check_frequency_minutes": 15,
-      "video_lookback_days": 30,
-      "custom_sentiment_categories": [
-        "Comedic Roasting Praise",
-        "Actor & Drama Defense",
-        "Next Episode Suggestions",
-        "Awards Voting"
-      ],
-      "notification_channel": "#media-alerts",
-      "created_at": "2026-08-25T04:31:08.512929+00:00",
-      "last_checked_at": null,
-      "latest_video_id": null,
-      "snapshots": [
-        {
-          "timestamp": "2026-08-25T04:31:08.512922+00:00",
-          "subscriber_count": 48400,
-          "total_video_count": 65,
-          "average_views_per_video": 55000.0,
-          "comments_24h": 240,
-          "top_clip_title": "TOÀN BỘ PHIM VIỆT chiếu rạp dịp 2/9 (FEhLXCMXWUk)"
-        }
-
-      ]
-    },
-    {
       "channel_id": "ch_thochupanhdalat",
       "report_key": "channel_thochupanh",
       "handle": "@thochupanh.dalat",
@@ -261,39 +229,6 @@
         }
       ],
       "generated_report_path": "reports/video_report_R7Bf4l5VgO8.md",
-      "anomaly_status": "NORMAL"
-    },
-    {
-      "video_id": "TNl9diGdyPo",
-      "channel_id": "ch_business",
-      "url": "https://www.youtube.com/watch?v=TNl9diGdyPo",
-      "title": "How Ferrero Makes 365,000 Tons Of Nutella A Year | Big Business | Business Insider",
-      "published_at": "2026-08-24T12:00:00Z",
-      "tracking_duration_days": 30,
-      "expires_at": null,
-      "custom_sentiment_categories": [
-        "Industrial Automation Fascination",
-        "Raw Ingredient Quality & Palm Oil",
-        "Factory Engineering Praise",
-        "Commercial Scale Inquiries"
-      ],
-      "monitoring_tier": "HIGH_PRIORITY_24H",
-      "tracking_status": "ACTIVE",
-      "created_at": "2026-08-25T07:45:00+00:00",
-      "last_analyzed_at": null,
-      "snapshots": [
-        {
-          "timestamp": "2026-08-25T07:45:00+00:00",
-          "hours_since_publish": 24.0,
-          "views": 388149,
-          "likes": 4830,
-          "comments": 473,
-          "velocity_views_per_hour": 16172.0,
-          "sentiment_positive_pct": 98.4,
-          "sentiment_negative_pct": 0.2
-        }
-      ],
-      "generated_report_path": "reports/video_report_TNl9diGdyPo.md",
       "anomaly_status": "NORMAL"
     }
   ]
