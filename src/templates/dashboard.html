@@ -1986,11 +1986,10 @@
                 if (!res.ok) return;
                 const data = await res.json();
                 
-                // Update header pill
-                const p50 = data?.latency?.p50_ms ?? 12.0;
-                const p95 = data?.latency?.p95_ms ?? 18.0;
+                // Update header pill (Zero-Fake: display actual or standby indicator)
+                const p50Text = data?.latency?.p50_ms != null ? `${data.latency.p50_ms} ms` : '-- ms';
                 const headerMetric = document.getElementById('header-ch-metric');
-                if (headerMetric) headerMetric.innerText = `${p50} ms`;
+                if (headerMetric) headerMetric.innerText = p50Text;
 
                 // Update Cockpit Radar Widget
                 const queriesEl = document.getElementById('ch-counter-queries');
@@ -2000,32 +1999,41 @@
 
                 const costEl = document.getElementById('ch-cost-savings');
                 if (costEl && data.cost_defense) {
-                    costEl.innerText = `$0.00 marginal cost (Saved $${data.cost_defense.monthly_saving_usd}/mo vs BQ)`;
+                    const saved = data.cost_defense.monthly_saving_usd || 0;
+                    costEl.innerText = `$0.00 marginal cost (Saved $${saved}/mo vs BQ)`;
                 }
 
                 const latencyBadge = document.getElementById('ch-latency-badge');
                 if (latencyBadge) {
-                    latencyBadge.innerText = `${p50}ms / ${p95}ms`;
+                    if (data?.latency?.p50_ms != null && data?.latency?.p95_ms != null) {
+                        latencyBadge.innerText = `${data.latency.p50_ms}ms / ${data.latency.p95_ms}ms`;
+                    } else {
+                        latencyBadge.innerText = `STANDBY / -- ms`;
+                    }
                 }
 
-                const spark = data.sparkline_30m || [240, 255, 270, 290, 310, 335];
-                const rate5m = spark[spark.length - 1] || 280;
+                const spark = (Array.isArray(data?.sparkline_30m) && data.sparkline_30m.length > 0) ? data.sparkline_30m : [];
+                const rate5m = spark.length > 0 ? spark[spark.length - 1] : 0;
                 const rate5mEl = document.getElementById('ch-rate-5m');
-                if (rate5mEl) rate5mEl.innerText = rate5m;
+                if (rate5mEl) rate5mEl.innerText = spark.length > 0 ? rate5m : '--';
 
                 const rate6hEl = document.getElementById('ch-rate-6h');
-                if (rate6hEl) rate6hEl.innerText = Math.round(rate5m / 2.2);
+                if (rate6hEl) rate6hEl.innerText = spark.length > 0 ? Math.round(rate5m / 2.2) : '--';
 
-                // Render Sparkline Mini-Bars
+                // Render Sparkline Mini-Bars (Zero-Fake: show standby notice when no stream data)
                 const barsContainer = document.getElementById('ch-sparkline-bars');
                 if (barsContainer) {
-                    const maxVal = Math.max(...spark, 1);
-                    barsContainer.innerHTML = spark.map((val, idx) => {
-                        const hPct = Math.round((val / maxVal) * 100);
-                        const isLatest = idx === spark.length - 1;
-                        const col = isLatest ? '#00f5a0' : (idx >= 3 ? '#00f2fe' : '#7928ca');
-                        return `<div style="flex:1; height:${hPct}%; background:${col}; border-radius:2px; transition:height 0.3s ease;" title="${val} cmts/5m"></div>`;
-                    }).join('');
+                    if (spark.length > 0) {
+                        const maxVal = Math.max(...spark, 1);
+                        barsContainer.innerHTML = spark.map((val, idx) => {
+                            const hPct = Math.round((val / maxVal) * 100);
+                            const isLatest = idx === spark.length - 1;
+                            const col = isLatest ? '#00f5a0' : (idx >= 3 ? '#00f2fe' : '#7928ca');
+                            return `<div style="flex:1; height:${hPct}%; background:${col}; border-radius:2px; transition:height 0.3s ease;" title="${val} cmts/5m"></div>`;
+                        }).join('');
+                    } else {
+                        barsContainer.innerHTML = `<span style="font-size:0.68rem; color:var(--text-secondary); font-family:'JetBrains Mono',monospace;">STANDBY (Awaiting realtime comment volume stream)</span>`;
+                    }
                 }
             } catch (err) {
                 console.warn("Hot counters poll error:", err);

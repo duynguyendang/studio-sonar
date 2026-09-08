@@ -109,11 +109,21 @@ class StudioSonarClickHouseClient:
         }
 
     def insert_snapshots(self, snapshots: List[Dict[str, Any]]) -> int:
-        """Batch streams hourly video snapshots into ClickHouse video_snapshots table with input validation."""
+        """
+        Batch streams hourly video snapshots into ClickHouse video_snapshots table.
+        Uses native JSONEachRow streaming format (immune to SQL injection, zero SQL string formatting).
+        """
+        import json
         if not snapshots:
             return 0
         
-        # Build SQL batch insert with validated identifiers
+        endpoint = f"{self.base_url}/"
+        params = {
+            "database": self.database,
+            "query": "INSERT INTO video_snapshots FORMAT JSONEachRow"
+        }
+        auth = (self.user, self.password) if self.password else None
+
         rows = []
         for s in snapshots:
             ts = s.get("snapshot_timestamp") or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
@@ -130,13 +140,31 @@ class StudioSonarClickHouseClient:
             raw_snap = s.get("snapshot_id") or f"snap_{v_id}_{int(datetime.now(timezone.utc).timestamp())}"
             snap_id = _sanitize_id(raw_snap)
 
-            rows.append(
-                f"('{snap_id}', '{v_id}', '{ts}', {h_pub}, {views}, {likes}, {comments}, {v_per_h}, {eng}, {pos}, {neg})"
-            )
+            rows.append(json.dumps({
+                "snapshot_id": snap_id,
+                "video_id": v_id,
+                "snapshot_timestamp": ts,
+                "hours_since_publish": h_pub,
+                "view_count": views,
+                "like_count": likes,
+                "comment_count": comments,
+                "views_per_hour": v_per_h,
+                "engagement_rate_pct": eng,
+                "sentiment_positive_pct": pos,
+                "sentiment_negative_pct": neg
+            }))
 
-        query = f"INSERT INTO {self.database}.video_snapshots VALUES {', '.join(rows)}"
-        res = self.execute_query(query, format_json=False)
-        return len(snapshots) if res is not None else 0
+        payload = "\n".join(rows)
+        try:
+            resp = requests.post(endpoint, params=params, data=payload.encode("utf-8"), auth=auth, timeout=5.0)
+            if resp.status_code == 200:
+                return len(snapshots)
+            else:
+                logger.warning(f"ClickHouse JSONEachRow insert error ({resp.status_code}): {resp.text[:120]}")
+                return 0
+        except Exception as e:
+            logger.debug(f"ClickHouse insert notice: {e}")
+            return 0
 
     def query_realtime_sentiment_spikes(
         self,
@@ -145,8 +173,9 @@ class StudioSonarClickHouseClient:
         sentiment_threshold: float = -0.50
     ) -> List[Dict[str, Any]]:
         """
-        Executes sub-second query on ClickHouse Materialized View
+        Executes sub-second parameterized query on ClickHouse Materialized View
         to detect real-time sentiment backlash spikes.
+        Follows Zero-Fake: never returns canned fake anomalies when no spikes exist.
         """
         query = f"""
             SELECT 
@@ -155,43 +184,42 @@ class StudioSonarClickHouseClient:
                 sum(negative_comments) AS negative_comments,
                 sum(positive_comments) AS positive_comments,
                 round(sum(sum_sentiment) / greatest(sum(comment_volume), 1), 2) AS avg_sentiment,
-                round((sum(comment_volume) / greatest({int(time_window_hours)}, 1)) * 100.0, 1) AS velocity_spike_pct
+                round((sum(comment_volume) / greatest({{time_window_hours:UInt32}}, 1)) * 100.0, 1) AS velocity_spike_pct
             FROM {self.database}.hourly_sentiment_aggregates
-            WHERE window_start >= now() - INTERVAL {int(time_window_hours)} HOUR
+            WHERE window_start >= now() - INTERVAL {{time_window_hours:UInt32}} HOUR
             GROUP BY video_id
-            HAVING negative_comments >= 3 AND avg_sentiment <= {float(sentiment_threshold)}
+            HAVING negative_comments >= 3 AND avg_sentiment <= {{sentiment_threshold:Float32}}
             ORDER BY negative_comments DESC
             LIMIT 5
         """
-        results = self.execute_query(query)
-        if results:
+        results = self.execute_query(
+            query,
+            query_params={
+                "time_window_hours": int(time_window_hours),
+                "sentiment_threshold": float(sentiment_threshold)
+            }
+        )
+        if results is not None:
             for r in results:
                 r["data_provenance"] = "MEASURED_REALTIME"
                 r["is_measured"] = True
             return results
 
-        # In-process Fallback for local dev/demo consistency (explicitly tagged)
-        from src.core.registry_manager import registry_manager
-        videos = registry_manager.get_all_videos()
-        anomalies = []
-        if videos:
-            v = videos[0]
-            anomalies.append({
-                "video_id": v.get("video_id", "vid_demo"),
-                "video_title": v.get("title", "Phương Mỹ Chi - Vũ Trụ Có Anh (Official MV)"),
-                "channel_title": v.get("channel_id", "Phương Mỹ Chi"),
+        # In mock test mode only: return mock scenario for unit tests
+        if settings.execution_mode == "mock":
+            return [{
+                "video_id": "vid_demo",
+                "video_title": "Mock Anomaly Scenario",
+                "channel_title": "Mock Channel",
                 "comment_volume": 450,
                 "negative_comments": 95,
                 "avg_sentiment": -0.68,
                 "velocity_spike_pct": 245.0,
-                "sample_negative_comments": [
-                    "Nội dung tập này giải thích quá sơ sài, thiếu dẫn chứng thuyết phục!",
-                    "Không đồng ý với quan điểm trong video, cảm giác thiên vị nhãn hàng."
-                ],
+                "sample_negative_comments": ["Mock comment for unit test"],
                 "data_provenance": "SIMULATED_STANDBY",
                 "is_measured": False
-            })
-        return anomalies
+            }]
+        return []
 
     def query_realtime_viral_trends(
         self,
@@ -200,6 +228,7 @@ class StudioSonarClickHouseClient:
     ) -> List[Dict[str, Any]]:
         """
         Queries ClickHouse for explosive breakout viral topics & retention surges.
+        Follows Zero-Fake: never returns canned fake breakout trends in live mode.
         """
         query = f"""
             SELECT 
@@ -207,30 +236,35 @@ class StudioSonarClickHouseClient:
                 any(title) AS trend_topic,
                 round(max(views_per_hour) - min(views_per_hour), 1) AS cross_platform_acceleration_pct
             FROM {self.database}.video_snapshots
-            WHERE snapshot_timestamp >= now() - INTERVAL {int(lookback_hours)} HOUR
+            WHERE snapshot_timestamp >= now() - INTERVAL {{lookback_hours:UInt32}} HOUR
             GROUP BY video_id
-            HAVING cross_platform_acceleration_pct >= {float(min_view_acceleration_pct)}
+            HAVING cross_platform_acceleration_pct >= {{min_accel:Float32}}
             LIMIT 3
         """
-        res = self.execute_query(query)
-        if res:
+        res = self.execute_query(
+            query,
+            query_params={
+                "lookback_hours": int(lookback_hours),
+                "min_accel": float(min_view_acceleration_pct)
+            }
+        )
+        if res is not None:
             for r in res:
                 r["data_provenance"] = "MEASURED_REALTIME"
                 r["is_measured"] = True
             return res
 
-        # Standby Breakout Trends for Demonstration
-        return [
-            {
-                "trend_topic": "Folk Fusion Electronic Beat Synthesis (Vũ Trụ Có Anh)",
+        if settings.execution_mode == "mock":
+            return [{
+                "trend_topic": "Mock Breakout Trend",
                 "cross_platform_acceleration_pct": 348.5,
-                "driver": "Cultural Heritage Modernization",
-                "sound_slug": "dtap-folk-fusion-master",
-                "recommended_angle": "Loss Aversion Hook: 90% Creators miss cultural authenticity",
+                "driver": "Mock Driver",
+                "sound_slug": "mock-sound",
+                "recommended_angle": "Mock angle",
                 "data_provenance": "SIMULATED_STANDBY",
                 "is_measured": False
-            }
-        ]
+            }]
+        return []
 
     # =========================================================================
     # U1 — 1-Minute Radar Loop (Raw-Column Sliding Window Query & Native Decay Heat)
@@ -240,6 +274,7 @@ class StudioSonarClickHouseClient:
         Executes an ad-hoc, multi-window raw-column aggregation on comments_realtime.
         Compares instant 5-minute velocity against a 6-hour rolling baseline.
         Executed every minute via Cloud Scheduler radar loop.
+        Follows Zero-Fake: returns empty list if no spikes exist. Never fabricates crisis!
         """
         self._radar_ticks_count += 1
         query = f"""
@@ -258,17 +293,16 @@ class StudioSonarClickHouseClient:
             LIMIT 5
         """
         results = self.execute_query(query)
-        if results:
+        if results is not None:
             for r in results:
                 r["data_provenance"] = "MEASURED_REALTIME"
                 r["is_measured"] = True
             return results
 
-        # In-process Fallback for local demo/tests when ClickHouse is in Standby mode
-        return [
-            {
+        if settings.execution_mode == "mock":
+            return [{
                 "video_id": "UH21OnJwxZE",
-                "video_title": "Phương Mỹ Chi - Vũ Trụ Có Anh (Official MV)",
+                "video_title": "Mock Video Title",
                 "rate_5m_per_hr": 384.0,
                 "rate_6h_per_hr": 142.5,
                 "neg_ratio_6h": 0.62,
@@ -277,19 +311,18 @@ class StudioSonarClickHouseClient:
                 "surge_multiplier": 2.69,
                 "data_provenance": "SIMULATED_STANDBY",
                 "is_measured": False
-            }
-        ]
+            }]
+        return []
 
     def query_decay_adjusted_heat_spikes(self, halflife_seconds: int = 600) -> List[Dict[str, Any]]:
         """
         Evaluates real-time comment heat score using native exponentialTimeDecayedCount.
-        Weights recent comments exponentially higher (10-minute half-life), preventing
-        false alerts caused by old comment waves being re-read.
+        Weights recent comments exponentially higher (10-minute half-life).
         """
         query = f"""
             SELECT
                 video_id,
-                exponentialTimeDecayedCount({int(halflife_seconds)})(1, published_at) AS heat_halflife_10m,
+                exponentialTimeDecayedCount({{halflife:UInt32}})(1, published_at) AS heat_halflife_10m,
                 count() AS raw_6h
             FROM {self.database}.comments_realtime
             WHERE published_at >= now() - INTERVAL 6 HOUR
@@ -297,21 +330,22 @@ class StudioSonarClickHouseClient:
             ORDER BY heat_halflife_10m DESC
             LIMIT 5
         """
-        results = self.execute_query(query)
-        if results:
+        results = self.execute_query(query, query_params={"halflife": int(halflife_seconds)})
+        if results is not None:
             for r in results:
                 r["data_provenance"] = "MEASURED_REALTIME"
                 r["is_measured"] = True
             return results
-        return [
-            {
+
+        if settings.execution_mode == "mock":
+            return [{
                 "video_id": "UH21OnJwxZE",
                 "heat_halflife_10m": 184.2,
                 "raw_6h": 855,
                 "data_provenance": "SIMULATED_STANDBY",
                 "is_measured": False
-            }
-        ]
+            }]
+        return []
 
     def query_velocity_acceleration_slope(self, video_id: str, window_hours: int = 24) -> Dict[str, Any]:
         """
@@ -327,23 +361,23 @@ class StudioSonarClickHouseClient:
                 (simpleLinearRegression(toUnixTimestamp(window_start))(comment_volume) AS lr).1 AS slope_per_sec,
                 sum(comment_volume) AS total_vol_24h
             FROM {self.database}.hourly_sentiment_aggregates
-            WHERE video_id = {{video_id:String}} AND window_start >= now() - INTERVAL {int(window_hours)} HOUR
+            WHERE video_id = {{video_id:String}} AND window_start >= now() - INTERVAL {{window_hours:UInt32}} HOUR
             GROUP BY video_id
         """
-        results = self.execute_query(query, query_params={"video_id": clean_vid})
-        slope = 0.042
-        total_vol = 1420
-        data_provenance = "SIMULATED_STANDBY"
-        is_measured = False
-
+        results = self.execute_query(
+            query,
+            query_params={"video_id": clean_vid, "window_hours": int(window_hours)}
+        )
         if results and len(results) > 0:
-            try:
-                slope = float(results[0].get("slope_per_sec", 0.042))
-                total_vol = int(results[0].get("total_vol_24h", 1420))
-                data_provenance = "MEASURED_REALTIME"
-                is_measured = True
-            except Exception:
-                pass
+            slope = float(results[0].get("slope_per_sec", 0.0))
+            total_vol = int(results[0].get("total_vol_24h", 0))
+            data_provenance = "MEASURED_REALTIME"
+            is_measured = True
+        else:
+            slope = 0.0
+            total_vol = 0
+            data_provenance = "SIMULATED_STANDBY"
+            is_measured = False
 
         status = "ACCELERATING" if slope > 0.005 else ("DECELERATING" if slope < -0.005 else "PLATEAU")
         return {
@@ -356,7 +390,7 @@ class StudioSonarClickHouseClient:
             "interpretation": (
                 "Trend momentum accelerating upward (viral growth active)."
                 if status == "ACCELERATING" else
-                "Velocity has passed its peak and is decelerating; PR risk is subsiding."
+                ("Velocity has passed its peak and is decelerating; PR risk is subsiding." if status == "DECELERATING" else "Velocity is plateaued.")
             )
         }
 
@@ -411,20 +445,37 @@ class StudioSonarClickHouseClient:
             data_provenance = "MEASURED_REALTIME"
             is_measured = True
         else:
-            # Standby baseline for offline/local demonstration
-            total_comments = 450
-            unique_authors = 120
-            p95_toxicity = 0.78
-            author_entropy = 2.85
+            # Zero-Fake: report real zero values if ClickHouse has no comments for this asset
+            total_comments = 0
+            unique_authors = 0
+            p95_toxicity = 0.0
+            author_entropy = 0.0
             data_provenance = "SIMULATED_STANDBY"
             is_measured = False
 
-        author_diversity_ratio = round(unique_authors / max(total_comments, 1), 3)
-        comments_per_author = round(total_comments / max(unique_authors, 1), 2)
-
-        # Brigade Attack Heuristic: High repetition (diversity < 0.35 or entropy < 4.0), and high toxicity (>= 0.65)
-        is_brigade = bool((author_diversity_ratio < 0.35 or author_entropy < 4.0) and p95_toxicity >= 0.65)
-        verdict = "COORDINATED_BRIGADE_ATTACK" if is_brigade else "ORGANIC_COMMUNITY_OUTCRY"
+        if total_comments == 0:
+            author_diversity_ratio = 0.0
+            comments_per_author = 0.0
+            is_brigade = False
+            verdict = "INSUFFICIENT_DATA"
+            containment = "Continue standard telemetry monitoring; zero comment activity detected in the last 24 hours."
+        elif total_comments < 20:
+            author_diversity_ratio = round(unique_authors / max(total_comments, 1), 3)
+            comments_per_author = round(total_comments / max(unique_authors, 1), 2)
+            is_brigade = False
+            verdict = "INSUFFICIENT_DATA_SAMPLE"
+            containment = "Sample volume under 20 comments is too small for statistical entropy confidence; continue passive monitoring."
+        else:
+            author_diversity_ratio = round(unique_authors / max(total_comments, 1), 3)
+            comments_per_author = round(total_comments / max(unique_authors, 1), 2)
+            # Exact Brigade Heuristic: high repetition (>= 3.0), low Shannon entropy (< 3.5), and severe toxicity (>= 0.65)
+            is_brigade = bool(comments_per_author >= 3.0 and author_entropy < 3.5 and p95_toxicity >= 0.65)
+            verdict = "COORDINATED_BRIGADE_ATTACK" if is_brigade else "ORGANIC_COMMUNITY_OUTCRY"
+            containment = (
+                "Do NOT issue public apology. Alert platform trust & safety teams to purge bot accounts."
+                if is_brigade else
+                "Issue official brand clarification addressing verified community friction."
+            )
 
         return {
             "status": "DRILL_DOWN_COMPLETE",
@@ -440,11 +491,7 @@ class StudioSonarClickHouseClient:
             "is_brigade_attack": is_brigade,
             "verdict": verdict,
             "threat_verdict": verdict,
-            "recommended_containment": (
-                "Do NOT issue public apology. Alert platform trust & safety teams to purge bot accounts."
-                if is_brigade else
-                "Issue official brand clarification addressing verified community friction."
-            ),
+            "recommended_containment": containment,
             "hourly_bands": hourly_res or []
         }
 
@@ -463,21 +510,24 @@ class StudioSonarClickHouseClient:
                        countIf(platform = 'youtube') AS yt_h,
                        countIf(platform = 'tiktok')  AS tt_h
                 FROM {self.database}.comments_realtime
-                WHERE published_at >= now() - INTERVAL {int(days)} DAY
+                WHERE published_at >= now() - INTERVAL {{days:UInt32}} DAY
                 GROUP BY h
             )
         """
-        results = self.execute_query(query)
-        corr_val = 0.84
-        data_provenance = "SIMULATED_STANDBY"
-        is_measured = False
+        results = self.execute_query(query, query_params={"days": int(days)})
         if results and results[0].get("synergy_7d") is not None:
             try:
                 corr_val = float(results[0]["synergy_7d"])
                 data_provenance = "MEASURED_REALTIME"
                 is_measured = True
             except Exception:
-                corr_val = 0.84
+                corr_val = 0.0
+                data_provenance = "SIMULATED_STANDBY"
+                is_measured = False
+        else:
+            corr_val = 0.0
+            data_provenance = "SIMULATED_STANDBY"
+            is_measured = False
 
         return {
             "time_window_days": int(days),
@@ -486,7 +536,7 @@ class StudioSonarClickHouseClient:
             "is_measured": is_measured,
             "synergy_verdict": (
                 "STRONG_CROSS_PLATFORM_AMPLIFICATION" if corr_val >= 0.70 else
-                "MODERATE_CORRELATION" if corr_val >= 0.40 else "INDEPENDENT_AUDIENCE_ENGAGEMENT"
+                ("MODERATE_CORRELATION" if corr_val >= 0.40 else "INDEPENDENT_AUDIENCE_ENGAGEMENT")
             ),
             "description": f"ClickHouse native corr(yt, tt) over {days}d reveals r={corr_val} synchronized viral dynamics."
         }
@@ -498,15 +548,14 @@ class StudioSonarClickHouseClient:
         """
         clean_vid = _sanitize_id(video_id)
         query = f"""
-            SELECT sparkbar({int(hours)})(toUnixTimestamp(window_start), comment_volume) AS volume_spark
+            SELECT sparkbar({{hours:UInt32}})(toUnixTimestamp(window_start), comment_volume) AS volume_spark
             FROM {self.database}.hourly_sentiment_aggregates
-            WHERE video_id = {{video_id:String}} AND window_start >= now() - INTERVAL {int(hours)} HOUR
+            WHERE video_id = {{video_id:String}} AND window_start >= now() - INTERVAL {{hours:UInt32}} HOUR
         """
-        results = self.execute_query(query, query_params={"video_id": clean_vid})
+        results = self.execute_query(query, query_params={"video_id": clean_vid, "hours": int(hours)})
         if results and results[0].get("volume_spark"):
             return str(results[0]["volume_spark"])
-        # Standby fallback for offline / test
-        return " ▂▃▄▅▆▇██▇▆▅▄▃▂ "
+        return ""
 
     def query_top_friction_terms(self, video_id: str, top_n: int = 5) -> List[str]:
         """
@@ -514,14 +563,14 @@ class StudioSonarClickHouseClient:
         """
         clean_vid = _sanitize_id(video_id)
         query = f"""
-            SELECT topK({int(top_n)})(comment_text) AS top_terms
+            SELECT topK({{top_n:UInt32}})(comment_text) AS top_terms
             FROM {self.database}.comments_realtime
             WHERE video_id = {{video_id:String}} AND sentiment_score < -0.40 AND published_at >= now() - INTERVAL 24 HOUR
         """
-        results = self.execute_query(query, query_params={"video_id": clean_vid})
+        results = self.execute_query(query, query_params={"video_id": clean_vid, "top_n": int(top_n)})
         if results and results[0].get("top_terms"):
             return list(results[0]["top_terms"])
-        return ["giá vé", "quảng cáo lố", "bản quyền", "âm thanh rè", "phản hồi trễ"]
+        return []
 
     # =========================================================================
     # U2 — 5s Dashboard Polling & Cost Defense Telemetry (Zero-Fake Transparency)
@@ -529,9 +578,10 @@ class StudioSonarClickHouseClient:
     def get_hot_counters(self) -> Dict[str, Any]:
         """
         Provides real-time telemetry counters and transparent financial cost defense metrics.
-        Adheres to Zero-Fake Doctrine: reports None for unmeasured latencies,
-        marks data_provenance as SIMULATED_STANDBY or MEASURED_REALTIME,
-        and uses deterministic baselines instead of random jitter.
+        Adheres to Zero-Fake Doctrine:
+        - Never returns seeded latencies (p50/p95 are None when unmeasured)
+        - Queries ClickHouse for real 5m comment buckets across last 30m; returns [] if no data
+        - Never hardcodes fake numbers
         """
         import statistics
 
@@ -546,8 +596,23 @@ class StudioSonarClickHouseClient:
             data_provenance = "SIMULATED_STANDBY"
             is_measured = False
 
-        # Deterministic 30m sparkline baseline (6 intervals of 5 minutes across last 30m)
-        sparkline = [240, 245, 252, 260, 275, 290]
+        # Query ClickHouse for real 5-minute volume buckets in the last 30 minutes
+        sparkline_query = f"""
+            SELECT 
+                toStartOfInterval(published_at, INTERVAL 5 MINUTE) AS b,
+                count() AS vol
+            FROM {self.database}.comments_realtime
+            WHERE published_at >= now() - INTERVAL 30 MINUTE
+            GROUP BY b
+            ORDER BY b
+        """
+        spark_res = self.execute_query(sparkline_query)
+        if spark_res and len(spark_res) > 0:
+            sparkline = [int(r.get("vol", 0)) for r in spark_res]
+        else:
+            sparkline = []
+
+        stream_velocity_eps = round(sparkline[-1] / 60.0, 2) if sparkline else 0.0
 
         # Financial cost defense formula:
         # Polling BigQuery every 10s = 8,640 queries/day * 10MB min scan = 2.6 TB/mo ≈ $15.45/mo.
@@ -557,7 +622,7 @@ class StudioSonarClickHouseClient:
         measured_saving = round((self._hot_queries_count * 30 * 10.0 / (1024.0 * 1024.0)) * 6.25, 2) if self._hot_queries_count > 0 else 0.0
 
         return {
-            "status": "HOT_LAYER_ONLINE",
+            "status": "HOT_LAYER_ONLINE" if is_measured else "HOT_LAYER_STANDBY",
             "data_provenance": data_provenance,
             "is_measured": is_measured,
             "hot_queries_served": self._hot_queries_count,
@@ -568,7 +633,7 @@ class StudioSonarClickHouseClient:
                 "engine": "ClickHouse Native Columnar HTTP",
                 "sample_count": len(self._latencies_ms)
             },
-            "stream_velocity_eps": round(sparkline[-1] / 60.0, 2),
+            "stream_velocity_eps": stream_velocity_eps,
             "sparkline_30m": sparkline,
             "cost_defense": {
                 "daily_hot_queries_measured": self._hot_queries_count,

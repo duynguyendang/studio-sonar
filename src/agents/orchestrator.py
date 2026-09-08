@@ -525,7 +525,10 @@ class StudioSonarOrchestrationEngine:
             )
 
             # Graduated Autonomy & Approval Gate:
-            # Evaluate statistical confidence (sample size, surge multiplier, search grounding)
+            # 1. Zero-Fake Gate: Never auto-dispatch alerts on unmeasured / standby / simulated spikes
+            is_measured = bool(spike.get("is_measured") is True or spike.get("data_provenance") == "MEASURED_REALTIME")
+
+            # 2. Statistical confidence calculation (sample depth, surge multiplier, search grounding)
             rate_5m = float(spike.get("rate_5m_per_hr", 0.0))
             baseline_6h = float(spike.get("rate_6h_per_hr", 1.0))
             surge_mult = rate_5m / max(baseline_6h, 1.0)
@@ -536,8 +539,9 @@ class StudioSonarOrchestrationEngine:
             grounding_conf = 0.2 if search_intel.get("status") == "GROUNDED_INTEL_READY" else 0.1
             confidence_score = round(sample_conf + surge_conf + grounding_conf, 2)
 
-            # Check if graduated autonomy criteria met (confidence >= threshold and auto dispatch enabled)
+            # 3. Autonomy policy: requires real measurement, confidence >= threshold, AND explicit auto-dispatch opt-in
             should_auto_dispatch = bool(
+                is_measured and
                 confidence_score >= settings.radar_confidence_threshold and
                 settings.radar_auto_dispatch_enabled
             )
@@ -559,21 +563,25 @@ class StudioSonarOrchestrationEngine:
                 action_res["dispatch_status"] = "AUTO_DISPATCHED"
                 action_res["confidence_score"] = confidence_score
             else:
+                dispatch_reason = (
+                    "Simulated or standby spike: automated Slack dispatch suppressed under Zero-Fake Doctrine."
+                    if not is_measured else
+                    f"Spike confidence ({confidence_score}) is below threshold ({settings.radar_confidence_threshold}) "
+                    f"or auto-dispatch is disabled (Human-in-the-Loop policy); queued for executive triage sign-off."
+                )
                 action_res = {
                     "status": "QUEUED_FOR_APPROVAL",
                     "dispatch_status": "QUEUED_FOR_APPROVAL",
+                    "is_measured": is_measured,
                     "confidence_score": confidence_score,
                     "confidence_threshold": settings.radar_confidence_threshold,
-                    "reason": (
-                        f"Spike confidence ({confidence_score}) is below autonomy threshold ({settings.radar_confidence_threshold}) "
-                        f"or auto-dispatch is disabled; queued for executive triage sign-off."
-                    ),
+                    "reason": dispatch_reason,
                     "approval_target": "EXECUTIVE_TRIAGE_BOARD",
                     "proposed_severity": "CRITICAL_P1" if not is_brigade else "ELEVATED_P2",
                     "title": f"Radar Spike: {title}",
                     "video_id": vid_id
                 }
-                logger.info(f"🛡️ [Radar Gate] Spike on {vid_id} queued for approval (Confidence: {confidence_score} vs {settings.radar_confidence_threshold})")
+                logger.info(f"🛡️ [Radar Gate] Spike on {vid_id} held at gate for approval (is_measured={is_measured}, Confidence: {confidence_score} vs {settings.radar_confidence_threshold})")
 
             immediate_actions.append({
                 "tool": "dispatch_slack_crisis_alert" if action_res.get("dispatch_status") == "AUTO_DISPATCHED" else "queue_executive_approval",

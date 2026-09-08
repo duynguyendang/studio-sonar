@@ -62,7 +62,7 @@ class Settings(BaseSettings):
     trigger_timezone: str = Field(default="Asia/Ho_Chi_Minh", validation_alias="TRIGGER_TIMEZONE")
 
     # Graduated Autonomy & Radar Approval Gate
-    radar_auto_dispatch_enabled: bool = Field(default=True, validation_alias="RADAR_AUTO_DISPATCH_ENABLED")
+    radar_auto_dispatch_enabled: bool = Field(default=False, validation_alias="RADAR_AUTO_DISPATCH_ENABLED")
     radar_confidence_threshold: float = Field(default=0.95, validation_alias="RADAR_CONFIDENCE_THRESHOLD")
 
     # Server
