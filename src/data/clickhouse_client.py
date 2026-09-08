@@ -205,20 +205,6 @@ class StudioSonarClickHouseClient:
                 r["is_measured"] = True
             return results
 
-        # In mock test mode only: return mock scenario for unit tests
-        if settings.execution_mode == "mock":
-            return [{
-                "video_id": "vid_demo",
-                "video_title": "Mock Anomaly Scenario",
-                "channel_title": "Mock Channel",
-                "comment_volume": 450,
-                "negative_comments": 95,
-                "avg_sentiment": -0.68,
-                "velocity_spike_pct": 245.0,
-                "sample_negative_comments": ["Mock comment for unit test"],
-                "data_provenance": "SIMULATED_STANDBY",
-                "is_measured": False
-            }]
         return []
 
     def query_realtime_viral_trends(
@@ -254,16 +240,6 @@ class StudioSonarClickHouseClient:
                 r["is_measured"] = True
             return res
 
-        if settings.execution_mode == "mock":
-            return [{
-                "trend_topic": "Mock Breakout Trend",
-                "cross_platform_acceleration_pct": 348.5,
-                "driver": "Mock Driver",
-                "sound_slug": "mock-sound",
-                "recommended_angle": "Mock angle",
-                "data_provenance": "SIMULATED_STANDBY",
-                "is_measured": False
-            }]
         return []
 
     # =========================================================================
@@ -299,19 +275,6 @@ class StudioSonarClickHouseClient:
                 r["is_measured"] = True
             return results
 
-        if settings.execution_mode == "mock":
-            return [{
-                "video_id": "UH21OnJwxZE",
-                "video_title": "Mock Video Title",
-                "rate_5m_per_hr": 384.0,
-                "rate_6h_per_hr": 142.5,
-                "neg_ratio_6h": 0.62,
-                "total_samples_6h": 855,
-                "spike_severity": "CRITICAL_BURST",
-                "surge_multiplier": 2.69,
-                "data_provenance": "SIMULATED_STANDBY",
-                "is_measured": False
-            }]
         return []
 
     def query_decay_adjusted_heat_spikes(self, halflife_seconds: int = 600) -> List[Dict[str, Any]]:
@@ -337,14 +300,6 @@ class StudioSonarClickHouseClient:
                 r["is_measured"] = True
             return results
 
-        if settings.execution_mode == "mock":
-            return [{
-                "video_id": "UH21OnJwxZE",
-                "heat_halflife_10m": 184.2,
-                "raw_6h": 855,
-                "data_provenance": "SIMULATED_STANDBY",
-                "is_measured": False
-            }]
         return []
 
     def query_velocity_acceleration_slope(self, video_id: str, window_hours: int = 24) -> Dict[str, Any]:
