@@ -7,7 +7,12 @@ from src.core.config import settings
 
 logger = logging.getLogger("studiosonar.llm")
 
-AGENT_PLATFORM_OPENAPI_PATH = (
+# Regional endpoint is dynamically resolved in GeminiLLMClient to enforce intra-region traffic (us-central1)
+DEFAULT_REGIONAL_OPENAPI_PATH = (
+    "https://{location}-aiplatform.googleapis.com/v1/projects/{project_id}"
+    "/locations/{location}/endpoints/openapi/chat/completions"
+)
+GLOBAL_OPENAPI_PATH = (
     "https://aiplatform.googleapis.com/v1/projects/{project_id}"
     "/locations/global/endpoints/openapi/chat/completions"
 )
@@ -17,10 +22,11 @@ class GeminiLLMClient:
     Unified Google Gemini LLM Client for the Google ADK Multi-Agent System.
 
     STRICT single-model policy: every call targets ONE model (gemini-3.8-flash).
-    There is no cross-model fallback. Transport resolution:
-      1. Gemini Enterprise Agent Platform (OpenAI-compatible global endpoint) via
+    Regional intra-zone routing: prioritizes us-central1 endpoints to avoid cross-region egress.
+    Transport resolution:
+      1. Gemini Enterprise Agent Platform (Regional us-central1 endpoint) via
          Application Default Credentials - this is how gemini-3.x is served.
-      2. google-genai SDK (API-key gateway) - same model only.
+      2. google-genai SDK (Vertex AI us-central1 regional gateway) - same model only.
     """
 
     MAX_RETRIES = 4
@@ -76,7 +82,14 @@ class GeminiLLMClient:
         if not token:
             return None
         import requests
-        url = AGENT_PLATFORM_OPENAPI_PATH.format(project_id=self.project_id)
+        
+        # Enforce intra-region endpoint (us-central1) first to eliminate cross-region network egress
+        loc = (self.location or "us-central1").lower()
+        if loc != "global":
+            regional_url = DEFAULT_REGIONAL_OPENAPI_PATH.format(location=loc, project_id=self.project_id)
+        else:
+            regional_url = GLOBAL_OPENAPI_PATH.format(project_id=self.project_id)
+
         messages = []
         if system_instruction:
             messages.append({"role": "system", "content": system_instruction})
@@ -89,11 +102,20 @@ class GeminiLLMClient:
         }
         try:
             res = requests.post(
-                url,
+                regional_url,
                 headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
                 json=payload,
                 timeout=60,
             )
+            # Fallback to global endpoint only if regional endpoint returns 404
+            if res.status_code == 404 and loc != "global":
+                global_url = GLOBAL_OPENAPI_PATH.format(project_id=self.project_id)
+                res = requests.post(
+                    global_url,
+                    headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+                    json=payload,
+                    timeout=60,
+                )
             if res.status_code == 200:
                 data = res.json()
                 content = (data.get("choices") or [{}])[0].get("message", {}).get("content")
@@ -106,6 +128,8 @@ class GeminiLLMClient:
         except Exception as e:
             logger.debug(f"Agent Platform model {model} request notice: {e}")
         return None
+
+
 
     # ------------------------------------------------------------------ google-genai
     def _init_client(self):
@@ -150,17 +174,16 @@ class GeminiLLMClient:
         """
         model = self.model_name or "gemini-3.7-flash"
 
-        # Authoritative transport: Agent Platform global OpenAI-compatible endpoint.
+        # Primary transport: Agent Platform regional (us-central1) endpoint via ADC.
         if self._agent_platform_ready:
             for attempt in range(self.MAX_RETRIES):
                 text = self._generate_agent_platform(prompt, system_instruction, model)
                 if text:
                     return text
                 self._sleep_backoff(attempt)
-            logger.warning(f"generate() exhausted all Agent Platform retries for {model}")
-            return None
+            logger.warning(f"Agent Platform endpoint exhausted for {model}, falling through to regional Vertex AI client...")
 
-        # Fallback transport (only when Agent Platform is unavailable): google-genai SDK.
+        # Secondary transport: google-genai SDK (Vertex AI us-central1 regional gateway).
         if not self._client:
             self._init_client()
         if self._client:

@@ -16,7 +16,7 @@ echo "================================================================="
 echo "🚀 Deploying Distributed Google ADK Multi-Agent Architecture"
 echo "Project:  ${PROJECT_ID}"
 echo "Region:   ${REGION}"
-echo "Model:    gemini-3.7-flash (Vertex AI Zero-Key)"
+echo "Model:    gemini-3.8-flash (Vertex AI Zero-Key)"
 echo "Image:    ${IMAGE_NAME}"
 echo "================================================================="
 
@@ -26,28 +26,28 @@ COMMON_FLAGS="--image=${IMAGE_NAME} --platform=managed --region=${REGION} --proj
 # Step 1: Deploy Specialized Agent Microservices
 echo "🤖 Step 1.1: Deploying ChannelMonitorAgent Service..."
 gcloud run deploy studiosonar-channel-monitor ${COMMON_FLAGS} \
-  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},GCS_REPORTS_BUCKET=studiosonar-dev-reports,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.7-flash,GOOGLE_GENAI_USE_ENTERPRISE=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION},YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}"
+  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},GCS_REPORTS_BUCKET=studiosonar-dev-reports,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.8-flash,GOOGLE_GENAI_USE_ENTERPRISE=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION},YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}"
 
 CHANNEL_MONITOR_URL=$(gcloud run services describe studiosonar-channel-monitor --region="${REGION}" --project="${PROJECT_ID}" --format='value(status.url)')
 echo "✅ ChannelMonitorAgent Live: ${CHANNEL_MONITOR_URL}"
 
 echo "🤖 Step 1.2: Deploying AnomalyDetectorAgent Service..."
 gcloud run deploy studiosonar-anomaly-detector ${COMMON_FLAGS} \
-  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},GCS_REPORTS_BUCKET=studiosonar-dev-reports,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.7-flash,GOOGLE_GENAI_USE_ENTERPRISE=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION},YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}"
+  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},GCS_REPORTS_BUCKET=studiosonar-dev-reports,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.8-flash,GOOGLE_GENAI_USE_ENTERPRISE=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION},YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}"
 
 ANOMALY_DETECTOR_URL=$(gcloud run services describe studiosonar-anomaly-detector --region="${REGION}" --project="${PROJECT_ID}" --format='value(status.url)')
 echo "✅ AnomalyDetectorAgent Live: ${ANOMALY_DETECTOR_URL}"
 
 echo "🤖 Step 1.3: Deploying PRCrisisStrategistAgent Service..."
 gcloud run deploy studiosonar-pr-strategist ${COMMON_FLAGS} \
-  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},GCS_REPORTS_BUCKET=studiosonar-dev-reports,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.7-flash,GOOGLE_GENAI_USE_ENTERPRISE=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION},YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}"
+  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},GCS_REPORTS_BUCKET=studiosonar-dev-reports,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.8-flash,GOOGLE_GENAI_USE_ENTERPRISE=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION},YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}"
 
 PR_STRATEGIST_URL=$(gcloud run services describe studiosonar-pr-strategist --region="${REGION}" --project="${PROJECT_ID}" --format='value(status.url)')
 echo "✅ PRCrisisStrategistAgent Live: ${PR_STRATEGIST_URL}"
 
 echo "🤖 Step 1.4: Deploying ViralContentCreatorAgent Service..."
 gcloud run deploy studiosonar-content-creator ${COMMON_FLAGS} \
-  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},GCS_REPORTS_BUCKET=studiosonar-dev-reports,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.7-flash,GOOGLE_GENAI_USE_ENTERPRISE=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION},YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}"
+  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},GCS_REPORTS_BUCKET=studiosonar-dev-reports,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.8-flash,GOOGLE_GENAI_USE_ENTERPRISE=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION},YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}"
 
 CONTENT_CREATOR_URL=$(gcloud run services describe studiosonar-content-creator --region="${REGION}" --project="${PROJECT_ID}" --format='value(status.url)')
 echo "✅ ViralContentCreatorAgent Live: ${CONTENT_CREATOR_URL}"
@@ -68,7 +68,7 @@ gcloud run deploy studiosonar-taskmaster \
   --cpu-throttling \
   --timeout=60s \
   --quiet \
-  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},GCS_REPORTS_BUCKET=studiosonar-dev-reports,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.7-flash,GOOGLE_GENAI_USE_ENTERPRISE=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION},YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY},CHANNEL_MONITOR_URL=${CHANNEL_MONITOR_URL},ANOMALY_DETECTOR_URL=${ANOMALY_DETECTOR_URL},PR_STRATEGIST_URL=${PR_STRATEGIST_URL},CONTENT_CREATOR_URL=${CONTENT_CREATOR_URL}"
+  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},GCS_REPORTS_BUCKET=studiosonar-dev-reports,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.8-flash,GOOGLE_GENAI_USE_ENTERPRISE=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION},YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY},CHANNEL_MONITOR_URL=${CHANNEL_MONITOR_URL},ANOMALY_DETECTOR_URL=${ANOMALY_DETECTOR_URL},PR_STRATEGIST_URL=${PR_STRATEGIST_URL},CONTENT_CREATOR_URL=${CONTENT_CREATOR_URL}"
 
 ORCHESTRATOR_URL=$(gcloud run services describe studiosonar-taskmaster --region="${REGION}" --project="${PROJECT_ID}" --format='value(status.url)')
 
