@@ -61,6 +61,10 @@ class Settings(BaseSettings):
     trigger_end_hour: int = Field(default=18, validation_alias="TRIGGER_END_HOUR")
     trigger_timezone: str = Field(default="Asia/Ho_Chi_Minh", validation_alias="TRIGGER_TIMEZONE")
 
+    # Graduated Autonomy & Radar Approval Gate
+    radar_auto_dispatch_enabled: bool = Field(default=True, validation_alias="RADAR_AUTO_DISPATCH_ENABLED")
+    radar_confidence_threshold: float = Field(default=0.95, validation_alias="RADAR_CONFIDENCE_THRESHOLD")
+
     # Server
     port: int = Field(default=8080, validation_alias="PORT")
     host: str = Field(default="0.0.0.0", validation_alias="HOST")

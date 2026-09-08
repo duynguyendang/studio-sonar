@@ -17,9 +17,11 @@ client = TestClient(app)
 
 
 def test_clickhouse_client_hot_counters():
-    """Validates get_hot_counters returns sub-10ms telemetry and financial cost defense."""
+    """Validates get_hot_counters returns sub-10ms telemetry, provenance tag, and financial cost defense."""
     res = ch_client.get_hot_counters()
     assert res["status"] == "HOT_LAYER_ONLINE"
+    assert "data_provenance" in res
+    assert res["data_provenance"] in ["MEASURED_REALTIME", "SIMULATED_STANDBY"]
     assert "hot_queries_served" in res
     assert "latency" in res
     assert "p50_ms" in res["latency"]
@@ -28,6 +30,24 @@ def test_clickhouse_client_hot_counters():
     assert len(res["sparkline_30m"]) == 6
     assert "cost_defense" in res
     assert res["cost_defense"]["monthly_saving_usd"] >= 14.0
+    assert "data_provenance" in res["cost_defense"]
+
+
+def test_clickhouse_sql_injection_sanitization():
+    """Validates that SQL injection attempts are rejected with ValueError."""
+    from src.data.clickhouse_client import _sanitize_id
+    
+    # Valid IDs pass
+    assert _sanitize_id("UH21OnJwxZE") == "UH21OnJwxZE"
+    assert _sanitize_id("vid-123_abc.456") == "vid-123_abc.456"
+
+    # Malicious injection payloads are blocked
+    with pytest.raises(ValueError):
+        _sanitize_id("' OR 1=1 --")
+    with pytest.raises(ValueError):
+        _sanitize_id("vid; DROP TABLE video_snapshots;")
+    with pytest.raises(ValueError):
+        _sanitize_id("UH21OnJwxZE' UNION SELECT * FROM comments_realtime--")
 
 
 def test_clickhouse_client_raw_velocity_query():
@@ -43,24 +63,36 @@ def test_clickhouse_client_raw_velocity_query():
 
 
 def test_clickhouse_client_brigade_forensic_drilldown():
-    """Validates drill_down_spike_brigade_analysis forensic math and PR recommendation."""
+    """Validates drill_down_spike_brigade_analysis forensic math, provenance, and PR recommendation."""
     forensics = ch_client.drill_down_spike_brigade_analysis("UH21OnJwxZE")
     assert forensics["status"] == "DRILL_DOWN_COMPLETE"
     assert forensics["video_id"] == "UH21OnJwxZE"
+    assert "data_provenance" in forensics
+    assert forensics["data_provenance"] in ["MEASURED_REALTIME", "SIMULATED_STANDBY"]
+    assert "total_comments_24h" in forensics
+    assert "unique_authors_24h" in forensics
+    assert forensics["total_comments_24h"] >= forensics["unique_authors_24h"]
     assert "author_diversity_ratio" in forensics
     assert "p95_toxicity" in forensics
+    assert 0.0 <= forensics["p95_toxicity"] <= 1.0
+    assert "author_entropy" in forensics
     assert "verdict" in forensics
     assert forensics["verdict"] in ["COORDINATED_BRIGADE_ATTACK", "ORGANIC_COMMUNITY_OUTCRY"]
     assert "recommended_containment" in forensics
 
 
 def test_orchestrator_radar_tick_execution():
-    """Validates taskmaster orchestrator 1-minute radar tick loop."""
+    """Validates taskmaster orchestrator 1-minute radar tick loop with graduated autonomy gate."""
     result = taskmaster_orchestrator.run_radar_tick()
     assert result["status"] in ["RADAR_TICK_COMPLETED", "RADAR_TICK_ANOMALIES_DETECTED", "RADAR_TICK_NORMAL"]
     assert "execution_time_ms" in result
     assert result["execution_time_ms"] > 0
     assert "anomalies_detected" in result
+    if result.get("findings"):
+        action = result["findings"][0]
+        assert "confidence_score" in action
+        assert "dispatch_status" in action
+        assert action["dispatch_status"] in ["AUTO_DISPATCHED", "QUEUED_FOR_APPROVAL"]
 
 
 def test_api_hot_counters_endpoint():
@@ -109,11 +141,13 @@ def test_clickhouse_decay_adjusted_heat_spikes():
 
 
 def test_clickhouse_velocity_acceleration_slope():
-    """Validates simpleLinearRegression slope calculation."""
+    """Validates simpleLinearRegression slope calculation and data provenance."""
     res = ch_client.query_velocity_acceleration_slope("UH21OnJwxZE")
     assert res["video_id"] == "UH21OnJwxZE"
     assert "slope_per_sec" in res
     assert res["momentum_status"] in ["ACCELERATING", "DECELERATING", "PLATEAU"]
+    assert "data_provenance" in res
+    assert res["data_provenance"] in ["MEASURED_REALTIME", "SIMULATED_STANDBY"]
 
 
 def test_clickhouse_cross_platform_synergy_correlation():

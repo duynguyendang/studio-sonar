@@ -524,23 +524,62 @@ class StudioSonarOrchestrationEngine:
                 }
             )
 
-            # Optional Slack P1 immediate dispatch
-            from src.mcp.slack_tools import dispatch_slack_crisis_alert
-            action_res = dispatch_slack_crisis_alert(
-                severity="CRITICAL_P1" if not is_brigade else "ELEVATED_P2",
-                title=f"Radar Spike: {title}",
-                channel_id_or_name=f"Asset {vid_id}",
-                root_cause_summary=f"ClickHouse 5m spike ({spike.get('rate_5m_per_hr')} cmts/h vs {spike.get('rate_6h_per_hr')} cmts/h). Verdict: {brigade_analysis.get('threat_verdict')}. Momentum: {slope_info.get('momentum_status')} (slope: {slope_info.get('slope_per_sec')}/s).",
-                sample_negative_quotes=[
-                    f"⚠️ [Radar Alert] 5m Velocity: {spike.get('rate_5m_per_hr')} views/h vs 6h Baseline: {spike.get('rate_6h_per_hr')} views/h.",
-                    f"🛡️ Brigade Analysis: {brigade_analysis.get('threat_verdict')} (Entropy: {brigade_analysis.get('author_entropy')}, Diversity: {brigade_analysis.get('author_diversity_ratio')})."
-                ],
-                recommended_pr_stance=brigade_analysis.get("recommended_containment", ""),
-                metric_velocity_pct=float(spike.get("rate_5m_per_hr", 200.0))
+            # Graduated Autonomy & Approval Gate:
+            # Evaluate statistical confidence (sample size, surge multiplier, search grounding)
+            rate_5m = float(spike.get("rate_5m_per_hr", 0.0))
+            baseline_6h = float(spike.get("rate_6h_per_hr", 1.0))
+            surge_mult = rate_5m / max(baseline_6h, 1.0)
+            total_samples = int(spike.get("total_samples_6h", 0))
+
+            sample_conf = min(total_samples / 500.0, 1.0) * 0.4
+            surge_conf = min(surge_mult / 3.0, 1.0) * 0.4
+            grounding_conf = 0.2 if search_intel.get("status") == "GROUNDED_INTEL_READY" else 0.1
+            confidence_score = round(sample_conf + surge_conf + grounding_conf, 2)
+
+            # Check if graduated autonomy criteria met (confidence >= threshold and auto dispatch enabled)
+            should_auto_dispatch = bool(
+                confidence_score >= settings.radar_confidence_threshold and
+                settings.radar_auto_dispatch_enabled
             )
+
+            if should_auto_dispatch:
+                from src.mcp.slack_tools import dispatch_slack_crisis_alert
+                action_res = dispatch_slack_crisis_alert(
+                    severity="CRITICAL_P1" if not is_brigade else "ELEVATED_P2",
+                    title=f"Radar Spike: {title}",
+                    channel_id_or_name=f"Asset {vid_id}",
+                    root_cause_summary=f"ClickHouse 5m spike ({spike.get('rate_5m_per_hr')} cmts/h vs {spike.get('rate_6h_per_hr')} cmts/h). Verdict: {brigade_analysis.get('threat_verdict')}. Momentum: {slope_info.get('momentum_status')} (slope: {slope_info.get('slope_per_sec')}/s). Confidence: {confidence_score}.",
+                    sample_negative_quotes=[
+                        f"⚠️ [Radar Alert] 5m Velocity: {spike.get('rate_5m_per_hr')} views/h vs 6h Baseline: {spike.get('rate_6h_per_hr')} views/h.",
+                        f"🛡️ Brigade Analysis: {brigade_analysis.get('threat_verdict')} (Entropy: {brigade_analysis.get('author_entropy')}, Diversity: {brigade_analysis.get('author_diversity_ratio')})."
+                    ],
+                    recommended_pr_stance=brigade_analysis.get("recommended_containment", ""),
+                    metric_velocity_pct=float(spike.get("rate_5m_per_hr", 200.0))
+                )
+                action_res["dispatch_status"] = "AUTO_DISPATCHED"
+                action_res["confidence_score"] = confidence_score
+            else:
+                action_res = {
+                    "status": "QUEUED_FOR_APPROVAL",
+                    "dispatch_status": "QUEUED_FOR_APPROVAL",
+                    "confidence_score": confidence_score,
+                    "confidence_threshold": settings.radar_confidence_threshold,
+                    "reason": (
+                        f"Spike confidence ({confidence_score}) is below autonomy threshold ({settings.radar_confidence_threshold}) "
+                        f"or auto-dispatch is disabled; queued for executive triage sign-off."
+                    ),
+                    "approval_target": "EXECUTIVE_TRIAGE_BOARD",
+                    "proposed_severity": "CRITICAL_P1" if not is_brigade else "ELEVATED_P2",
+                    "title": f"Radar Spike: {title}",
+                    "video_id": vid_id
+                }
+                logger.info(f"🛡️ [Radar Gate] Spike on {vid_id} queued for approval (Confidence: {confidence_score} vs {settings.radar_confidence_threshold})")
+
             immediate_actions.append({
-                "tool": "dispatch_slack_crisis_alert",
+                "tool": "dispatch_slack_crisis_alert" if action_res.get("dispatch_status") == "AUTO_DISPATCHED" else "queue_executive_approval",
                 "video_id": vid_id,
+                "confidence_score": confidence_score,
+                "dispatch_status": action_res.get("dispatch_status"),
                 "spike_info": spike,
                 "brigade_analysis": brigade_analysis,
                 "slope_acceleration": slope_info,
