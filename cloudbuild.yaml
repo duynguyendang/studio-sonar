@@ -40,8 +40,7 @@ steps:
       - '--allow-unauthenticated'
       - '--memory=512Mi'
       - '--cpu=1'
-      - '--concurrency=80'
-      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=us-central1,BIGQUERY_DATASET=studiosonar_analytics,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.8-flash,USE_VERTEX_SEARCH_GROUNDING=true,GOOGLE_SEARCH_ENABLED=true'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=us-central1,BIGQUERY_DATASET=studiosonar_analytics,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.8-flash,USE_VERTEX_SEARCH_GROUNDING=true,GOOGLE_SEARCH_ENABLED=true,CLICKHOUSE_HOST=sfzvgvl2p7.us-central1.gcp.clickhouse.cloud,CLICKHOUSE_PORT=8443,CLICKHOUSE_USER=default,CLICKHOUSE_PASSWORD=ZoUQbd24Iv~~J,CLICKHOUSE_DATABASE=default,CLICKHOUSE_SECURE=true,TRIGGER_ACTIVE_WINDOW_ENABLED=true,TRIGGER_START_HOUR=8,TRIGGER_END_HOUR=18,TRIGGER_TIMEZONE=Asia/Ho_Chi_Minh'
     id: 'deploy-cloud-run-service'
 
 images:
