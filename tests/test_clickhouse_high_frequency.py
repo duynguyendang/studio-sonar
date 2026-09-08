@@ -130,6 +130,16 @@ def test_api_brigade_drilldown_endpoint():
     assert "p95_toxicity" in data
 
 
+def test_api_brigade_drilldown_injection_blocked():
+    """Validates that SQL injection attempts on API endpoint return 400 Bad Request."""
+    response = client.post(
+        "/api/v1/analytics/brigade-drilldown",
+        json={"video_id": "' OR 1=1 --"}
+    )
+    assert response.status_code == 400
+    assert "Invalid identifier" in response.json()["detail"]
+
+
 def test_clickhouse_decay_adjusted_heat_spikes():
     """Validates exponentialTimeDecayedCount query."""
     spikes = ch_client.query_decay_adjusted_heat_spikes(halflife_seconds=600)

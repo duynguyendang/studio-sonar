@@ -818,7 +818,10 @@ def brigade_drilldown_endpoint(req: BrigadeDrilldownRequest) -> Dict[str, Any]:
     Analyzes author diversity ratio, p95 toxicity, and repetition rate using ClickHouse raw columns.
     """
     from src.data.clickhouse_client import ch_client
-    return ch_client.drill_down_spike_brigade_analysis(video_id=req.video_id)
+    try:
+        return ch_client.drill_down_spike_brigade_analysis(video_id=req.video_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/api/v1/analytics/synergy-correlation")
@@ -838,5 +841,8 @@ def velocity_slope_endpoint(video_id: str = "UH21OnJwxZE", hours: int = 24) -> D
     Indicates whether trend momentum is accelerating (+), plateaued, or decelerating (-).
     """
     from src.data.clickhouse_client import ch_client
-    return ch_client.query_velocity_acceleration_slope(video_id=video_id, window_hours=hours)
+    try:
+        return ch_client.query_velocity_acceleration_slope(video_id=video_id, window_hours=hours)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
