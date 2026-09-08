@@ -55,8 +55,12 @@ class Settings(BaseSettings):
     # Guardrails & Anomaly Thresholds
     min_anomaly_velocity_pct: float = Field(default=250.0, validation_alias="MIN_ANOMALY_VELOCITY_PCT")
     critical_sentiment_threshold: float = Field(default=-0.60, validation_alias="CRITICAL_SENTIMENT_THRESHOLD")
-    confidence_threshold: float = Field(default=0.85, validation_alias="CONFIDENCE_THRESHOLD")
-    
+    # FinOps Cost Governance & Active Trigger Window (Protects ClickHouse Auto-Suspend)
+    trigger_active_window_enabled: bool = Field(default=True, validation_alias="TRIGGER_ACTIVE_WINDOW_ENABLED")
+    trigger_start_hour: int = Field(default=8, validation_alias="TRIGGER_START_HOUR")
+    trigger_end_hour: int = Field(default=18, validation_alias="TRIGGER_END_HOUR")
+    trigger_timezone: str = Field(default="Asia/Ho_Chi_Minh", validation_alias="TRIGGER_TIMEZONE")
+
     # Server
     port: int = Field(default=8080, validation_alias="PORT")
     host: str = Field(default="0.0.0.0", validation_alias="HOST")

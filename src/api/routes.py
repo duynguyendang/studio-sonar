@@ -550,18 +550,38 @@ def get_cycle_status() -> Dict[str, Any]:
     return {"status": "SUCCESS", "ledger": ledger}
 
 @router.post("/api/v1/trigger-cycle")
-def trigger_scheduled_cycle(background_tasks: BackgroundTasks) -> Dict[str, Any]:
+def trigger_scheduled_cycle(background_tasks: BackgroundTasks, force: bool = False) -> Dict[str, Any]:
     """
-    Endpoint triggered by Google Cloud Scheduler / Eventarc.
-    Runs a full background analysis and autonomous Multi-Agent cycle across all tracks.
-    The cycle executes asynchronously in the background so the long-running agent
-    pipeline (ingest + parallel Gemini authoring + GCS publish) is never cut short
-    by the Cloud Run request timeout. A cycle ledger marks the run as RUNNING and,
-    on completion, records `completed_at` so the UI can refresh in sync.
+    Endpoint triggered by Google Cloud Scheduler / Eventarc or UI.
+    Includes FinOps Cost Governance Gate to skip scheduled runs outside active hours
+    (allowing ClickHouse Cloud to auto-suspend and stay at $0 cost).
+    Pass force=True (or click UI button) to override the gate for on-demand demos.
     """
     import logging as _logging
     from datetime import datetime, timezone as _tz
     _log = _logging.getLogger("studiosonar.routes")
+
+    # FinOps Active Window Gate: prevent waking up ClickHouse Cloud outside active demo hours
+    if settings.trigger_active_window_enabled and not force:
+        try:
+            import zoneinfo
+            tz = zoneinfo.ZoneInfo(settings.trigger_timezone)
+            now_local = datetime.now(tz)
+            if now_local.hour < settings.trigger_start_hour or now_local.hour >= settings.trigger_end_hour:
+                _log.info(
+                    f"FinOps Standby: Skipping trigger at {now_local.strftime('%H:%M %Z')} "
+                    f"(outside {settings.trigger_start_hour}:00 - {settings.trigger_end_hour}:00). "
+                    f"ClickHouse Cloud remains in Auto-Suspend to save compute costs."
+                )
+                return {
+                    "status": "SKIPPED_FINOPS_STANDBY",
+                    "execution": "STANDBY",
+                    "detail": f"Skipped scheduled trigger outside active window ({settings.trigger_start_hour}:00 - {settings.trigger_end_hour}:00 {settings.trigger_timezone}) to preserve compute credits.",
+                    "current_local_time": now_local.strftime("%Y-%m-%d %H:%M:%S %Z"),
+                    "hint": "Pass ?force=true or click UI 'Run Swarm Cycle' for on-demand execution."
+                }
+        except Exception as e:
+            _log.debug(f"FinOps gate check notice: {e}")
 
     now_iso = datetime.now(_tz.utc).isoformat()
     gcs_report_manager.save_cycle_ledger({

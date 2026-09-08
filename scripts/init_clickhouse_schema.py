@@ -20,6 +20,9 @@ def main():
     with open(schema_path, "r", encoding="utf-8") as f:
         sql_content = f.read()
 
+    from dotenv import load_dotenv
+    load_dotenv()
+
     host = os.getenv("CLICKHOUSE_HOST", "localhost")
     port = int(os.getenv("CLICKHOUSE_PORT", "8443" if "clickhouse.cloud" in host else "8123"))
     user = os.getenv("CLICKHOUSE_USER", "default")
@@ -37,7 +40,9 @@ def main():
             username=user,
             password=password,
             database=database,
-            secure=secure
+            secure=secure,
+            connect_timeout=30,
+            send_receive_timeout=30
         )
         
         # Split statements by semicolon

@@ -34,12 +34,12 @@ class StudioSonarClickHouseClient:
         self._latencies_ms = [11.2, 14.5, 12.8, 16.1, 13.0, 15.4]
         self._last_check = 0.0
 
-    def execute_query(self, query: str, format_json: bool = True) -> Optional[List[Dict[str, Any]]]:
+    def execute_query(self, query: str, format_json: bool = True, timeout: float = 3.0) -> Optional[List[Dict[str, Any]]]:
         """Executes a SQL query against ClickHouse HTTP endpoint."""
         import time
         now = time.time()
-        # Fast circuit breaker if ClickHouse is offline (retry after 15s)
-        if self._is_online is False and (now - self._last_check) < 15.0:
+        # Fast circuit breaker if ClickHouse is offline (retry after 30s)
+        if self._is_online is False and (now - self._last_check) < 30.0:
             return None
 
         endpoint = f"{self.base_url}/"
@@ -57,7 +57,7 @@ class StudioSonarClickHouseClient:
                 params=params,
                 data=query.encode("utf-8"),
                 auth=auth,
-                timeout=2.0
+                timeout=timeout
             )
             lat_ms = (time.perf_counter() - t0) * 1000.0
             self._latencies_ms.append(round(lat_ms, 2))
@@ -73,7 +73,7 @@ class StudioSonarClickHouseClient:
                 logger.warning(f"ClickHouse query error ({resp.status_code}): {resp.text[:120]}")
                 return None
         except Exception as e:
-            logger.debug(f"ClickHouse connection notice: {e}")
+            logger.debug(f"ClickHouse cold-start or connection notice: {e}")
             self._is_online = False
             return None
 
