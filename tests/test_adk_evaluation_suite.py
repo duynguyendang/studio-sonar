@@ -23,10 +23,10 @@ def test_adk_agents_instantiation_and_tools():
     assert anomaly_detector_agent.mode == "single_turn"
 
     assert pr_crisis_agent.name == "PRCrisisStrategistAgent"
-    assert len(pr_crisis_agent.tools) == 2
+    assert len(pr_crisis_agent.tools) == 3
 
     assert viral_content_agent.name == "ViralContentCreatorAgent"
-    assert len(viral_content_agent.tools) == 2
+    assert len(viral_content_agent.tools) == 3
 
     assert channel_monitor_agent.name == "ChannelMonitorAgent"
     assert len(channel_monitor_agent.tools) == 4

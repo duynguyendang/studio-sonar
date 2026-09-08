@@ -16,7 +16,7 @@ class GeminiLLMClient:
     """
     Unified Google Gemini LLM Client for the Google ADK Multi-Agent System.
 
-    STRICT single-model policy: every call targets ONE model (gemini-3.7-flash).
+    STRICT single-model policy: every call targets ONE model (gemini-3.8-flash).
     There is no cross-model fallback. Transport resolution:
       1. Gemini Enterprise Agent Platform (OpenAI-compatible global endpoint) via
          Application Default Credentials - this is how gemini-3.x is served.
@@ -30,7 +30,7 @@ class GeminiLLMClient:
         self.api_key = settings.gemini_api_key or os.getenv("GEMINI_API_KEY")
         self.project_id = settings.gcp_project_id
         self.location = settings.gcp_location
-        self.model_name = settings.gemini_model or "gemini-3.7-flash"
+        self.model_name = settings.gemini_model or "gemini-3.8-flash"
         self._client = None
         self._credentials = None
         self._agent_platform_ready = False

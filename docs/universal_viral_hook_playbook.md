@@ -70,6 +70,29 @@ Loss Aversion            Contrarian Warning     BTS vs. Final Result    Behind-T
 
 ---
 
+---
+
+## 🔎 6. Autonomous Google Search Grounding for Real-Time Viral Surges
+
+When `AnomalyDetectorAgent` flags an acute breakout spike ($\Delta \text{Velocity} > 200\%$), the `ViralContentCreatorAgent` does not generate hooks in a vacuum. It executes a live search query via the **Google Search Intelligence Tool**:
+
+1. **Context Extraction:** Identifies trending keywords, cultural slang, sound names, or creator handles from ClickHouse telemetry.
+2. **Search Verification:** Queries Google for live discussions, breaking news, or Reddit/TikTok FYP context:
+   ```bash
+   Query: "viral [Trend Topic] origin meme context trending challenge"
+   ```
+3. **Dynamic Hook Synthesis:** Injects verified real-world facts and news into the 5 formulas (e.g. replacing a generic dollar figure with the exact verified loss amount or naming the specific cultural event).
+
+---
+
+## 📈 7. Closed-Loop CTR Feedback Optimization
+
+To maintain adaptive effectiveness across algorithm shifts:
+* **T+24h Tracking:** Measures actual impressions and CTR via YouTube Analytics API.
+* **Reinforcement Scoring:** Hooks that outperform the channel benchmark by $\ge 1.5\times$ are tagged as canonical exemplars in ClickHouse and BigQuery, updating future formula weightings.
+
+---
+
 ## 🚀 Autonomous Hook Prescription API Usage:
 
 ```bash
@@ -78,4 +101,5 @@ curl -X POST "https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app/api/v1/hook
      -d '{"topic": "Folk Fusion Electronic Production", "category": "Music"}'
 ```
 
-The system immediately synthesizes a **suite of 5 high-converting viral hooks**, complete with on-screen thumbnail text overlays and predicted CTR uplift percentages!
+The system immediately synthesizes a **suite of 5 high-converting viral hooks** powered by **Gemini 3.8 Flash**, complete with on-screen thumbnail text overlays and predicted CTR uplift percentages!
+

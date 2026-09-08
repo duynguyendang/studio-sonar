@@ -175,3 +175,48 @@ LEFT JOIN historical_window h ON c.video_id = h.video_id
 WHERE SAFE_DIVIDE(c.comment_volume - h.baseline_volume, h.baseline_volume) * 100.0 >= 200.0
   AND c.avg_sentiment <= -0.50;
 
+-- ------------------------------------------------------------------------------
+-- 8. SWARM REASONING & AGENT TELEMETRY SYSTEM OF RECORD
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `studiosonar_analytics.agent_telemetry` (
+  telemetry_id STRING NOT NULL,
+  agent_id STRING NOT NULL,
+  agent_name STRING NOT NULL,
+  role STRING NOT NULL,
+  status STRING NOT NULL, -- 'ACTIVE' | 'IDLE' | 'EXECUTING'
+  cpu_pct FLOAT64,
+  memory_mb FLOAT64,
+  batch_id STRING,
+  tasks_completed INT64,
+  last_action STRING,
+  last_tool_call STRING,
+  last_payload_summary STRING,
+  gemini_reasoning STRING,
+  recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+)
+PARTITION BY DATE(recorded_at)
+CLUSTER BY agent_id, status;
+
+-- ------------------------------------------------------------------------------
+-- 9. AUTONOMOUS CYCLE EXECUTION AUDIT LEDGER (System of Record)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `studiosonar_analytics.cycle_ledger` (
+  cycle_id STRING NOT NULL,
+  cycle_type STRING NOT NULL, -- 'ALL' | 'COMPANY_CHANNEL' | 'PR_CRISIS' | 'VIRAL_TREND'
+  trigger_source STRING NOT NULL, -- 'CLOUD_SCHEDULER' | 'WEB_API' | 'CLI_JOB'
+  status STRING NOT NULL, -- 'SUCCESS' | 'FAILED' | 'PARTIAL'
+  started_at TIMESTAMP NOT NULL,
+  completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+  duration_seconds FLOAT64,
+  ingested_snapshot_count INT64,
+  anomalies_detected_count INT64,
+  slack_alerts_dispatched INT64,
+  notion_cards_created INT64,
+  gdocs_scripts_created INT64,
+  gcs_reports_published ARRAY<STRING>,
+  error_message STRING
+)
+PARTITION BY DATE(started_at)
+CLUSTER BY cycle_type, status;
+
+

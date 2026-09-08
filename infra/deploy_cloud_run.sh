@@ -33,11 +33,34 @@ echo "📦 Step 1: Enabling Google Cloud APIs..."
 gcloud services enable \
   run.googleapis.com \
   bigquery.googleapis.com \
+  aiplatform.googleapis.com \
   cloudscheduler.googleapis.com \
   cloudbuild.googleapis.com \
   secretmanager.googleapis.com \
   youtube.googleapis.com \
   --project="${PROJECT_ID}"
+
+# Step 1.5: Configure Dedicated Zero-Secret Service Account
+echo "🛡️ Step 1.5: Configuring Dedicated IAM Service Account with Vertex AI Grounding..."
+SA_NAME="studio-sonar-sa"
+SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
+
+gcloud iam service-accounts create "${SA_NAME}" \
+  --display-name="Studio Sonar Autonomous Multi-Agent Service Account" \
+  --project="${PROJECT_ID}" 2>/dev/null || echo "Service account ${SA_NAME} already exists."
+
+echo "Binding IAM Roles (Vertex AI Search Grounding, BigQuery, PubSub)..."
+for ROLE in \
+  "roles/aiplatform.user" \
+  "roles/bigquery.dataEditor" \
+  "roles/bigquery.jobUser" \
+  "roles/pubsub.publisher" \
+  "roles/secretmanager.secretAccessor"; do
+  gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${SA_EMAIL}" \
+    --role="${ROLE}" \
+    --condition=None >/dev/null 2>&1 || true
+done
 
 # Step 2: Initialize BigQuery Schema
 echo "📊 Step 2: Initializing BigQuery Dataset and Tables..."
@@ -62,18 +85,20 @@ adk deploy cloud_run \
   --otel_to_cloud \
   src/agents \
   -- \
+  --service-account="${SA_EMAIL}" \
   --allow-unauthenticated \
   --min-instances=0 \
   --max-instances=3 \
   --memory=512Mi \
   --cpu=1 \
   --concurrency=80 \
-  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},EXECUTION_MODE=live,GEMINI_API_KEY=${GEMINI_KEY},GEMINI_MODEL=gemini-3.7-flash,YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}" || \
+  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},EXECUTION_MODE=live,GEMINI_API_KEY=${GEMINI_KEY},GEMINI_MODEL=gemini-3.8-flash,YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY},USE_VERTEX_SEARCH_GROUNDING=true,GOOGLE_SEARCH_ENABLED=true" || \
 gcloud run deploy "${SERVICE_NAME}" \
   --image="${IMAGE_NAME}" \
   --platform=managed \
   --region="${REGION}" \
   --project="${PROJECT_ID}" \
+  --service-account="${SA_EMAIL}" \
   --allow-unauthenticated \
   --min-instances=0 \
   --max-instances=3 \
@@ -82,7 +107,7 @@ gcloud run deploy "${SERVICE_NAME}" \
   --concurrency=80 \
   --cpu-throttling \
   --timeout=60s \
-  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},EXECUTION_MODE=live,GEMINI_API_KEY=${GEMINI_KEY},GEMINI_MODEL=gemini-3.7-flash,YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}"
+  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},EXECUTION_MODE=live,GEMINI_API_KEY=${GEMINI_KEY},GEMINI_MODEL=gemini-3.8-flash,YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY},USE_VERTEX_SEARCH_GROUNDING=true,GOOGLE_SEARCH_ENABLED=true"
 
 # Step 5: Deploy Google Cloud Run Job (Autonomous Google ADK Multi-Agent Runner)
 echo "🤖 Step 5: Deploying Google Cloud Run Job (ADK Multi-Agent Runner)..."
@@ -90,22 +115,24 @@ gcloud run jobs create "${SERVICE_NAME}-job" \
   --image="${IMAGE_NAME}" \
   --region="${REGION}" \
   --project="${PROJECT_ID}" \
+  --service-account="${SA_EMAIL}" \
   --command="python3" \
   --args="-m,src.demo.run_taskmaster_demo" \
   --memory=512Mi \
   --cpu=1 \
   --max-retries=1 \
-  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},EXECUTION_MODE=live,GEMINI_API_KEY=${GEMINI_KEY},GEMINI_MODEL=gemini-3.7-flash,YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}" || \
+  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},EXECUTION_MODE=live,GEMINI_API_KEY=${GEMINI_KEY},GEMINI_MODEL=gemini-3.8-flash,YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY},USE_VERTEX_SEARCH_GROUNDING=true,GOOGLE_SEARCH_ENABLED=true" || \
 gcloud run jobs update "${SERVICE_NAME}-job" \
   --image="${IMAGE_NAME}" \
   --region="${REGION}" \
   --project="${PROJECT_ID}" \
+  --service-account="${SA_EMAIL}" \
   --command="python3" \
   --args="-m,src.demo.run_taskmaster_demo" \
   --memory=512Mi \
   --cpu=1 \
   --max-retries=1 \
-  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},EXECUTION_MODE=live,GEMINI_API_KEY=${GEMINI_KEY},GEMINI_MODEL=gemini-3.7-flash,YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY}"
+  --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCP_LOCATION=${REGION},BIGQUERY_DATASET=${DATASET_NAME},EXECUTION_MODE=live,GEMINI_API_KEY=${GEMINI_KEY},GEMINI_MODEL=gemini-3.8-flash,YOUTUBE_DATA_API_KEY=${YOUTUBE_KEY},USE_VERTEX_SEARCH_GROUNDING=true,GOOGLE_SEARCH_ENABLED=true"
 
 
 # Step 6: Create Google Cloud Pub/Sub Agent Event Bus

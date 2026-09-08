@@ -1,0 +1,52 @@
+# ==============================================================================
+# Google Cloud Build Pipeline for StudioSonar Multi-Agent Architecture
+# Deploys to Cloud Run with Zero-Secret Service Account & Vertex AI Grounding
+# ==============================================================================
+
+steps:
+  # Step 1: Build container image with Docker layer caching
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:latest'
+      - '--cache-from'
+      - 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:latest'
+      - '.'
+    id: 'build-image'
+
+  # Step 2: Push images to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:$COMMIT_SHA']
+    id: 'push-sha-image'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:latest']
+    id: 'push-latest-image'
+
+  # Step 3: Deploy Service to Google Cloud Run with Dedicated Service Account
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'studiosonar-taskmaster'
+      - '--image=gcr.io/$PROJECT_ID/studiosonar-taskmaster:$COMMIT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--service-account=studio-sonar-sa@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--allow-unauthenticated'
+      - '--memory=512Mi'
+      - '--cpu=1'
+      - '--concurrency=80'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=us-central1,BIGQUERY_DATASET=studiosonar_analytics,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.8-flash,USE_VERTEX_SEARCH_GROUNDING=true,GOOGLE_SEARCH_ENABLED=true'
+    id: 'deploy-cloud-run-service'
+
+images:
+  - 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

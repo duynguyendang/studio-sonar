@@ -4,7 +4,7 @@ Welcome to the **StudioSonar Sample Reports Library**. The dossiers in this dire
 
 > 💡 **For Live, Real-Time Intelligence Dossiers:**  
 > Live intelligence is continuously synthesized from Google BigQuery OLAP telemetry and published directly to Google Cloud Storage (`gs://studiosonar-dev-reports`).  
-> 👉 **Inspect Live Reports on the Production Command Center:** [**https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app**](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)
+> 👉 **Inspect Live Reports on the Production Command Center:** [**https://studiosonar-taskmaster-598161588592.us-central1.run.app**](https://studiosonar-taskmaster-598161588592.us-central1.run.app)
 
 ---
 
@@ -33,7 +33,7 @@ Welcome to the **StudioSonar Sample Reports Library**. The dossiers in this dire
 ---
 
 ## ⚡ Live Web Command Center & API
-* 👑 **Root Web Command Center:** [https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)
+* 👑 **Root Web Command Center:** [https://studiosonar-taskmaster-598161588592.us-central1.run.app](https://studiosonar-taskmaster-598161588592.us-central1.run.app)
 * 📡 **Live GCS Dossier Endpoint:** `/api/v1/reports/content?report_key=channel_google`
 * 🛠️ **Local Development:**
 ```bash

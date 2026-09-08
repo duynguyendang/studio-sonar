@@ -14,8 +14,12 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 
+from contextlib import asynccontextmanager
+
 def _seed_registry_on_startup():
     """Seeds the canonical sample surveillance registry into BigQuery at startup (idempotent)."""
+    if os.getenv("PYTEST_CURRENT_TEST"):
+        return
     try:
         from src.core.config import settings as s
         from google.cloud import bigquery
@@ -28,14 +32,17 @@ def _seed_registry_on_startup():
     except Exception as e:
         logging.getLogger("studiosonar.main").warning(f"Startup BigQuery registry seed skipped: {e}")
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    _seed_registry_on_startup()
+    yield
 
 app = FastAPI(
     title="StudioSonar Taskmaster API & Dashboard",
     description="Autonomous Media Intelligence & Real-time Action Agent for Google Cloud",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
-
-_seed_registry_on_startup()
 
 # CORS middleware for local debugging
 app.add_middleware(
@@ -65,7 +72,7 @@ def healthcheck():
         "service": "studiosonar-taskmaster",
         "architecture": "Google ADK Multi-Agent Team",
         "agents": ["AnomalyDetectorAgent", "PRCrisisStrategistAgent", "ViralContentCreatorAgent", "ChannelSentinelAgent"],
-        "model": "gemini-3.7-flash"
+        "model": settings.gemini_model
     }
 
 app.include_router(main_router)

@@ -105,7 +105,11 @@ class TrackingRegistryManager:
             query_job = client.query(query)
             default_categories = ["Praise & Loyalty", "Technical Inquiries", "Commercial Leads", "Complaints & Friction"]
             result = []
+            seen_ids = set()
             for row in query_job.result():
+                if row.channel_id in seen_ids:
+                    continue
+                seen_ids.add(row.channel_id)
                 result.append({
                     "channel_id": row.channel_id,
                     "report_key": f"channel_{row.handle.replace('@', '').replace('.', '_').lower()}",
@@ -162,7 +166,11 @@ class TrackingRegistryManager:
             """
             query_job = client.query(query)
             result = []
+            seen_ids = set()
             for row in query_job.result():
+                if row.video_id in seen_ids:
+                    continue
+                seen_ids.add(row.video_id)
                 result.append({
                     "video_id": row.video_id,
                     "channel_id": row.channel_id or "ch_music_vpop",
@@ -280,9 +288,23 @@ class TrackingRegistryManager:
                 if clean_key.lower() in f_lower or mapped_key.lower() in f_lower or any(sk.lower() in f_lower for sk in sub_keywords):
                     return os.path.join(REPORTS_DIR, fname)
                     
-        return None
-
-
+    def get_monitoring_keywords(self, video_id: str = "", channel_id: str = "") -> List[str]:
+        """Retrieves user-defined monitoring keywords for a video or channel."""
+        data = self._load_data()
+        keywords = []
+        if video_id:
+            for v in data.get("videos", []):
+                if v.get("video_id") == video_id and "monitoring_keywords" in v:
+                    keywords.extend(v["monitoring_keywords"])
+                    break
+        if channel_id:
+            for c in data.get("channels", []):
+                if c.get("channel_id") == channel_id and "monitoring_keywords" in c:
+                    for kw in c["monitoring_keywords"]:
+                        if kw not in keywords:
+                            keywords.append(kw)
+                    break
+        return keywords
 
 registry_manager = TrackingRegistryManager()
 

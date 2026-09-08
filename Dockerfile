@@ -37,5 +37,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/healthz || exit 1
 
-# Start FastAPI server via Uvicorn
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Start FastAPI server via Uvicorn (dynamically honoring Cloud Run PORT)
+CMD ["sh", "-c", "exec uvicorn src.api.main:app --host 0.0.0.0 --port ${PORT:-8080}"]

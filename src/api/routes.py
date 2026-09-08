@@ -25,6 +25,25 @@ class HookPrescriptionRequest(BaseModel):
     topic: str = "Trí Tuệ Nhân Tạo & Lập Trình Viên"
     category: str = "Tech & Business"
 
+class KeywordSuggestionRequest(BaseModel):
+    title: Optional[str] = None
+    video_title: Optional[str] = None
+    channel: Optional[str] = None
+    channel_name: Optional[str] = None
+    category: Optional[str] = "General"
+    context_notes: Optional[str] = ""
+    include_search_grounding: bool = True
+
+    def get_title(self) -> str:
+        return self.title or self.video_title or "PHƯƠNG MỸ CHI x DTAP | 'THIÊN ĐƯỜNG VỚI NGƯỜI THƯƠNG'"
+
+    def get_channel(self) -> str:
+        return self.channel or self.channel_name or ""
+
+class SearchLiveIntelRequest(BaseModel):
+    query: str = "Phương Mỹ Chi xu hướng viral âm nhạc"
+    num_results: int = 4
+
 class ChatCommandRequest(BaseModel):
     message: str
 
@@ -39,12 +58,18 @@ def process_chat_command_endpoint(req: ChatCommandRequest) -> Dict[str, Any]:
 @router.get("/api/v1/health")
 def healthcheck_endpoint():
     """Cluster health check and microservice status."""
+    from src.data.clickhouse_client import ch_client
     return {
         "status": "healthy",
         "service": "studiosonar-taskmaster",
         "architecture": "Google ADK Multi-Agent Team (v2.7.1 Native)",
+        "substrates": {
+            "hot_path_realtime": ch_client.check_health(),
+            "warehouse_system_of_record": "Google BigQuery OLAP",
+            "external_osint_grounding": "Google Search Live Intelligence Engine"
+        },
         "agents": ["StudioSonarRootTaskmaster", "ChannelMonitorAgent", "AnomalyDetectorAgent", "PRCrisisStrategistAgent", "ViralContentCreatorAgent"],
-        "model": "gemini-3.7-flash"
+        "model": settings.gemini_model
     }
 
 @router.get("/api/v1/swarm/telemetry")
@@ -297,13 +322,15 @@ def get_surveillance_assets_live() -> Dict[str, Any]:
     """
     from src.tools.youtube_live_client import youtube_live_client
     assets = []
+    seen_asset_ids = set()
     
     try:
         # 1. Monitored Videos (YouTube MVs + TikTok Sounds) from BigQuery
         for v in registry_manager.get_all_videos():
             vid = v.get("video_id", "")
-            if not vid:
+            if not vid or vid in seen_asset_ids:
                 continue
+            seen_asset_ids.add(vid)
 
             is_tiktok = vid.startswith("tt_") or v.get("platform") == "tiktok"
 
@@ -367,6 +394,9 @@ def get_surveillance_assets_live() -> Dict[str, Any]:
         # 2. Monitored Channels
         for ch in registry_manager.get_all_channels():
             ch_id = ch.get("channel_id", "")
+            if not ch_id or ch_id in seen_asset_ids:
+                continue
+            seen_asset_ids.add(ch_id)
             ch_title = ch.get("title", ch.get("name", ""))
             ch_handle = ch.get("handle", ch.get("custom_url", ""))
             rep_key = ch.get("report_key", f"channel_{ch_id}")
@@ -452,6 +482,39 @@ def scan_tiktok_video_endpoint(req: TikTokScanRequest) -> Dict[str, Any]:
     Save/Share multipliers, and audio virality drivers.
     """
     return tiktok_scanner.scan_tiktok_video(req.tiktok_url_or_id)
+
+@router.post("/api/v1/keywords/suggest")
+def suggest_keywords_endpoint(req: KeywordSuggestionRequest) -> Dict[str, Any]:
+    """
+    Uses Gemini AI to analyze a video or channel and suggest
+    multi-dimensional monitoring keywords (core entities, PR risk terms, viral hooks).
+    Optionally grounds with Google Search via GCP Service Account ADC.
+    """
+    from src.tools.ai_keyword_suggester import ai_keyword_suggester
+    res = ai_keyword_suggester.suggest_keywords(
+        title=req.get_title(),
+        channel=req.get_channel(),
+        category=req.category or "",
+        context_notes=req.context_notes or ""
+    )
+    if req.include_search_grounding:
+        from src.tools.google_search_tool import google_search_tool
+        top_kws = res.get("recommended_monitoring_keywords", [])
+        primary = res.get("primary_entity", req.get_title())
+        search_query = f"{primary} {' '.join(top_kws[:2])}" if top_kws else primary
+        search_res = google_search_tool.search_live_intel(query=search_query, num_results=3)
+        res["google_search_grounding"] = search_res
+    return res
+
+@router.post("/api/v1/search/live-intel")
+def search_live_intel_endpoint(req: SearchLiveIntelRequest) -> Dict[str, Any]:
+    """
+    Direct endpoint for real-time Google Search Grounding.
+    Executes live search via Vertex AI Gemini (GCP Service Account ADC) or Google Custom Search API.
+    Emits explicit logs to Google Cloud Logging.
+    """
+    from src.tools.google_search_tool import google_search_tool
+    return google_search_tool.search_live_intel(query=req.query, num_results=req.num_results)
 
 
 
@@ -694,10 +757,66 @@ def a2a_pr_strategist_endpoint(payload: Dict[str, Any]) -> Dict[str, Any]:
     return {"status": "SUCCESS", "actions_taken": actions}
 
 @router.post("/api/v1/a2a/content-creator")
-def a2a_content_creator_endpoint(payload: Dict[str, Any]) -> Dict[str, Any]:
+def a2a_content_creator_endpoint(payload: Dict[str, Any] = {}) -> Dict[str, Any]:
     """Dedicated Google ADK Endpoint for ViralContentCreatorAgent."""
     trend_payload = payload.get("trend_payload", payload)
     actions = taskmaster_orchestrator.content_creator.handle_breakout_trend(trend_payload)
     return {"status": "SUCCESS", "actions_taken": actions}
 
+
+# =====================================================================
+# CLICKHOUSE HIGH-FREQUENCY RADAR & HOT PATH ENDPOINTS (U1, U2, U3)
+# =====================================================================
+
+class BrigadeDrilldownRequest(BaseModel):
+    video_id: str
+
+@router.post("/api/v1/radar-tick")
+def radar_tick_endpoint() -> Dict[str, Any]:
+    """
+    U1: High-Frequency Radar Loop (1-minute schedule).
+    Executes sub-50ms ClickHouse raw velocity scan across 5m vs 6h baseline.
+    If anomaly detected, triggers U3 brigade drill-down, live Search Grounding, and PR Crisis handoff.
+    """
+    return taskmaster_orchestrator.run_radar_tick()
+
+
+@router.get("/api/v1/hot/counters")
+def hot_counters_endpoint() -> Dict[str, Any]:
+    """
+    U2: Sub-10ms Hot Path Dashboard Polling & Cost Defense Metrics.
+    Returns real-time comment velocity, active alerts, p50/p95 query latency, and BigQuery cost savings.
+    """
+    from src.data.clickhouse_client import ch_client
+    return ch_client.get_hot_counters()
+
+
+@router.post("/api/v1/analytics/brigade-drilldown")
+def brigade_drilldown_endpoint(req: BrigadeDrilldownRequest) -> Dict[str, Any]:
+    """
+    U3: Coordinated Bot Brigade vs Organic Crisis Forensic Drill-Down.
+    Analyzes author diversity ratio, p95 toxicity, and repetition rate using ClickHouse raw columns.
+    """
+    from src.data.clickhouse_client import ch_client
+    return ch_client.drill_down_spike_brigade_analysis(video_id=req.video_id)
+
+
+@router.get("/api/v1/analytics/synergy-correlation")
+def synergy_correlation_endpoint(days: int = 7) -> Dict[str, Any]:
+    """
+    ClickHouse Native Pearson Correlation: corr(yt_h, tt_h) over 7 days.
+    Reveals synchronized viral multi-platform momentum.
+    """
+    from src.data.clickhouse_client import ch_client
+    return ch_client.query_cross_platform_synergy_correlation(days=days)
+
+
+@router.get("/api/v1/analytics/velocity-slope")
+def velocity_slope_endpoint(video_id: str = "UH21OnJwxZE", hours: int = 24) -> Dict[str, Any]:
+    """
+    ClickHouse Native Acceleration Slope: simpleLinearRegression(window_start)(comment_volume).
+    Indicates whether trend momentum is accelerating (+), plateaued, or decelerating (-).
+    """
+    from src.data.clickhouse_client import ch_client
+    return ch_client.query_velocity_acceleration_slope(video_id=video_id, window_hours=hours)
 

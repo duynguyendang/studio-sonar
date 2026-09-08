@@ -129,25 +129,6 @@ SEED_VIDEOS: List[Dict[str, Any]] = [
         "comment_count": 25382
     },
     {
-        "video_id": "tt_sound_pmc_thien_duong",
-        "channel_id": "ch_tiktok_sounds",
-        "platform": "tiktok",
-        "url": "https://www.tiktok.com/music/Thien-Duong-Voi-Nguoi-Thuong-Official",
-        "title": "🎵 TikTok Sound: 'Thiên Đường Với Người Thương' (128.5K UGC Videos)",
-        "published_at": "2026-08-20T12:00:00Z",
-        "monitoring_tier": "TIKTOK_SOUND_RADAR",
-        "tracking_status": "ACTIVE",
-        "custom_sentiment_categories": [
-            "Traditional Transformation Dance",
-            "Speed-Up Remix Adoption",
-            "UGC Creation Velocity",
-            "Hand Gesture Choreography"
-        ],
-        "view_count": 128540,
-        "like_count": 985000,
-        "comment_count": 14200
-    },
-    {
         "video_id": "Rp6ZnP5WRgI",
         "channel_id": "ch_phuongmychi",
         "platform": "youtube",
@@ -165,25 +146,6 @@ SEED_VIDEOS: List[Dict[str, Any]] = [
         "view_count": 232424,
         "like_count": 13370,
         "comment_count": 839
-    },
-    {
-        "video_id": "tt_sound_dtap_dan_choi",
-        "channel_id": "ch_tiktok_sounds",
-        "platform": "tiktok",
-        "url": "https://www.tiktok.com/music/Dan-Choi-Dan-Ca-Drop-Beat",
-        "title": "🎵 TikTok Sound: 'Dân Chơi Dân Ca' (34.2K UGC Videos)",
-        "published_at": "2026-08-24T12:00:00Z",
-        "monitoring_tier": "TIKTOK_SOUND_RADAR",
-        "tracking_status": "ACTIVE",
-        "custom_sentiment_categories": [
-            "Bass Drop Transitions",
-            "Street Style Dance",
-            "Remix Sound Inquiries",
-            "Short-form Virality"
-        ],
-        "view_count": 34210,
-        "like_count": 245000,
-        "comment_count": 4850
     },
     {
         "video_id": "R7Bf4l5VgO8",

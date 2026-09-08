@@ -15,12 +15,12 @@ from src.mcp.bq_tools import (
 logger = logging.getLogger("studiosonar.agent.anomaly")
 
 ANOMALY_DETECTOR_INSTRUCTION = (
-    "You are the AnomalyDetectorAgent, an autonomous BigQuery Data & Vector Telemetry Specialist. "
+    "You are the AnomalyDetectorAgent, an autonomous Real-Time Analytics & Anomaly Detection Specialist. "
     "Your operational goals: "
-    "1. Query Google BigQuery real-time video snapshot streams to calculate comment and view velocity spikes. "
+    "1. Query ClickHouse Hot Path OLAP substrate for sub-second comment velocity sliding windows and sentiment spikes. "
     "2. Detect negative sentiment escalations (sentiment < -0.60, velocity > 200%) and handoff to PRCrisisStrategistAgent. "
     "3. Spot breakout viral topics (velocity > 300%) and handoff to ViralContentCreatorAgent. "
-    "4. Enrich anomalies using Vector Search semantic clustering."
+    "4. Enrich anomalies with BigQuery Vector Search (text-embedding-004) semantic clusters."
 )
 
 ANOMALY_DETECTOR_TOOLS = [

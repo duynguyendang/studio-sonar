@@ -28,17 +28,18 @@ class SettingsCopilotAgent:
                         "reply": f"✅ Đã cập nhật thời gian theo dõi video **{updated.title[:40]}...** thành **{days} ngày** (FinOps Cost Saver kích hoạt)."
                     }
 
-        # Dynamic fuzzy match against all actively tracked videos
-        for vid, v in tracking_service.videos.items():
-            title_words = [w.lower() for w in re.findall(r'\w+', v.title)]
-            if any(w in msg_lower for w in title_words if len(w) > 3):
-                updated = tracking_service.update_video_tracking_duration(vid, days)
-                return {
-                    "action_executed": "UPDATE_VIDEO_DURATION",
-                    "video_id": vid,
-                    "new_duration_days": days,
-                    "reply": f"✅ Đã điều chỉnh thời gian theo dõi video **{v.title[:40]}...** thành **{days} ngày**."
-                }
+        # Dynamic fuzzy match against all actively tracked videos ONLY if duration adjustment intent is present
+        if duration_match or any(kw in msg_lower for kw in ["thời gian", "duration", "chỉnh", "đổi", "set"]):
+            for vid, v in tracking_service.videos.items():
+                title_words = [w.lower() for w in re.findall(r'\w+', v.title)]
+                if any(w in msg_lower for w in title_words if len(w) > 3):
+                    updated = tracking_service.update_video_tracking_duration(vid, days)
+                    return {
+                        "action_executed": "UPDATE_VIDEO_DURATION",
+                        "video_id": vid,
+                        "new_duration_days": days,
+                        "reply": f"✅ Đã điều chỉnh thời gian theo dõi video **{v.title[:40]}...** thành **{days} ngày**."
+                    }
 
         # 2. Intent: Add Channel
         if any(kw in msg_lower for kw in ["thêm kênh", "follow kênh", "track channel", "add channel"]):
@@ -61,6 +62,32 @@ class SettingsCopilotAgent:
                 "action_executed": "GENERATE_HOOKS",
                 "topic": topic,
                 "reply": f"🔥 **Gợi ý 3 Hook Triệu View cho chủ đề '{topic}':**\n\n{sample_hooks}"
+            }
+
+        # 4. Intent: AI Suggest Monitoring Keywords
+        if any(kw in msg_lower for kw in ["keyword", "từ khóa", "gợi ý từ khóa", "đề xuất từ khóa", "suggest keyword"]):
+            from src.tools.ai_keyword_suggester import ai_keyword_suggester
+            clean_topic = user_message
+            for noise in ["gợi ý từ khóa cho", "đề xuất từ khóa cho", "gợi ý keyword cho", "đề xuất keyword cho", "gợi ý keyword", "đề xuất keyword", "từ khóa", "keyword"]:
+                clean_topic = clean_topic.replace(noise, "")
+            clean_topic = clean_topic.strip(" :-\"\'") or "Video theo dõi"
+            
+            res = ai_keyword_suggester.suggest_keywords(title=clean_topic)
+            recs = res.get("recommended_monitoring_keywords", [])
+            cats = res.get("categories", {})
+            
+            reply_lines = [
+                f"🎯 **AI đề xuất từ khóa theo dõi cho '{clean_topic}':**",
+                f"• **Từ khóa khuyên dùng:** {', '.join(recs[:5])}",
+                f"• **Thực thể cốt lõi:** {', '.join(cats.get('core_entities', [])[:4])}",
+                f"• **Rủi ro / Tranh cãi tiềm ẩn:** {', '.join(cats.get('risk_keywords', [])[:4])}",
+                f"• **Cụm bắt trend / Slang:** {', '.join(cats.get('viral_slang_hooks', [])[:3])}"
+            ]
+            return {
+                "action_executed": "SUGGEST_KEYWORDS",
+                "topic": clean_topic,
+                "suggestions": res,
+                "reply": "\n".join(reply_lines)
             }
 
         # 4. Intent: FinOps Status & Help

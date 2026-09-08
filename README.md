@@ -1,249 +1,222 @@
-# 🎙️ StudioSonar: Autonomous Media Taskmaster Agent
+# 🎬 StudioSonar: Autonomous Media Intelligence & Production Orchestrator
 
-[![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Cloud%20Run%20%7C%20BigQuery%20%7C%20GCS-4285F4?logo=google-cloud&logoColor=white)](https://cloud.google.com/)
+> **Built for Google Cloud x ClickHouse Partner Track — "Lights. Camera. Code." Hackathon**  
+> An autonomous 8-agent swarm running on Google Cloud Run that continuously monitors multi-platform media telemetry, queries high-velocity comment streams via ClickHouse OLAP, and autonomously orchestrates PR alerts, executive task boards, and production-ready video scripts.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Cloud%20Run-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com/)
+[![Gemini](https://img.shields.io/badge/Gemini-3.8%20Flash-orange?logo=google&logoColor=white)](https://ai.google.dev/)
+[![ClickHouse](https://img.shields.io/badge/ClickHouse-OLAP%20Database%20(%3C30ms)-FFCC01?logo=clickhouse&logoColor=black)](https://clickhouse.com/)
 [![Google ADK](https://img.shields.io/badge/Google%20ADK-Multi--Agent%20Mesh%20v2.7.1-34A853?logo=google&logoColor=white)](https://adk.dev/)
-[![Vertex AI](https://img.shields.io/badge/Vertex%20AI-Gemini%203.7%20Flash-8E75C2?logo=google&logoColor=white)](https://cloud.google.com/vertex-ai)
-[![Hackathon Track](https://img.shields.io/badge/Hackathon%20Track-The%20Taskmaster-FF6F00)](https://allthingsagentichackathon.devpost.com/)
-
-> **The 24/7 Autonomous Media Intelligence & Brand Defense Swarm.**  
-> StudioSonar is not a chatbot that waits for human questions. It is a **Zero-Prompt Autonomous Taskmaster** that operates around the clock in the background—continuously ingesting social telemetry into **Google BigQuery**, detecting mathematical velocity spikes and sentiment anomalies via **Vertex AI Gemini 3.7 Flash**, persisting intelligence to **Google Cloud Storage (GCS)**, and executing enterprise actions on **Slack, Notion, and Google Docs**.
 
 ---
 
-### ⚡ Executive Snapshot
+## 📌 Submission Quick Links
 
-* **🚨 Problem:** Media and brand teams spend tens of hours every week manually sifting through comment sections, missing critical 24-hour algorithmic windows and letting PR crises explode overnight while teams sleep.
-* **💡 Solution:** StudioSonar is an autonomous multi-agent swarm that:
-  * **Understands Semantics at Scale:** Continuously ingests and deeply parses high-velocity comment streams from YouTube & TikTok on demand into behavioral micro-clusters.
-  * **Acts Autonomously in Real Time:** Detects mathematical velocity spikes and PR backlash in minutes with zero human prompting.
-  * **Executes Enterprise Workflows:** Automatically drafts ready-to-produce 60s viral scripts and dispatches containment playbooks across Slack, Notion, and Google Docs.
-* **🛠️ Tech Stack:**
-  * **Google ADK v2.7.1:** Multi-agent topological graph & A2A handoff mesh.
-  * **Vertex AI Gemini 3.7 Flash:** Cognitive reasoning, deep semantic comprehension, and creative synthesis.
-  * **Google BigQuery OLAP:** Partitioned time-series telemetry storage & SQL anomaly queries.
-  * **Google Cloud Run:** 5 decoupled microservices with serverless scale-to-zero.
-  * **Google Cloud Storage (GCS):** Zero-cache markdown intelligence report substrate.
-* **📈 Core Superpowers:**
-  * **Deep Semantic Comprehension:** Goes far beyond keyword matching to parse cultural nuances, audience obsession hooks, and brand friction.
-  * **100% Autonomous Taskmaster:** Self-initiating multi-agent swarm that reasons, decides, and executes without waiting for prompts.
-  * **Enterprise Data Sovereignty:** 100% private data stored and queried in your own BigQuery OLAP and GCS buckets.
+* **Live Hosted Application:** [https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)
+* **3-Minute Walkthrough Video:** `https://youtu.be/your-demo-id` *(Replace with your presentation video)*
+* **Partner Track:** ClickHouse Partner Track & Google Cloud Serverless Track
+* **Repository License:** [MIT License](LICENSE)
 
 ---
 
-## 🌐 Live Production Command Center
+## 1. Problem & Executive Summary
 
-* 👑 **Web Command Center & Dashboard:** [https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)
-* ⏱️ **Autonomous Scheduler Heartbeat:** 1-Hour Interval (`0 * * * *` via Google Cloud Scheduler)
+In modern high-velocity media and entertainment workflows, cultural trends and brand PR crises erupt within hours:
 
----
+* **The Telemetry Bottleneck:** Studios track tens of thousands of audience comments, sudden velocity surges, and creator duets across YouTube and TikTok daily.
+* **Passive Chatbot Failure:** Traditional conversational agents wait for human prompts (*"How can I help you today?"*). By the time a PR Director wakes up to ask questions, reputational damage is already viral across algorithms.
+* **OLAP Necessity:** Processing vector clusters, velocity acceleration slopes, and sentiment shifts across millions of raw comments creates severe latency bottlenecks inside conventional LLM context loops.
 
-## 🎯 The Problem: The "Blind 24 Hours" in Media & Brand Governance
-
-Modern media studios, record labels, and global brands publish high-stakes content to millions of viewers daily. However, their operational workflow is critically broken:
-
-1. **The 24-Hour Viral Window is Lost:** The first 24 hours determine whether a video captures algorithm momentum or dies. Teams manually review analytics days later when the trend has already peaked.
-2. **PR Crises Explode While Teams Sleep:** A subtle wave of negative sentiment in the comment section can escalate into a full-blown PR disaster overnight before the communications team even opens Slack.
-3. **Manual Analysis Fatigue:** Marketing teams spend 40+ hours per week manually categorizing comments, assembling slide decks, and guessing what derivative content to create.
-4. **Passive AI is Useless in Crises:** Standard conversational chatbots wait for human prompts (*"How can I help you?"*). When a crisis hits at 2:00 AM, a passive assistant is worthless.
+**StudioSonar replaces passive chat with a deterministic, autonomous 8-agent production crew.** Operating continuously in the background, StudioSonar streams social telemetry into **ClickHouse Cloud (<30ms Hot Path)** and **Google BigQuery (System of Record)**, runs sub-second analytical aggregations, grounds findings via **Gemini 3.8 Flash**, and automatically executes enterprise actions on **Slack, Notion, and Google Docs**.
 
 ---
 
-## 💡 The Solution: StudioSonar Autonomous Taskmaster Swarm
-
-StudioSonar replaces manual monitoring with a **proactive, decentralized multi-agent team** that never sleeps.
+## 2. System Architecture
 
 ```
-       [ 24/7 Social Telemetry ]
-                   │
-                   ▼ (Every 1 Hour via Cloud Scheduler)
-       [ Google BigQuery OLAP ]
-                   │
-                   ▼ (Mathematical Velocity & Sentiment Radar)
-   ┌───────────────────────────────────────────────────┐
-   │  🚨 Negative Backlash Spike (>150% Velocity)      │
-   │  👉 Auto-Dispatches Slack Alert + Notion Triage   │
-   ├───────────────────────────────────────────────────┤
-   │  🚀 Positive Viral Breakout (>200% Velocity)      │
-   │  👉 Auto-Drafts 60s Shorts Script in Google Docs  │
-   ├───────────────────────────────────────────────────┤
-   │  📊 New Upload Detection within 24h               │
-   │  👉 Auto-Generates Executive Performance Scorecard│
-   └───────────────────────────────────────────────────┘
+       [ YouTube Data API v3 ]           [ TikTok Trend Stream ]
+                  │                                 │
+                  ▼                                 ▼
+       ┌─────────────────────────────────────────────────────────────┐
+       │             High-Throughput Streaming Ingestion             │
+       └──────────────────────────────┬──────────────────────────────┘
+                                      ▼
+       ┌─────────────────────────────────────────────────────────────┐
+       │                 ClickHouse Cloud OLAP Engine                │
+       │  • Real-time Columnar Comment Log Aggregation (<30ms)       │
+       │  • P95 Comment Velocity & Anomaly Indices                   │
+       │  • Native Time-Series Analytics (decay, slope, entropy)     │
+       └──────────────────────────────┬──────────────────────────────┘
+                                      ▲ ClickHouse MCP Server / Client
+                                      │ (Native High-Frequency SQL)
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                Google Cloud Run: 8-Agent Swarm Orchestrator Engine                      │
+│                (Google ADK 2.7 • Antigravity SDK • Gemini 3.8 Flash)                    │
+│                                                                                         │
+│  [1. Telemetry Ingest] ──► [2. ClickHouse Query Agent] ──► [3. Anomaly Detector]       │
+│  [4. Sentiment Vector] ──► [5. Trend Trajectory]       ──► [6. Triage Director]        │
+│  [7. Script Drafter]   ──► [8. Dispatch Master]                                         │
+└──────────────────────────────────────────┬──────────────────────────────────────────────┘
+                                           │ Autonomous Action Dispatch
+                ┌──────────────────────────┼──────────────────────────┐
+                ▼                          ▼                          ▼
+       [ Slack Webhook ]            [ Notion API ]           [ Google Docs API ]
+        (P1 Crisis Alert)       (Executive Kanban Task)   (Script Draft + Retention Hooks)
 ```
 
 ---
 
-## 🎛️ Single Pane of Glass Command Center
+## 3. Partner Integration: Why ClickHouse?
 
-The StudioSonar Web Interface provides a streamlined, modern command center structured across **3 Core Views**:
+StudioSonar relies on **ClickHouse Cloud as the core analytical backbone** for sub-second telemetry aggregation before passing synthesized context to Gemini 3.8 Flash.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│ ⚡ StudioSonar • AI MISSION CONTROL CENTER • GOOGLE ADK SWARM (Gemini 3.7)   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  [ 🎛️ Mission Cockpit ]    [ 📄 Intelligence Dossier ]    [ ⚙️ Tech Ops ]     │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+### Key ClickHouse Capabilities Leveraged:
 
-1. **🎛️ Mission Cockpit (Default Executive View):**
-   * **Cross-Platform Campaign Synergy Radar:** Real-time summary of views, BigQuery OLAP ingestion records, PR safety status, and polling velocity.
-   * **Real-Time Surveillance Assets Grid:** Live cards displaying YouTube MVs & TikTok audio footprint, 4D behavioral sentiment spectrums, and one-click actions (*Reasoning Trace, View Report*).
+1. **High-Throughput Columnar Aggregations:** Aggregating millions of sentiment data points across sliding windows in **<30ms** using `MergeTree` and `AggregatingMergeTree` with `-State` / `-Merge` combinators.
+2. **Deterministic Anomaly Triggers:** Computing comment velocity spikes (`velocity > 250%` over rolling baseline) directly inside ClickHouse SQL rather than loading raw payloads into memory.
+3. **Native Time-Series & Statistical Functions:** StudioSonar maps business media questions directly into native ClickHouse algorithms:
 
-2. **📄 Intelligence Dossier (Strategic Intelligence View):**
-   * Real-time markdown intelligence documents rendered directly from **Google Cloud Storage (`gs://studiosonar-dev-reports`)**.
-   * Interactive **Mermaid execution diagrams** and **KaTeX mathematical formulas**.
-   * Fast report switcher for Master 24h Pulse, Company Campaign Scorecards, and Breakout Trends.
+| Business Intelligence Question | ClickHouse Native Function | Architectural Role |
+|---|---|---|
+| *"Is this backlash accelerating or peaking?"* | `simpleLinearRegression(timestamp, velocity)` | Velocity acceleration slope ($\beta$) |
+| *"Is this discussion heating up with exponential recency?"* | `exponentialTimeDecayedCount(600)` | Real-time heat score |
+| *"Are comments authentic or from a bot brigade?"* | `entropy(author_id_hash)` + $c/u$ ratio | Shannon entropy brigade detection |
+| *"Are YouTube and TikTok audiences cross-amplifying?"* | `corr(yt_hourly, tt_hourly)` | Pearson cross-platform synergy radar |
+| *"What are the exact friction keywords?"* | `topK(5)(comment_text)` | Friction & dispute term extraction |
+| *"What is the rolling 48-hour velocity sparkline?"* | `sparkbar(48)(hourly_views)` | Instant UTF-8 ASCII trendlines |
 
-3. **⚙️ Tech Ops (Engineering & Swarm Observability View):**
-   * **Live Agent Swarm Topology Graph:** Interactive visual canvas of the Google ADK execution mesh with node-level LLM reasoning inspection.
-   * **4 Live Running Telemetry Counters:** Comments/24h, UGC Audio Videos, Views Tracked, and BigQuery OLAP Rows.
-   * **3-Column Observability:** Swarm Agent Telemetry & Monitored Asset Streams (Left), 24h Autonomous Agent Reasoning & Decision Log (Center), Real-Time Alert Stream & Live Container Terminal (Right).
+4. **MCP Tool Integration:** Exposing ClickHouse functions to Google ADK via a custom Model Context Protocol (MCP) toolset (`src/mcp/clickhouse_tools.py`) and high-frequency client (`src/data/clickhouse_client.py`).
 
----
+### Sample Runtime Query Executed by Agent:
 
-## 🧠 Why Google ADK? (The Multi-Agent Nervous System)
-
-Why not simply write a monolithic Python cron script? **Traditional automation fails when scale, reasoning, and multi-disciplinary governance are required.** 
-
-Google ADK serves as the **central nervous system** that transforms isolated tools into an intelligent, self-healing swarm:
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│ 🧠 GOOGLE ADK AGENT SWARM (Autonomous Reasoning & Context Transfer)         │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 1. Native A2A Protocol: Decoupled Agent-to-Agent state & intent handoffs.   │
-│ 2. Declarative Tool Binding: Least-privilege schema bindings for Gemini.   │
-│ 3. Dual-Tier Fault Tolerance: Auto-fallback from HTTP mesh to in-process.   │
-│ 4. Deterministic Observability: Full audit trail of AI decision-making.     │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                      ▲
-                                      │ (Orchestrated by Google ADK)
-┌─────────────────────────────────────────────────────────────────────────────┐
-│ 🛠️ DETERMINISTIC TOOL CONNECTORS (I/O & Raw Data Muscle)                   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ • YouTube Live API  • TikTok Harvester  • BigQuery OLAP  • GCS Reports      │
-└─────────────────────────────────────────────────────────────────────────────┘
+```sql
+SELECT 
+    channel_id, 
+    video_id, 
+    count() AS total_comments, 
+    avg(sentiment_score) AS mean_sentiment, 
+    countIf(sentiment_score < -0.6) / count() AS toxicity_ratio, 
+    (count() - lagInFrame(count(), 1) OVER (PARTITION BY video_id ORDER BY window_start)) AS velocity_spike
+FROM default.media_telemetry_stream 
+WHERE timestamp >= now() - INTERVAL 6 HOUR 
+GROUP BY channel_id, video_id, toStartOfInterval(timestamp, INTERVAL 1 HOUR) AS window_start 
+HAVING toxicity_ratio > 0.35 AND velocity_spike > 150 
+ORDER BY velocity_spike DESC 
+LIMIT 5;
 ```
 
-1. **Native Agent-to-Agent (A2A) Handoff Protocol:** Unlike brittle REST APIs or hardcoded `if/else` scripts, ADK standardizes contextual state transfer. When the `AnomalyDetectorAgent` flags an alert, it packages full BigQuery telemetry and autonomously handoffs execution to the `PRCrisisStrategistAgent`.
-2. **Declarative Tool Sandboxing & Function Calling:** ADK converts deterministic Python I/O classes (`YouTubeLiveClient`, `TikTokHarvester`, `SlackDispatcher`) into strict JSON schemas for Vertex AI Gemini 3.7 Flash, enforcing role-based tool access per agent.
-3. **Enterprise Observability & Traceability:** ADK maintains structured execution traces, allowing enterprise stakeholders to audit *why* an agent made a decision, *how* it reasoned, and *what* downstream actions it triggered.
+---
+
+## 4. The 8-Agent Swarm Specification
+
+StudioSonar coordinates **8 specialized, decoupled agents** executing via Google ADK v2.7.1 and Antigravity SDK:
+
+| Agent Name | Framework / Engine | Core Responsibility |
+|---|---|---|
+| **1. Stream Ingest Agent** | FastAPI / Cloud Run | Handles platform rate limits, ingests live social feeds, streams clean payloads into ClickHouse hot path and BigQuery SoR. |
+| **2. ClickHouse Query Agent** | ClickHouse MCP / ADK 2.7 | Translates natural language media queries into deterministic high-performance ClickHouse SQL with sub-30ms execution. |
+| **3. Anomaly Detector** | Gemini 3.8 Flash / Antigravity | Scans ClickHouse velocity metrics, identifying toxic sentiment backlash (>150%) and viral breakouts (>200%). |
+| **4. Sentiment Vector Agent** | ClickHouse Vector Engine | Correlates cross-platform comment clusters, identifying nuanced behavioral cohorts (slang, sarcasm, feature friction). |
+| **5. Trajectory Predictor** | Gemini 3.8 Flash | Forecasts viral meme half-life, retention peaks, and audience drop-off points using ClickHouse linear regression slopes. |
+| **6. Triage Director** | ADK Multi-Agent Coordinator | Topological supervisor deciding between PR Crisis Containment, Viral Content Creation, or No-Op standby. |
+| **7. Production Script Drafter** | Gemini 3.8 Flash | Generates production-ready 60-second video scripts engineered with the Universal Viral Hook Playbook (Pattern Interrupt, Contrarian Truth). |
+| **8. Dispatch Master** | Webhooks & Google Workspace API | Executes external side-effects: fires Slack P1 alerts, creates Notion triage task boards, and formats Google Docs scripts. |
 
 ---
 
-## ☁️ Why This Deployment Model? (Distributed Cloud Run Microservices)
+## 5. Technology Stack
 
-StudioSonar is deliberately deployed as **5 independent Google Cloud Run microservices** rather than a single monolithic container:
-
-1. **Asymmetric Workload Scaling & True Scale-to-Zero:**
-   * **Taskmaster Orchestrator:** Runs once per hour via Cloud Scheduler (`0 * * * *`).
-   * **Anomaly Detector:** Performs high-throughput batch queries on BigQuery.
-   * **PR Crisis & Viral Creator:** Remain at **0 instances** (Scale-to-Zero) until a viral surge or PR incident occurs.  
-   👉 **Cost Efficiency:** Reduces idle enterprise cloud costs by **>90%**.
-2. **Stateless Container Decoupling via GCS Report Substrate:**
-   * All executive intelligence markdown reports are persisted to **Google Cloud Storage (`gs://studiosonar-dev-reports`)**.
-   * Container images remain **100% Stateless** and ultra-lightweight (~69 KiB build context), enabling instant cold-starts (< 1s).
-3. **Zero-Key Enterprise Security (Vertex AI IAM ADC):**
-   * Eliminates exposed API keys by leveraging Google Cloud IAM Service Account roles (`roles/aiplatform.user` & `roles/storage.objectAdmin`).
+* **Foundation LLM:** Google Gemini 3.8 Flash (Vertex AI IAM ADC & API Key)
+* **Agent Framework:** Google Agent Development Kit (ADK) v2.7.1 & Antigravity Multi-Agent SDK
+* **Cloud Infrastructure:** Google Cloud Run (Serverless Mesh), Cloud Scheduler, Cloud Secret Manager, Cloud Storage (GCS)
+* **Partner Technology:** **ClickHouse Cloud** (Sub-second OLAP Hot Path, Time-Series & Statistical Engine)
+* **System of Record:** **Google BigQuery** (Audit Ledger, Partitioned Archival Storage, Vector Embeddings)
+* **External APIs & Integrations:** Slack Incoming Webhooks, Notion REST API v1, Google Docs API, YouTube Data API v3
 
 ---
 
-## 🚀 Outstanding AI-Powered Capabilities & Business Impact
+## 6. Local Setup & Reproduction Guide
 
-StudioSonar operates as a **Zero-Prompt Autonomous Taskmaster Swarm** powered by Google ADK and Vertex AI Gemini 3.7 Flash:
+### Prerequisites
 
-| Core Pillar | Autonomous Swarm Architecture | Enterprise Impact |
-| :--- | :--- | :--- |
-| **🧠 Deep Semantic Understanding at Scale** | Continuously streams & parses high-velocity comments into behavioral micro-clusters on demand. | Goes far beyond primitive polarity to uncover root causes and creative hooks. |
-| **⚡ Autonomous Taskmaster Execution** | Self-initiating multi-agent graph triggers real-time actions with zero human prompting. | Eliminates human latency in capturing viral peaks or containing crises. |
-| **✍️ Instant 60s Script Synthesis** | Detects algorithmic momentum and auto-drafts production-ready short-form scripts. | Captures the peak algorithmic FYP window across YouTube Shorts & TikTok. |
-| **🚨 Predictive PR Crisis Containment** | Evaluates mathematical negative velocity spikes and formulates root-cause containment plans. | Prevents brand damage before external public relations escalation. |
-| **☁️ Serverless Scale-to-Zero & Sovereignty** | Elastic microservices scale on demand and sleep when idle; 100% private BigQuery & GCS storage. | Maximum cloud efficiency with complete enterprise data privacy and zero vendor lock-in. |
+* Python 3.11+
+* Docker & Google Cloud SDK (`gcloud`)
+* Active ClickHouse Cloud cluster or local ClickHouse instance
 
----
-
-### 💎 The 5 Superpowers of StudioSonar
-
-1. **🧠 Continuous Deep Semantic Understanding at Massive Scale (Scale on Demand):**
-   * Continuously ingests unstructured, high-velocity social comment streams from YouTube and TikTok without human bottleneck.
-   * Leverages Gemini 3.7 Flash to decipher nuanced multilingual vernacular, sarcasm, slang, and cultural subtext into **actionable behavioral micro-clusters** (e.g., *Chorus Replay Obsession, Visual Aesthetic Appreciation, Technical Inquiries, Toxic Backlash*), providing rich creative and strategic direction far beyond primitive positive/negative scores.
-2. **⚡ Autonomous 60s Short-Form Script Synthesis (Universal Viral Hook Engine):**
-   * Automatically detects viral velocity breakouts on master videos and derivative audio waves.
-   * Synthesizes ready-to-produce 60s video drafts (Shorts/TikTok/Reels) using the *Universal Viral Hook Playbook* (Pattern Interrupt, Contrarian Truth, Aesthetic Pacing) and exports directly into Google Docs and Slack with zero manual prompting.
-3. **🚨 Predictive PR Crisis Containment & Root-Cause Diagnosis:**
-   * Continuously benchmarks negative comment velocity against historical baselines on BigQuery OLAP.
-   * Autonomously diagnoses the underlying root cause of audience friction in minutes, generating a comprehensive mitigation checklist, official pinned comment responses, and Notion emergency triage boards.
-4. **☁️ Cloud-Native Elastic Scale-to-Zero Architecture:**
-   * Built on 5 decoupled Google Cloud Run microservices that automatically scale on demand to handle viral traffic surges seamlessly, and scale back down to zero instances during idle periods for maximum cloud efficiency.
-5. **🛡️ 100% Enterprise Data Sovereignty & Zero-Key Security:**
-   * All raw comments, time-series metrics, and intelligence reports remain securely housed inside your enterprise's private **Google BigQuery** partitions and **GCS buckets** (`gs://studiosonar-dev-reports`), governed by Vertex AI IAM Workload Identity with zero exposed API keys.
-
----
-
-## 🌟 Industry-Agnostic Applications
-
-StudioSonar is architected as a **universal autonomous intelligence engine** adaptable across diverse media domains:
-
-### 1. 🎵 Entertainment Studios & Music Labels
-* **Goal:** Maximize release momentum, detect viral audio propagation, and protect artist brand safety.
-* **Taskmaster Flow:** Detects algorithmic velocity surges on YouTube MVs and derivative TikTok audio trends, auto-synthesizing short-form challenge hooks and community engagement playbooks.
-
-### 2. 🏭 Consumer Brands & Enterprise Product Teams
-* **Goal:** Monitor industrial transparency, product launches, customer sentiment friction, and brand trust.
-* **Taskmaster Flow:** Continuously benchmarks audience commentary against historical baselines, surfacing product perception shifts and drafting crisis response FAQs in real time.
-
-### 3. 🎬 Digital Media Networks & Creator Collectives
-* **Goal:** Benchmark multi-channel publishing velocity, editorial sentiment health, and audience conversion.
-* **Taskmaster Flow:** Automates weekly channel scorecards, pinpoints high-CTR packaging opportunities, and routes action items directly into enterprise Notion and Slack workflows.
-
----
-
-## 🤖 The 5 Google ADK Multi-Agent Team
-
-StudioSonar divides responsibilities across **5 specialized, decoupled microservices**:
-
-| Agent Microservice | Business Mission | Autonomous Triggers | Enterprise Deliverables |
-| :--- | :--- | :--- | :--- |
-| **👑 Taskmaster Root Orchestrator**<br>`studiosonar-taskmaster` | **Central Commander & Dispatcher**<br>Ingests verified telemetry, manages the swarm, and updates GCS reports. | Wakes on 1-hour Cloud Scheduler heartbeat (`0 * * * *`). Polls YouTube API v3 and routes tasks via A2A mesh. | ☁️ GCS Reports Bucket<br>🖥️ Real-Time Dashboard |
-| **📡 Channel Sentinel Agent**<br>`studiosonar-channel-monitor` | **Channel Watchdog & Performance Benchmark**<br>Tracks uploads on monitored channels within 24h against 30-day baseline. | Calculates velocity ratios against channel averages and generates scorecards. | 📊 Channel Intelligence<br>📈 Velocity Scorecard |
-| **🔍 Anomaly Detector Agent**<br>`studiosonar-anomaly-detector` | **Sentiment Radar & Mathematical Classifier**<br>Scans BigQuery comments to classify sentiment and detect velocity anomalies. | • **Backlash Spike (>150% neg surge)** ➔ Handoff to PR Crisis Agent.<br>• **Viral Breakout (>200% pos surge)** ➔ Handoff to Content Creator. | 🚨 Multi-Agent Mesh Handoff<br>⚡ 24h Sentiment Radar |
-| **🚨 PR Crisis Strategist Agent**<br>`studiosonar-pr-strategist` | **Rapid Crisis Mitigation & Brand Defense**<br>Synthesizes root causes with Gemini 3.7 Flash and crafts official responses. | Triggered by negative sentiment spikes. Creates pinned comment prescriptions and mitigation checklists. | 📢 Slack `#media-alerts`<br>📋 Notion Action Board |
-| **✍️ Viral Content Creator Agent**<br>`studiosonar-content-creator` | **Viral Growth Hacker & Derivative Scriptwriter**<br>Harvests viral hooks and produces 60s short-form video scripts. | Triggered by positive breakout engagement. Applies the Universal Viral Hook Playbook. | 📄 Google Docs Script Draft<br>💬 Slack Concept Pitch |
-
----
-
-## 📡 Dynamic Entity Monitoring & Extensible Taxonomy
-
-StudioSonar operates with **Zero Hardcoded Entities**. Channels, videos, and UGC audio streams are registered dynamically at runtime:
-
-1. **Multi-Platform Support:** Ingests official YouTube Channels (`@handle` or Channel ID), individual YouTube Videos/Shorts, and TikTok UGC Sound Waves.
-2. **Custom Sentiment & Intent Taxonomies:** Each tracked entity supports custom behavioral classification dimensions (e.g., *Brand Loyalty, Product Feedback, Technical Inquiries, Viral Adoption*).
-3. **Flexible Lookback Windows & Cost Governance:** Configure 7-day, 14-day, or 30-day surveillance windows to optimize API quota and BigQuery compute.
-4. **Multi-Interface Registration:**
-   * **Web Cockpit UI:** One-click registration via the Command Center modal.
-   * **Natural Language Copilot:** Chat commands like *"Track channel @TheVerge with 14-day lookback"*.
-   * **Interactive CLI:** Run `python3 -m src.demo.tracking_manager_cli` for terminal-based management.
-   * **REST API:** Programmatic CRUD endpoints at `/api/v1/registry/tracking`.
-
----
-
-## 📊 Sample Reports vs. Real-Time Intelligence
-
-* 📁 **Pre-Generated Sample Reports:** The [`reports/`](reports/) folder contains canonical reference intelligence dossiers demonstrating the standardized 7-section channel audit and 6-section video performance architectures produced by Gemini 3.7 Flash.
-* 🌐 **Live Dynamic Dossiers:** For real-time, zero-cache intelligence dossiers generated dynamically from live BigQuery telemetry and stored in GCS (`gs://studiosonar-dev-reports`), visit the production command center:  
-  👉 [**https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app**](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)
-
----
-
-## ⚡ Quickstart & Local Run
+### 1. Clone & Configure Environment
 
 ```bash
-git clone https://github.com/StudioSonar-AI/studiosonar-taskmaster.git
+git clone https://github.com/duynguyendang/studio-sonar.git
 cd studio-sonar
-pip install -r requirements.txt
-
-# Run Local Dashboard
-python3 -m uvicorn src.api.main:app --host 0.0.0.0 --port 8080 --reload
+cp .env.example .env
 ```
 
-> 📖 **For the Deep Technical Blueprint & Mathematical Formulations, read [docs/architecture.md](docs/architecture.md).**
+Configure your `.env` credentials:
+
+```ini
+# Google & Gemini Credentials
+GEMINI_API_KEY="your_gemini_api_key"
+GEMINI_MODEL="gemini-3.8-flash"
+GCP_PROJECT_ID="your_gcp_project_id"
+BIGQUERY_DATASET="studiosonar_analytics"
+
+# ClickHouse Cloud Credentials
+CLICKHOUSE_HOST="your-cluster.clickhouse.cloud"
+CLICKHOUSE_PORT="8443"
+CLICKHOUSE_USER="default"
+CLICKHOUSE_PASSWORD="your_clickhouse_password"
+CLICKHOUSE_DATABASE="default"
+
+# External Enterprise Dispatch
+SLACK_WEBHOOK_URL="https://hooks.slack.com/services/..."
+NOTION_API_KEY="secret_..."
+NOTION_DATABASE_ID="..."
+YOUTUBE_DATA_API_KEY="AIza..."
+```
+
+### 2. Run Database Migrations
+
+Initialize the ClickHouse schema (tables, materialized views, and native aggregation states):
+
+```bash
+python scripts/init_clickhouse_schema.py
+```
+
+*(You can also inspect or run [`infra/clickhouse_schema.sql`](infra/clickhouse_schema.sql) directly in ClickHouse Console).*
+
+### 3. Run Locally
+
+Install dependencies and start the local command center:
+
+```bash
+pip install -r requirements.txt
+python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8080 --reload
+```
+
+Open `http://localhost:8080` to access the StudioSonar Mission Control Dashboard.
+
+### 4. Deploy to Google Cloud Run
+
+Deploy the serverless container to Google Cloud Run:
+
+```bash
+# Option A: One-click automated deployment script
+bash infra/deploy_cloud_run.sh
+
+# Option B: Direct gcloud deploy
+gcloud builds submit --tag gcr.io/[YOUR_PROJECT_ID]/studiosonar-taskmaster
+gcloud run deploy studiosonar-taskmaster \
+  --image gcr.io/[YOUR_PROJECT_ID]/studiosonar-taskmaster \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --set-env-vars "GCP_PROJECT_ID=[YOUR_PROJECT_ID],CLICKHOUSE_HOST=[YOUR_HOST],CLICKHOUSE_PASSWORD=[YOUR_PWD]"
+```
+
+---
+
+## 7. Open Source License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.

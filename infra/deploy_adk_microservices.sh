@@ -10,7 +10,7 @@ PROJECT_ID="studiosonar-dev"
 REGION="us-central1"
 DATASET_NAME="studiosonar_analytics"
 IMAGE_NAME="gcr.io/${PROJECT_ID}/studiosonar-taskmaster:latest"
-YOUTUBE_KEY="${YOUTUBE_DATA_API_KEY:-AIzaSyAV5KupWHw65Y-EMtuEcgm7DFkszYyBOx4}"
+YOUTUBE_KEY="${YOUTUBE_DATA_API_KEY:-}"
 
 echo "================================================================="
 echo "🚀 Deploying Distributed Google ADK Multi-Agent Architecture"

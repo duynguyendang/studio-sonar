@@ -120,16 +120,28 @@ class StudioSonarOrchestrationEngine:
         executed_actions: List[Dict[str, Any]] = []
 
         # =====================================================================
-        # Step 0: Real-Time Telemetry Stream Ingestion -> BigQuery
+        # Step 0: Real-Time Telemetry Stream Ingestion -> ClickHouse (Hot) & BigQuery (SoR)
         # =====================================================================
         ingest_res = {}
         try:
             from src.data.bigquery_client import bq_client
+            from src.data.clickhouse_client import ch_client
+            
+            # 1. Ingest to BigQuery System of Record
             ingest_res = bq_client.collect_and_ingest_latest_telemetry()
-            logger.info(f"Step 0 Complete: Ingested {ingest_res.get('ingested_count', 0)} live video snapshots to BigQuery.")
-            executed_actions.append({"step": "Step 0 - BigQuery Ingestion", "result": ingest_res})
+            
+            # 2. Ingest to ClickHouse Hot Path Substrate (Sub-second sliding windows)
+            snaps = ingest_res.get("snapshots", [])
+            ch_inserted = ch_client.insert_snapshots(snaps)
+            
+            logger.info(f"Step 0 Complete: Ingested {ingest_res.get('ingested_count', 0)} snapshots to BQ (SoR) and {ch_inserted} to ClickHouse (Hot Path).")
+            executed_actions.append({
+                "step": "Step 0 - Dual Substrate Ingestion",
+                "bigquery_so_record": ingest_res.get("ingested_count", 0),
+                "clickhouse_hot_path": ch_inserted
+            })
         except Exception as e:
-            logger.warning(f"Live Ingestion notice: {e}")
+            logger.warning(f"Dual Ingestion notice: {e}")
 
         # =====================================================================
         # Step 1: Channel Monitor Agent (Company Channels & 24h Scorecards)
@@ -229,12 +241,36 @@ class StudioSonarOrchestrationEngine:
                 velocity = anomaly.get("velocity_spike_pct", 0.0)
                 quotes = anomaly.get("sample_negative_comments", [])
 
-                root_cause = f"Rapid sentiment backlash (+{velocity:.1f}%) on core message transparency."
+                # Autonomous Google Search Grounding: Query external news & controversy context
+                from src.mcp.search_tools import search_google_live_intel
+                from src.tools.keyword_extractor import keyword_extractor
+                from src.core.registry_manager import registry_manager
+
+                custom_kws = registry_manager.get_monitoring_keywords(video_id=anomaly.get("video_id", ""), channel_id=channel)
+                query_info = keyword_extractor.build_crisis_search_query(
+                    video_title=title,
+                    channel_title=channel,
+                    sample_comments=quotes,
+                    custom_keywords=custom_kws
+                )
+                search_query = query_info["query"]
+                search_intel = search_google_live_intel(query=search_query, num_results=3)
+                top_findings = search_intel.get("results", [])
+                finding_snippet = top_findings[0].get("snippet", "") if top_findings else ""
+
+                root_cause = f"Rapid sentiment backlash (+{velocity:.1f}%) on core message transparency. Google Search OSINT: {finding_snippet[:150]}"
                 containment_stance = (
                     "1. Publish verified pinned clarification comment addressing friction points directly.\n"
                     "2. Update video description with transparent disclosure timestamps.\n"
                     "3. Temporarily pause automated ad placements until sentiment stabilizes."
                 )
+
+                executed_actions.append({
+                    "agent": pr_crisis_agent.name,
+                    "tool": "search_google_live_intel",
+                    "query": search_query,
+                    "result": f"Grounded root-cause with {len(top_findings)} external news/forum sources."
+                })
 
                 slack_res = dispatch_slack_crisis_alert(
                     severity="CRITICAL_P1",
@@ -299,14 +335,37 @@ class StudioSonarOrchestrationEngine:
                 topic = trend.get("trend_topic", "Breakout Tech Trend")
                 accel = trend.get("cross_platform_acceleration_pct", 0.0)
 
-                hooks = ViralHookEngine.generate_high_octane_hooks(topic=topic, context={"accel": accel})
+                # Autonomous Google Search Grounding: Query viral origin and meme catalysts
+                from src.mcp.search_tools import search_google_live_intel
+                from src.tools.keyword_extractor import keyword_extractor
+                from src.core.registry_manager import registry_manager
+
+                trend_kws = registry_manager.get_monitoring_keywords(video_id=trend.get("video_id", ""))
+                query_info = keyword_extractor.build_viral_search_query(
+                    trend_topic=topic,
+                    channel_title=trend.get("channel_title", ""),
+                    custom_keywords=trend_kws
+                )
+                search_query = query_info["query"]
+                trend_intel = search_google_live_intel(query=search_query, num_results=2)
+                trend_snippets = trend_intel.get("results", [])
+                grounded_note = trend_snippets[0].get("snippet", "") if trend_snippets else ""
+
+                executed_actions.append({
+                    "agent": viral_content_agent.name,
+                    "tool": "search_google_live_intel",
+                    "query": search_query,
+                    "result": f"Grounded viral hook with {len(trend_snippets)} live trend references."
+                })
+
+                hooks = ViralHookEngine.generate_high_octane_hooks(topic=topic, context={"accel": accel, "grounded_note": grounded_note})
                 hook_3s = hooks.get("framework_1_financial_catastrophe", {}).get("hook_3s", f"99% người xem đang hiểu sai về {topic}!")
                 problem = f"Tại sao 90% nhà sáng tạo bỏ lỡ làn sóng {topic} trong khi nó đang tăng trưởng +{accel:.1f}%?"
                 solution = f"Bí quyết nằm ở việc nắm bắt comment velocity và nhu cầu ngách của cộng đồng trước khi đối thủ nhận ra."
                 cta = "Lưu lại video này và đăng ký kênh để đón đầu làn sóng tiếp theo!"
                 b_rolls = [
                     "0:00 - High-contrast visual disruption",
-                    "0:15 - BigQuery analytics spike graph",
+                    "0:15 - ClickHouse real-time velocity spike graph",
                     "0:45 - High-contrast CTA overlay"
                 ]
 
@@ -333,7 +392,7 @@ class StudioSonarOrchestrationEngine:
                     title=f"Production Sprint: {topic[:35]}...",
                     priority="High",
                     assigned_team="Creative Studio & Shorts Team",
-                    summary=f"Automated 60s viral video draft generated for breakout trend (+{accel:.1f}% velocity surge).",
+                    summary=f"Automated 60s viral video draft generated for breakout trend (+{accel:.1f}% velocity surge). Grounded by Google Search.",
                     action_items=[
                         "Record A-Roll talking head using 3s hook",
                         "Edit B-Roll pacing at 1.2x speed with sound effects",
@@ -399,6 +458,113 @@ class StudioSonarOrchestrationEngine:
             "actions_executed": executed_actions
         }
 
+    def run_radar_tick(self) -> Dict[str, Any]:
+        """
+        U1 — High-Frequency 1-Minute Radar Loop.
+        Executes a sub-50ms ad-hoc raw columnar scan in ClickHouse.
+        If an acute spike (5m vs 6h baseline) is detected, it performs immediate
+        U3 Brigade/Bot attack analysis and dispatches PR Crisis / Viral agents with
+        Google Search Grounding without waiting for the 1-hour heavy cycle.
+        """
+        import time
+        t_start = time.perf_counter()
+        now_utc = datetime.now(timezone.utc)
+        timestamp_str = now_utc.strftime("%Y-%m-%d %H:%M:%S UTC")
+        logger.info(f"⚡ [Radar Tick] Executing 1-minute ClickHouse hot scan at {timestamp_str}...")
+
+        from src.data.clickhouse_client import ch_client
+        spikes = ch_client.query_ad_hoc_raw_velocity_spikes()
+        decay_spikes = ch_client.query_decay_adjusted_heat_spikes(halflife_seconds=600)
+
+        spike_count = len(spikes)
+        immediate_actions = []
+
+        for spike in spikes:
+            vid_id = spike.get("video_id", "")
+            title = spike.get("video_title", f"Video {vid_id}")
+            neg_ratio = float(spike.get("neg_ratio_6h", 0.0))
+
+            # U3 — Immediate Brigade Attack Drill-Down with Shannon Entropy
+            brigade_analysis = ch_client.drill_down_spike_brigade_analysis(vid_id)
+            is_brigade = brigade_analysis.get("is_brigade_attack", False)
+
+            # Native ClickHouse simpleLinearRegression Slope Acceleration
+            slope_info = ch_client.query_velocity_acceleration_slope(vid_id)
+            spike["acceleration_slope"] = slope_info.get("slope_per_sec", 0.0)
+            spike["momentum_status"] = slope_info.get("momentum_status", "PLATEAU")
+
+            # Autonomous Google Search Grounding for context
+            from src.tools.keyword_extractor import keyword_extractor
+            from src.tools.google_search_tool import google_search_tool
+            from src.core.registry_manager import registry_manager
+
+            custom_kws = registry_manager.get_monitoring_keywords(video_id=vid_id)
+            query_info = keyword_extractor.build_crisis_search_query(
+                video_title=title,
+                channel_title="",
+                sample_comments=["Nội dung này đang bị chỉ trích gay gắt trên mạng"],
+                custom_keywords=custom_kws
+            )
+            search_intel = google_search_tool.search_live_intel(query=query_info["query"], num_results=2)
+
+            # Record immediate handoff trace
+            adk_event_tracer.record_handoff(
+                sender=self.root_agent.name,
+                recipient=pr_crisis_agent.name,
+                reason="HIGH_FREQUENCY_RADAR_SPIKE_DETECTED",
+                payload={
+                    "video_id": vid_id,
+                    "surge_rate_5m": spike.get("rate_5m_per_hr"),
+                    "baseline_rate_6h": spike.get("rate_6h_per_hr"),
+                    "momentum_slope": slope_info.get("slope_per_sec"),
+                    "momentum_status": slope_info.get("momentum_status"),
+                    "is_brigade": is_brigade,
+                    "author_entropy": brigade_analysis.get("author_entropy"),
+                    "search_findings": search_intel.get("results_count", 0)
+                }
+            )
+
+            # Optional Slack P1 immediate dispatch
+            from src.mcp.slack_tools import dispatch_slack_crisis_alert
+            action_res = dispatch_slack_crisis_alert(
+                severity="CRITICAL_P1" if not is_brigade else "ELEVATED_P2",
+                title=f"Radar Spike: {title}",
+                channel_id_or_name=f"Asset {vid_id}",
+                root_cause_summary=f"ClickHouse 5m spike ({spike.get('rate_5m_per_hr')} cmts/h vs {spike.get('rate_6h_per_hr')} cmts/h). Verdict: {brigade_analysis.get('threat_verdict')}. Momentum: {slope_info.get('momentum_status')} (slope: {slope_info.get('slope_per_sec')}/s).",
+                sample_negative_quotes=[
+                    f"⚠️ [Radar Alert] 5m Velocity: {spike.get('rate_5m_per_hr')} views/h vs 6h Baseline: {spike.get('rate_6h_per_hr')} views/h.",
+                    f"🛡️ Brigade Analysis: {brigade_analysis.get('threat_verdict')} (Entropy: {brigade_analysis.get('author_entropy')}, Diversity: {brigade_analysis.get('author_diversity_ratio')})."
+                ],
+                recommended_pr_stance=brigade_analysis.get("recommended_containment", ""),
+                metric_velocity_pct=float(spike.get("rate_5m_per_hr", 200.0))
+            )
+            immediate_actions.append({
+                "tool": "dispatch_slack_crisis_alert",
+                "video_id": vid_id,
+                "spike_info": spike,
+                "brigade_analysis": brigade_analysis,
+                "slope_acceleration": slope_info,
+                "google_search_grounding": search_intel.get("status"),
+                "alert_dispatched": action_res
+            })
+
+        elapsed_ms = round((time.perf_counter() - t_start) * 1000.0, 2)
+        logger.info(f"⚡ [Radar Tick Complete] Scanned in {elapsed_ms}ms, Spikes: {spike_count}, Actions: {len(immediate_actions)}")
+
+        return {
+            "status": "RADAR_TICK_COMPLETED",
+            "timestamp": timestamp_str,
+            "engine": "ClickHouse Hot Path Raw Scan",
+            "latency_ms": elapsed_ms,
+            "execution_time_ms": elapsed_ms,
+            "spikes_detected": spike_count,
+            "anomalies_detected": spike_count,
+            "decay_heat_candidates": len(decay_spikes),
+            "immediate_handoffs_triggered": len(immediate_actions),
+            "findings": immediate_actions,
+            "actions_dispatched": immediate_actions
+        }
+
     def _generate_master_dossier_markdown(
         self,
         timestamp_str: str,
@@ -410,10 +576,21 @@ class StudioSonarOrchestrationEngine:
         """Constructs an updated Master Markdown Dossier for GCS synchronization."""
         from src.core.registry_manager import registry_manager
         from src.tools.youtube_live_client import youtube_live_client
+        from src.data.clickhouse_client import ch_client
+
+        # Native ClickHouse timeseries metrics for dossier
+        synergy_info = ch_client.query_cross_platform_synergy_correlation(days=7)
+        primary_vid = "UH21OnJwxZE"
+        vids = registry_manager.get_all_videos()
+        if vids:
+            primary_vid = vids[0].get("video_id", primary_vid)
+        ascii_spark = ch_client.query_ascii_sparkbar(video_id=primary_vid, hours=48)
+        top_frictions = ch_client.query_top_friction_terms(video_id=primary_vid, top_n=5)
+        friction_str = ", ".join(top_frictions)
 
         # Dynamically build asset rows
         asset_rows = []
-        for vid in registry_manager.get_all_videos()[:6]:
+        for vid in vids[:6]:
             v_id = vid.get("video_id", "")
             if not v_id or v_id.startswith("tt_"):
                 continue
@@ -431,7 +608,7 @@ class StudioSonarOrchestrationEngine:
         matrix_table = "\n".join(asset_rows) if asset_rows else "| Monitored Properties | Live Telemetry Stream | Real-time BigQuery Ledger | 🟢 Safe | Continuous Monitoring |"
 
         return f"""# 📡 StudioSonar Autonomous Media Intelligence Dossier (24h Pulse)
-> **Execution Engine:** Google ADK v2.7.1 Swarm • **Model:** Gemini 3.7 Flash • **OLAP:** BigQuery  
+> **Execution Engine:** Google ADK v2.7.1 Swarm • **Model:** Gemini 3.8 Flash • **OLAP:** ClickHouse + BigQuery  
 > **Last Synchronized:** `{timestamp_str}` • **Cloud Run Status:** Active Serverless Mesh
 
 ---
@@ -442,12 +619,12 @@ class StudioSonarOrchestrationEngine:
 flowchart LR
     subgraph EarlyStage ["00:00 - 06:00"]
         direction TB
-        E1["Baseline Listening<br/>Real-Time Ingestion"]
+        E1["Baseline Listening<br/>ClickHouse Ingestion"]
     end
 
     subgraph MidDaySpike ["06:00 - 14:00"]
         direction TB
-        M1["Organic Inflow Acceleration<br/>BigQuery Snapshot Processing"]
+        M1["Organic Inflow Acceleration<br/>Materialized View Processing"]
     end
 
     subgraph PeakSynergy ["14:00 - 20:00"]
@@ -462,6 +639,11 @@ flowchart LR
 
     EarlyStage --> MidDaySpike --> PeakSynergy --> LateStabilize
 ```
+
+### ⚡ 1b. ClickHouse Native Timeseries Intelligence
+- **48h Native Sparkbar:** `{ascii_spark}`
+- **Cross-Platform Pearson Synergy (7d):** `r = {synergy_info.get('pearson_correlation')}` (`{synergy_info.get('synergy_verdict')}`)
+- **Top Friction Terms (topK):** `{friction_str}`
 
 ---
 

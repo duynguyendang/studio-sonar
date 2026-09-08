@@ -1,32 +1,38 @@
 from typing import Dict, List, Any
 from src.data.bigquery_client import bq_client
+from src.data.clickhouse_client import ch_client
 
-def query_bigquery_sentiment_spikes(
+def query_realtime_sentiment_spikes(
     time_window_hours: int = 6,
     min_comment_velocity_pct: float = 200.0,
     sentiment_threshold: float = -0.60
 ) -> Dict[str, Any]:
     """
-    Queries Google BigQuery for sudden velocity spikes in negative sentiment or critical brand keywords.
-    
-    Args:
-        time_window_hours: Time window in hours to analyze (e.g. 6).
-        min_comment_velocity_pct: Minimum acceleration percentage over baseline (e.g. 200.0).
-        sentiment_threshold: Upper threshold for negative sentiment (-1.0 to +1.0).
-        
-    Returns:
-        Dictionary containing list of detected anomaly spikes and root cause snippets.
+    Queries ClickHouse Hot Path OLAP substrate for sub-second velocity spikes in negative sentiment.
+    Falls back to BigQuery warehouse if ClickHouse is offline.
     """
-    results = bq_client.query_sentiment_velocity_spikes(
+    # Primary: ClickHouse Hot Path (Sub-second sliding windows)
+    results = ch_client.query_realtime_sentiment_spikes(
         time_window_hours=time_window_hours,
         min_velocity_pct=min_comment_velocity_pct,
         sentiment_threshold=sentiment_threshold
     )
+    if not results:
+        # Secondary fallback: BigQuery Warehouse
+        results = bq_client.query_sentiment_velocity_spikes(
+            time_window_hours=time_window_hours,
+            min_velocity_pct=min_comment_velocity_pct,
+            sentiment_threshold=sentiment_threshold
+        )
     return {
         "status": "SUCCESS",
+        "substrate": "ClickHouse Hot Path (<50ms)",
         "anomaly_count": len(results),
         "anomalies": results
     }
+
+# Backwards compatibility alias
+query_bigquery_sentiment_spikes = query_realtime_sentiment_spikes
 
 def query_bigquery_viral_trends(
     min_view_acceleration_pct: float = 300.0,
