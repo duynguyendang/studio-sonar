@@ -402,7 +402,7 @@ class StudioSonarClickHouseClient:
         query = f"""
             SELECT
                 video_id,
-                (simpleLinearRegression(toUnixTimestamp(window_start))(comment_volume) AS lr).1 AS slope_per_sec,
+                (simpleLinearRegression(comment_volume, toUnixTimestamp(window_start)) AS lr).1 AS slope_per_sec,
                 sum(comment_volume) AS total_vol_24h
             FROM {self.database}.hourly_sentiment_aggregates
             WHERE video_id = {{video_id:String}} AND window_start >= now() - INTERVAL {{window_hours:UInt32}} HOUR
@@ -758,8 +758,13 @@ class StudioSonarClickHouseClient:
         """
         Micro-NLP in ClickHouse: Extracts top weighted bigrams using
         tokens(), arrayMap(), and topKWeighted(N)(bigram, toxicity_weight).
+        Excludes HTML artifacts (<br>) and restricts to real negative/friction comments
+        to avoid attributing positive comments as toxic.
         """
-        where_parts = ["length(comment_text) >= 6"]
+        where_parts = [
+            "length(comment_text) >= 6",
+            "(toxicity_score >= 0.20 OR sentiment_score <= -0.15)"
+        ]
         params: Dict[str, Any] = {"top_n": int(top_n)}
         if video_id:
             clean_vid = _sanitize_id(video_id)
@@ -776,9 +781,12 @@ class StudioSonarClickHouseClient:
             FROM (
                 SELECT 
                     arrayJoin(
-                        arrayMap((x, y) -> concat(x, ' ', y), 
-                                 arrayPopBack(tokens(lower(comment_text))), 
-                                 arrayPopFront(tokens(lower(comment_text))))
+                        arrayFilter(b -> not (b LIKE '%br%' OR b LIKE '%http%' OR b LIKE '%www%' OR b LIKE '%href%'),
+                            arrayMap((x, y) -> concat(x, ' ', y), 
+                                     arrayPopBack(tokens(lower(replaceAll(replaceAll(comment_text, '<br>', ' '), '<br/>', ' ')))), 
+                                     arrayPopFront(tokens(lower(replaceAll(replaceAll(comment_text, '<br>', ' '), '<br/>', ' '))))
+                            )
+                        )
                     ) AS bigram,
                     toxicity_score
                 FROM {self.database}.comments_realtime
@@ -787,7 +795,7 @@ class StudioSonarClickHouseClient:
         """
         results = self.execute_query(query, query_params=params)
         if results and results[0].get("weighted_phrases"):
-            phrases = results[0]["weighted_phrases"]
+            phrases = [p for p in results[0]["weighted_phrases"] if p and p.strip()]
             return [{"phrase": p, "rank": idx + 1} for idx, p in enumerate(phrases)]
         return []
 
