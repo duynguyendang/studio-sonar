@@ -160,23 +160,23 @@ class ExternalAttributionMapper:
 
         # Search Vector A: External Catalyst & Referrers (Why did it surge?)
         clean_subj = f'"{secondary_entity}"' if secondary_entity else ""
-        query_catalyst = f'"{primary_entity}" {clean_subj} (viral OR "xu hướng" OR tiktok OR "báo chí" OR share OR trend OR cover)'.strip()
+        query_catalyst = f'"{primary_entity}" {clean_subj} (viral OR trend OR tiktok OR news OR breaking OR market OR surge OR discussion)'.strip()
         search_catalyst_res = self.search_tool.search_live_intel(query_catalyst, num_results=4)
         catalyst_snippets = search_catalyst_res.get("results", [])
 
-        # Search Vector B: Conditionally Grounded in Reality (No fake scandals!)
+        # Search Vector B: Conditionally Grounded in Reality (Audience Reception & Feedback)
         if has_real_controversy:
-            clean_friction_term = primary_friction if (primary_friction and primary_friction != "ý kiến phản hồi") else ""
+            clean_friction_term = primary_friction if (primary_friction and primary_friction not in ["ý kiến phản hồi", "tranh cãi chất lượng"]) else ""
             sub_frict = f'"{clean_friction_term}"' if clean_friction_term else ""
-            query_friction = f'"{primary_entity}" {sub_frict} (chê OR "tranh cãi" OR "ý kiến trái chiều" OR "thất vọng")'.strip()
+            query_friction = f'"{primary_entity}" {sub_frict} (criticism OR debate OR friction OR controversy OR reaction)'.strip()
         else:
             # High consensus / positive reception -> Search for authentic reviews, audience reception and praise
-            query_friction = f'"{primary_entity}" (review OR "đánh giá" OR "khen ngợi" OR "phản ứng" OR "chất lượng" OR "thành tích")'.strip()
+            query_friction = f'"{primary_entity}" (review OR praise OR audience OR reception OR performance OR quality)'.strip()
 
         search_friction_res = self.search_tool.search_live_intel(query_friction, num_results=4)
         friction_snippets = search_friction_res.get("results", [])
 
-        # Deduplicate & consolidate citations
+        # Deduplicate & consolidate citations in professional English
         all_citations: List[Dict[str, str]] = []
         seen_links = set()
         for s in catalyst_snippets + friction_snippets:
@@ -184,10 +184,10 @@ class ExternalAttributionMapper:
             if link and link not in seen_links:
                 seen_links.add(link)
                 all_citations.append({
-                    "title": s.get("title", ""),
+                    "title": s.get("title", f"Verified Intelligence: {primary_entity}"),
                     "link": link,
                     "snippet": s.get("snippet", ""),
-                    "source": s.get("source", "google.com")
+                    "source": s.get("source", "web")
                 })
 
         # ---------------------------------------------------------------------
