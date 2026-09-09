@@ -221,8 +221,8 @@ $$V_{\text{current}} = \frac{\text{Total Views (or Comments)}}{\text{Hours Elaps
 Computed across 30-day historical benchmarks:
 $$V_{\text{baseline}} = \frac{\text{30-Day Average Views Per Video}}{30 \text{ days} \times 24 \text{ hours}}$$
 
-### 4.3 Velocity Acceleration Surge ($\Delta \text{Velocity} \%$)
-$$\Delta \text{Velocity} \% = \left( \frac{V_{\text{current}} - V_{\text{baseline}}}{V_{\text{baseline}}} \right) \times 100\%$$
+### 4.3 Velocity Acceleration Surge ($\Delta V_{\text{pct}}$)
+$$\Delta V_{\text{pct}} = \left( \frac{V_{\text{current}} - V_{\text{baseline}}}{V_{\text{baseline}}} \right) \times 100$$
 
 ### 4.4 ClickHouse Sub-Second Materialized View Formulation
 In ClickHouse, rolling 6-hour sentiment velocity spikes are computed instantaneously using a Materialized View with zero full-table scans:
@@ -255,14 +255,16 @@ Execution takes **< 15ms** in ClickHouse thanks to columnar timestamp indexing, 
 ### 4.6 Coordinated Bot Brigade vs. Organic Crisis Forensics (U3)
 When an acute velocity spike triggers, ClickHouse executes raw-column aggregations to distinguish authentic public outcry from malicious bot brigade attacks:
 
-$$A_{\text{diversity}} = \frac{\text{uniqExact}(\text{author\_id\_hash})}{\text{count}()}$$
-$$T_{95} = \text{quantile}(0.95)(\text{toxicity\_score})$$
-$$R_{\text{repeat}} = \frac{\text{count}() - \text{uniqExact}(\text{cityHash64}(\text{comment\_text}))}{\text{count}()}$$
+$$A_{\text{diversity}} = \frac{\text{uniqExact}(H_{\text{author}})}{N}$$
+$$T_{95} = \text{quantile}(0.95)(S_{\text{toxicity}})$$
+$$R_{\text{repeat}} = \frac{N - \text{uniqExact}(\text{cityHash64}(C_{\text{text}}))}{N}$$
 
-$$\text{Classification Verdict} = \begin{cases}
-\text{COORDINATED\_BRIGADE\_ATTACK} & \text{if } A_{\text{diversity}} < 0.35 \text{ and } T_{95} \ge 0.65 \\
-\text{ORGANIC\_COMMUNITY\_OUTCRY} & \text{otherwise}
+$$\text{Verdict} = \begin{cases}
+\text{Coordinated Brigade Attack} & \text{if } A_{\text{diversity}} < 0.35 \text{ and } T_{95} \ge 0.65 \\
+\text{Organic Community Outcry} & \text{otherwise}
 \end{cases}$$
+
+*Where $H_{\text{author}}$ is `author_id_hash`, $S_{\text{toxicity}}$ is `toxicity_score`, $C_{\text{text}}$ is `comment_text`, and $N$ is `count()`.*
 
 * **PR Crisis Strategist Policy:** If classified as a **Brigade Attack**, the agent instructs the brand **NOT to issue a public apology** (which legitimizes bad-faith astroturfing), but rather flags coordinated bot accounts to platform Trust & Safety teams.
 
@@ -284,8 +286,9 @@ $$\beta = \frac{\sum (t_i - \bar{t})(v_i - \bar{v})}{\sum (t_i - \bar{t})^2}$$
 
 ### 4.9 Cross-Platform Synergy (Pearson Correlation) & Author Entropy
 StudioSonar replaces static qualitative claims with native ClickHouse statistical functions:
-* **Pearson Correlation ($r_{YT, TT}$)**: Computes hourly alignment across platforms:
-  $$r = \frac{\sum (YT_h - \bar{YT})(TT_h - \bar{TT})}{\sqrt{\sum (YT_h - \bar{YT})^2 \sum (TT_h - \bar{TT})^2}}$$
+* **Pearson Correlation ($r$)**: Computes hourly alignment across platforms:
+  $$r = \frac{\sum (y_i - \bar{y})(t_i - \bar{t})}{\sqrt{\sum (y_i - \bar{y})^2 \sum (t_i - \bar{t})^2}}$$
+  *(where $y_i$ is YouTube hourly volume and $t_i$ is TikTok hourly volume)*
 * **Shannon Author Entropy ($H$)**:
   $$H(A) = -\sum_{i} P(a_i) \log_2 P(a_i)$$
   Low entropy ($H < 4.0$) with high comments-per-author ($> 3.0$) definitively flags coordinated astroturfing bots.
@@ -315,14 +318,14 @@ When ClickHouse detects an acute velocity outlier ($Z \ge 2.5\sigma$) or an audi
    - Extracts top friction bigrams: `topKWeighted(6)(bigram, toxicity)`.
    - Queries verbatim audience critique comments: `SELECT comment_text FROM comments_realtime WHERE sentiment_score < -0.15 OR toxicity_score > 0.35`.
 2. **Dual-Vector Google Search Grounding:**
-   - **Vector A (External Catalysts & Referrers):** Dispatches live web query to discover external press coverage, TikTok viral sound trends, and influencer shares driving viewer traffic.
-     $$\text{Query}_A = \text{Entity} \land \text{Title} \land (\text{viral} \lor \text{tiktok} \lor \text{báo chí} \lor \text{trend})$$
-   - **Vector B (Content Friction & Criticism):** Dispatches query combining ClickHouse toxic tokens with controversy keywords to discover what viewers/reviewers are complaining about (audio mixing, ad disclosure, pacing, controversy).
-     $$\text{Query}_B = \text{Entity} \land \text{FrictionTokens} \land (\text{chê} \lor \text{tranh cãi} \lor \text{phốt} \lor \text{thất vọng})$$
+   - **Vector A (External Catalysts & Referrers):** Dispatches live web query to discover external press coverage, TikTok viral sound trends, and influencer shares driving viewer traffic:
+     > `Entity AND Title AND (viral OR tiktok OR "báo chí" OR trend)`
+   - **Vector B (Content Friction & Criticism):** Dispatches query combining ClickHouse toxic tokens with controversy keywords to discover what viewers/reviewers are complaining about (audio mixing, ad disclosure, pacing, controversy):
+     > `Entity AND FrictionTokens AND (chê OR "tranh cãi" OR phốt OR "thất vọng")`
 3. **Causal Map Synthesis & Dynamic Mermaid Flowchart:**
    - Powered strictly by **Gemini 3.8 Flash** (`us-central1` Vertex AI endpoint).
    - Generates an interactive, dark-mode Mermaid flowchart mapping:
-     $$\text{ClickHouse Alert} \longrightarrow \text{External Catalyst} \longrightarrow \text{Referral Channels} \longrightarrow \text{Sentiment Split (Praise vs Friction)} \longrightarrow \text{Tactical Remediation}$$
+     > `ClickHouse Alert` ➔ `External Catalyst` ➔ `Referral Channels` ➔ `Sentiment Split (Praise vs Friction)` ➔ `Tactical Remediation`
    - Presents real verified web citations (links, publishers, snippets) and prescriptive creator action protocols on the Mission Cockpit and Tech Ops UI.
 
 ---
@@ -356,10 +359,10 @@ StudioSonar avoids the trade-off between query speed and long-term durability by
 * `cycle_ledger`: Immutable audit trail for every 1-hour Cloud Scheduler cycle.
 
 ### 5.3 Financial Cost Defense: High-Frequency Polling Math
-* Continuous dashboard polling (every 10s) generates **8,640 queries/day** ($259,200\text{ queries/month}$).
+* Continuous dashboard polling (every 10s) generates **8,640 queries/day** (259,200 queries/month).
 * On Google BigQuery, each query incurs a minimum billing charge of **10 MB**:
   $$\text{Monthly Scan} = 8,640 \times 30 \times 10\text{ MB} \approx 2.592\text{ TB/month}$$
-  $$\text{Monthly Cost} = 2.592\text{ TB} \times \$6.25/\text{TB} = \mathbf{\$16.20/\text{month per active dashboard}}$$
+  $$\text{Monthly Cost} = 2.592\text{ TB} \times 6.25\text{ USD/TB} = \mathbf{16.20\text{ USD/month per active dashboard}}$$
 * ClickHouse runs on fixed compute with **$0 marginal cost** for high-frequency queries and sub-15ms response times.
 
 ### 5.4 Dynamic GCS Intelligence Dossier Discovery & Zero-Hardcode Presentation
