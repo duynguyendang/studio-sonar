@@ -141,12 +141,16 @@ class TrackingManagerService:
         return list(self.channels.values())
 
     def remove_channel(self, channel_id: str) -> bool:
-        """Deletes a channel from tracking."""
+        """Deletes a channel from tracking, synchronizing with registry_manager and BigQuery."""
+        deleted_local = False
         if channel_id in self.channels:
             del self.channels[channel_id]
             self._save_storage()
-            return True
-        return False
+            deleted_local = True
+
+        from src.core.registry_manager import registry_manager
+        deleted_registry = registry_manager.remove_channel(channel_id)
+        return deleted_local or deleted_registry
 
     # --- VIDEO MANAGEMENT ---
     def add_video(self, video_url_or_id: str, tracking_duration_days: int = 30, monitoring_tier: str = "HIGH_PRIORITY_24H") -> TrackedVideo:

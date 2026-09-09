@@ -201,3 +201,17 @@ def test_api_velocity_slope_endpoint():
     assert "slope_per_sec" in data
     assert "momentum_status" in data
 
+
+def test_api_clickhouse_forensics_endpoint():
+    """Validates GET /api/v1/analytics/clickhouse-forensics endpoint."""
+    response = client.get("/api/v1/analytics/clickhouse-forensics?video_id=UH21OnJwxZE")
+    assert response.status_code == 200
+    data = response.json()
+    assert "zscore_anomalies" in data
+    assert "polarization" in data
+    assert "weighted_toxic_ngrams" in data
+    assert "bot_forensics" in data
+    assert "polarization_spread" in data["polarization"]
+    assert "forensic_verdict" in data["bot_forensics"]
+
+

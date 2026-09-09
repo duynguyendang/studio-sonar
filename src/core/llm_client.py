@@ -51,6 +51,15 @@ class GeminiLLMClient:
     # ------------------------------------------------------------------ agent platform
     def _init_agent_platform(self):
         """Prepares ADC credentials for the Gemini Enterprise Agent Platform global endpoint."""
+        has_sa = bool(
+            os.getenv("GOOGLE_APPLICATION_CREDENTIALS") or
+            os.getenv("K_SERVICE") or
+            os.getenv("GAE_INSTANCE") or
+            (os.getenv("GCP_PROJECT_ID") and os.path.exists("/var/run/secrets/google.internal"))
+        )
+        if not has_sa and not os.getenv("FORCE_ADC"):
+            return
+
         try:
             from google.auth import default as google_auth_default
             credentials, project = google_auth_default(

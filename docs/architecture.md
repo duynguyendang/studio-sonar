@@ -43,9 +43,10 @@ To achieve both **ultra-low-latency real-time response (<50ms)** and **enterpris
 
 ```mermaid
 flowchart TB
-    subgraph TriggerLayer ["1. Trigger & Scheduling Layer"]
-        CS["⏰ Cloud Scheduler (1-Hour Cron: 0 * * * *)"]
-        WEB["🌐 Web Command Center Trigger (/api/v1/trigger-cycle)"]
+    subgraph TriggerLayer ["1. Trigger & Scheduling Layer (FinOps 30-Min Cadence)"]
+        CS["⏰ Cloud Scheduler: studiosonar-cycle-cron<br/>(30-Min: */30 8-18 * * 1-5 Asia/Ho_Chi_Minh)"]
+        RADAR["⏱️ Cloud Scheduler: studiosonar-radar-tick-cron<br/>(30-Min: */30 8-18 * * 1-5 Asia/Ho_Chi_Minh)"]
+        WEB["🌐 Web Command Center Trigger (/api/v1/trigger-cycle?sync=true)"]
         CHAT["💬 Settings Copilot Chat Command (/api/v1/chat/command)"]
     end
 
@@ -54,10 +55,10 @@ flowchart TB
     end
 
     subgraph IngestionLayer ["3. Ingestion & Dual Storage Substrate"]
-        YT["📹 YouTube Data API v3"]
-        TT["🎵 TikTok Stream Harvester"]
+        YT["📹 YouTube Data API v3<br/>(Live views, likes, comments telemetry)"]
+        TT["🎵 TikTok Stream Harvester<br/>(Optional secondary feed)"]
+        BQ[("📊 BigQuery System of Record (SoR)<br/>(studiosonar_analytics.video_snapshots)")]
         CH[("⚡ ClickHouse Hot Path OLAP<br/>(video_snapshots, comments_realtime, MV)")]
-        BQ[("📊 BigQuery System of Record<br/>(Deep Archive, text-embedding-004, Audit)")]
     end
 
     subgraph SwarmLayer ["4. Google ADK Multi-Agent Reasoning Swarm"]
@@ -68,7 +69,7 @@ flowchart TB
     end
 
     subgraph GroundingLayer ["5. Autonomous External Grounding"]
-        GS["🔎 Google Search Intelligence Tool<br/>(Live News, Forum Discourse, Meme Catalysts)"]
+        GS["🔎 Google Search Intelligence Tool<br/>(Vertex AI Search Grounding ADC Token)"]
     end
 
     subgraph ActionLayer ["6. Enterprise Action & Deliverables Dispatch"]
@@ -84,10 +85,12 @@ flowchart TB
         UI_TECHOPS["⚙️ Tech Ops<br/>(Live Topology Graph, Counters, Logs)"]
     end
 
-    TriggerLayer --> TM
-    TM --> YT & TT
-    YT & TT -->|Streaming Inserts| CH
-    CH -.->|Hourly Micro-Batch / CDC Archive| BQ
+    TriggerLayer -->|POST ?sync=true| TM
+    TM -->|Step 0: Fetch Live Telemetry| YT
+    TM -.->|Optional Stream Pull| TT
+    YT -->|1. Ingest Immutable Snapshot (SoR)| BQ
+    YT -->|2. Mirror Streaming Ingestion (OLAP)| CH
+    CH -.->|Cold Archive Sync| BQ
 
     TM --> CS_AGENT
     CS_AGENT --> AD_AGENT
@@ -110,29 +113,32 @@ flowchart TB
 
 ---
 
-### 2.2 Sequence Diagram with ClickHouse & Google Search Grounding
+### 2.2 Sequence Diagram with ClickHouse, BigQuery & Google Search Grounding
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Scheduler as ⏰ Cloud Scheduler (0 * * * *)
+    actor Scheduler as ⏰ Cloud Scheduler (*/30 8-18 * * 1-5)
     participant Taskmaster as 👑 Root Taskmaster
+    participant YouTube as 📹 YouTube Data API v3
+    participant BigQuery as 📊 BigQuery (Warehouse SoR)
     participant ClickHouse as ⚡ ClickHouse (Hot OLAP)
     participant Sentinel as 📡 Channel Sentinel
     participant Anomaly as 🔍 Anomaly Detector
-    participant GoogleSearch as 🔎 Google Search
+    participant GoogleSearch as 🔎 Google Search (Vertex AI)
     participant PRCrisis as 🚨 PR Crisis Strategist
     participant ContentCreator as ✍️ Viral Creator
-    participant BigQuery as 📊 BigQuery (Warehouse SoR)
     participant GCS as ☁️ GCS Bucket
     participant External as 📢 Slack / Notion / GDocs
 
-    Scheduler->>Taskmaster: POST /api/v1/trigger-cycle (cycle_type: "ALL")
+    Scheduler->>Taskmaster: POST /api/v1/trigger-cycle?sync=true (cycle_type: "ALL")
     
     rect rgb(20, 35, 50)
-        Note over Taskmaster,ClickHouse: Step 0: Streaming Ingestion
-        Taskmaster->>ClickHouse: Ingest raw snapshots & comments into Hot Substrate
-        Taskmaster->>BigQuery: Archive persistent cycle records & telemetry
+        Note over Taskmaster,ClickHouse: Step 0: Live Telemetry Ingestion into Dual Substrate
+        Taskmaster->>YouTube: Fetch latest telemetry (views, likes, comments)
+        YouTube-->>Taskmaster: Return live channel & video payload
+        Taskmaster->>BigQuery: Ingest immutable snapshot into video_snapshots (System of Record)
+        Taskmaster->>ClickHouse: Stream real-time snapshot into video_snapshots (Hot OLAP)
     end
 
     rect rgb(25, 45, 60)
@@ -152,7 +158,7 @@ sequenceDiagram
         Anomaly->>PRCrisis: A2A Handoff (Anomaly metadata & friction comments)
         PRCrisis->>GoogleSearch: Query live news & community discourse ("Brand/Video" controversy)
         GoogleSearch-->>PRCrisis: Return breaking news headlines, Reddit/X sentiment snippets
-        PRCrisis->>PRCrisis: Synthesize Root Cause with Gemini 3.7 Flash + Search Grounding
+        PRCrisis->>PRCrisis: Synthesize Root Cause with Gemini 3.8 Flash + Search Grounding
         PRCrisis->>External: Dispatch Slack P1 Red Alert & Notion Emergency Board
     else Positive Viral Breakout (> 200% Velocity & >= 95% Positive Sentiment)
         Anomaly->>ContentCreator: A2A Handoff (Breakout trend & momentum context)
@@ -166,7 +172,7 @@ sequenceDiagram
         Note over Taskmaster,GCS: Step 3: Centralized Dossier Publishing & SoR Sync
         Taskmaster->>Taskmaster: Parallel LLM Report Authoring Engine (12 Dossiers)
         Taskmaster->>GCS: Save realtime_24h_pulse_report.md & channel dossiers
-        Taskmaster->>BigQuery: Synchronize historical ledger & agent reasoning traces
+        Taskmaster->>BigQuery: Synchronize historical cycle_ledger & agent reasoning traces
     end
 ```
 
@@ -283,11 +289,34 @@ StudioSonar replaces static qualitative claims with native ClickHouse statistica
 | :--- | :--- | :--- |
 | Is this spike warming up or stale noise? | `exponentialTimeDecayedCount(600)` | 1-Minute Radar Loop |
 | Is velocity accelerating or peaking? | `simpleLinearRegression().1` (slope) | 1-Minute Radar Loop |
+| Dynamic 3σ statistical anomaly detection | `avg() OVER w`, `stddevSamp() OVER w` (Z-Score) | Tech Ops Forensics Matrix |
+| What are the top toxic friction phrases? | `topKWeighted(N)(ngrams/tokens, toxicity)` | Tech Ops Forensics & PR Dossier |
+| Is audience divided in a "Civil War"? | `quantilesExact(0.1, 0.5, 0.9)` (Spread IQR) | Tech Ops Forensics Matrix |
 | Are bots or brigades astroturfing? | `entropy(author_id_hash)` + `uniqExact` | Radar & Forensics Modal |
+| Are bots using paraphrased variations? | `uniqExact(cityHash64(tokens(lower(text))))` | Tech Ops Astroturfing Forensics |
 | Do YouTube and TikTok have genuine synergy? | `corr(yt_h, tt_h)` | Cockpit Dashboard Synergy Card |
 | What does the volume distribution look like? | `sparkbar(48)` | GCS Markdown Dossiers |
-| What are the top friction driver terms? | `topK(5)(comment_text)` | PR Root-Cause Dossier |
 | Rich sub-ms aggregates over multi-day windows | `AggregatingMergeTree()` + `-State` | Materialized View `mv_hourly_rich` |
+
+### 4.11 External Attribution & Root-Cause Radar (ClickHouse + Google Search Grounding)
+
+When ClickHouse detects an acute velocity outlier ($Z \ge 2.5\sigma$) or an audience polarization spread ($Q_{90} - Q_{10} \ge 1.0$), StudioSonar triggers the **External Attribution & Root-Cause Mapper** (`src/tools/attribution_mapper.py`):
+
+1. **ClickHouse Forensics Extraction:**
+   - Evaluates statistical surge magnitude: $Z$-Score window function anomaly status.
+   - Measures acceleration slope: $\frac{d(\text{Views})}{dt}$ via `simpleLinearRegression`.
+   - Extracts top friction bigrams: `topKWeighted(6)(bigram, toxicity)`.
+   - Queries verbatim audience critique comments: `SELECT comment_text FROM comments_realtime WHERE sentiment_score < -0.15 OR toxicity_score > 0.35`.
+2. **Dual-Vector Google Search Grounding:**
+   - **Vector A (External Catalysts & Referrers):** Dispatches live web query to discover external press coverage, TikTok viral sound trends, and influencer shares driving viewer traffic.
+     $$\text{Query}_A = \text{Entity} \land \text{Title} \land (\text{viral} \lor \text{tiktok} \lor \text{báo chí} \lor \text{trend})$$
+   - **Vector B (Content Friction & Criticism):** Dispatches query combining ClickHouse toxic tokens with controversy keywords to discover what viewers/reviewers are complaining about (audio mixing, ad disclosure, pacing, controversy).
+     $$\text{Query}_B = \text{Entity} \land \text{FrictionTokens} \land (\text{chê} \lor \text{tranh cãi} \lor \text{phốt} \lor \text{thất vọng})$$
+3. **Causal Map Synthesis & Dynamic Mermaid Flowchart:**
+   - Powered strictly by **Gemini 3.8 Flash** (`us-central1` Vertex AI endpoint).
+   - Generates an interactive, dark-mode Mermaid flowchart mapping:
+     $$\text{ClickHouse Alert} \longrightarrow \text{External Catalyst} \longrightarrow \text{Referral Channels} \longrightarrow \text{Sentiment Split (Praise vs Friction)} \longrightarrow \text{Tactical Remediation}$$
+   - Presents real verified web citations (links, publishers, snippets) and prescriptive creator action protocols on the Mission Cockpit and Tech Ops UI.
 
 ---
 
@@ -421,11 +450,24 @@ flowchart LR
 
 ## 7. Scheduled Jobs, Background Tasks & Execution Modes
 
-1. **Cloud Scheduler Autonomous Heartbeat (`studiosonar-taskmaster-heartbeat`):** Triggers `POST /api/v1/trigger-cycle` every 1 hour (`0 * * * *`).
-2. **Cloud Run Job Batch Runner (`studiosonar-taskmaster-job`):** Executes full evaluation benchmarks on demand.
-3. **Hot-to-Cold Telemetry Archiver (`ch_to_bq_archiver`):** Periodically archives expired ClickHouse batches into BigQuery cold storage.
-4. **Parallel LLM Dossier Authoring Engine (`llm_report_author`):** Employs 6 worker threads with Gemini Flash to compile 12 intelligence reports and streams them directly into GCS.
-5. **Self-Healing Registry Seeder (`registry_seeder`):** Idempotently checks ClickHouse & BigQuery registries upon startup and seeds default enterprise channels.
+1. **Cloud Scheduler Autonomous Ingestion & Swarm Cycle (`studiosonar-cycle-cron`):**
+   * **Schedule:** Every 30 minutes (`*/30 8-18 * * 1-5`, 8:00 - 18:00 Asia/Ho_Chi_Minh Monday to Friday).
+   * **Target:** `POST /api/v1/trigger-cycle?sync=true` with header `User-Agent: Google-Cloud-Scheduler`.
+   * **Execution Lifecycle:**
+     * **Step 0 (Live Telemetry Ingestion):** Pulls monitored video IDs, fetches real-time views, likes, and comments from the **YouTube Data API v3**, and writes immutable snapshots into Google BigQuery (`studiosonar-dev.studiosonar_analytics.video_snapshots` - System of Record) while streaming them to ClickHouse Cloud (`video_snapshots` - Hot OLAP).
+     * **Step 1 - 4 (Multi-Agent Swarm):** Runs Channel Sentinel, Anomaly Detector, PR Crisis Strategist, and Viral Content Creator with Gemini 3.8 Flash and Vertex AI Google Search Grounding.
+     * **Deliverables Output:** Publishes compiled Markdown intelligence dossiers directly to Google Cloud Storage (`gs://studiosonar-dev-reports/`).
+2. **Cloud Scheduler Real-Time Radar Tick (`studiosonar-radar-tick-cron`):**
+   * **Schedule:** Every 30 minutes (`*/30 8-18 * * 1-5`, 8:00 - 18:00 Asia/Ho_Chi_Minh).
+   * **Target:** `POST /api/v1/radar-tick`.
+   * **Execution:** Sub-50ms ClickHouse sliding window scan across recent velocity baselines with instant brigade drill-down.
+3. **FinOps Cost Governance Gate (Zero Waste Policy):**
+   * Outside business hours (before 8:00, after 18:00 VN time, and on weekends), the FinOps gate halts executions immediately (`SKIPPED_FINOPS_STANDBY`).
+   * Allows Google Cloud Run instances to scale down to **0** and ClickHouse Cloud compute to auto-suspend, incurring **$0 idle cost**.
+4. **Synchronous Cloud Run Protection (`sync=true`):**
+   * HTTP triggers include `sync=true` or use `Google-Cloud-Scheduler` User-Agent, ensuring Cloud Run allocates CPU continuously until the ingestion and multi-agent workflow completes (preventing CPU throttling).
+5. **Parallel LLM Dossier Authoring Engine (`llm_report_author`):** Employs 6 worker threads with Gemini Flash to compile 12 intelligence reports and streams them directly into GCS.
+6. **Self-Healing Registry Seeder (`registry_seeder`):** Idempotently checks ClickHouse & BigQuery registries upon startup and seeds default enterprise channels.
 
 ---
 

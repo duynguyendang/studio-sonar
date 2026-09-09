@@ -43,15 +43,36 @@ class GCSReportManager:
 
         clean_key = report_key.replace("video_", "").replace("channel_", "").replace("tt_sound_", "").strip()
 
-        # Alias mappings for channels
+        # Alias mappings for channels and videos
         alias_map = {
             "business": "bloomberg_originals",
             "bloomberg": "bloomberg_originals",
-            "kiemdinhphim90": "kiemdinhphim",
+            "bloomberg_originals": "bloomberg_originals",
+            "kiemdinhphim90": "kiemdinhphim9_0",
+            "kiemdinhphim": "kiemdinhphim9_0",
             "thochupanhdalat": "thochupanh_dalat",
-            "thochupanh": "thochupanh_dalat"
+            "thochupanh": "thochupanh_dalat",
+            "thien_duong": "UH21OnJwxZE",
+            "thienduong": "UH21OnJwxZE",
+            "dan_choi_dan_ca": "Rp6ZnP5WRgI",
+            "danchoi": "Rp6ZnP5WRgI",
+            "nutella": "TNl9diGdyPo",
+            "thuy_chi": "R7Bf4l5VgO8",
+            "yeu_lam_mien_tay": "R7Bf4l5VgO8"
         }
         mapped_key = alias_map.get(clean_key, clean_key)
+
+        # Dynamic registry resolution if not directly in alias map
+        try:
+            for v in registry_manager.get_all_videos():
+                vid = v.get("video_id", "")
+                v_title = (v.get("title") or "").lower()
+                clean_lower = clean_key.lower().replace("_", " ")
+                if clean_key == vid or clean_lower in v_title:
+                    mapped_key = vid
+                    break
+        except Exception:
+            pass
 
         # 1. Try Fetching directly from Google Cloud Storage (GCS)
         try:
@@ -61,13 +82,12 @@ class GCSReportManager:
                 blob_names = [
                     f"{report_key}.md",
                     f"video_report_{clean_key}.md",
+                    f"video_report_{mapped_key}.md",
                     f"channel_report_{clean_key}.md",
                     f"channel_report_{mapped_key}.md",
-                    f"channel_report_bloomberg_originals.md",
-                    f"channel_report_kiemdinhphim.md",
-                    f"channel_report_thochupanh_dalat.md",
                     f"tiktok_report_{clean_key}.md",
                     f"tiktok_report_sound_{clean_key}.md",
+                    f"tiktok_report_sound_{mapped_key}.md",
                     f"tiktok_report_sound_{clean_key.replace('pmc_', '').replace('dtap_', '')}.md",
                     f"video_report_{report_key}.md",
                     f"channel_report_{report_key}.md",
@@ -84,14 +104,13 @@ class GCSReportManager:
                         logger.info(f"Loaded report from GCS: gs://{self.bucket_name}/{b_name}")
                         return content, f"gs://{self.bucket_name}/{b_name}"
                 
-                # Loose scan in GCS bucket by sub-keywords
-                sub_keywords = [w for w in clean_key.split("_") if len(w) > 3] + [w for w in mapped_key.split("_") if len(w) > 3]
+                # Precise fuzzy match in GCS bucket: only match blobs whose name contains clean_key or mapped_key
                 blobs = list(bucket.list_blobs(prefix=""))
                 for b in blobs:
-                    if not b.name.endswith(".md"):
+                    if not b.name.endswith(".md") or b.name == "README.md" or b.name.startswith("channel_report_."):
                         continue
                     b_lower = b.name.lower()
-                    if clean_key.lower() in b_lower or mapped_key.lower() in b_lower or any(sk.lower() in b_lower for sk in sub_keywords):
+                    if (clean_key.lower() in b_lower and len(clean_key) > 3) or (mapped_key.lower() in b_lower and len(mapped_key) > 3):
                         content = b.download_as_text(encoding="utf-8")
                         logger.info(f"Loaded report via GCS fuzzy match: gs://{self.bucket_name}/{b.name}")
                         return content, f"gs://{self.bucket_name}/{b.name}"

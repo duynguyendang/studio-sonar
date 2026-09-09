@@ -10,9 +10,9 @@ PROJECT_ID="${GCP_PROJECT_ID:-$(gcloud config get-value project 2>/dev/null)}"
 REGION="${GCP_LOCATION:-us-central1}"
 SERVICE_NAME="studiosonar-taskmaster"
 JOB_NAME="studiosonar-cycle-cron"
-# FinOps Schedule: Runs only during business/demo hours (09:00 - 18:00 Asia/Ho_Chi_Minh, Mon-Fri)
+# FinOps Schedule: Runs every 30 minutes during business hours (08:00 - 18:00 Asia/Ho_Chi_Minh, Mon-Fri)
 # Outside this window, scheduler is completely silent, allowing ClickHouse Cloud to Auto-Suspend ($0 compute)
-SCHEDULE="0 9,11,13,15,17 * * 1-5" 
+SCHEDULE="*/30 8-18 * * 1-5" 
 TIME_ZONE="Asia/Ho_Chi_Minh"
 
 if [ -z "${PROJECT_ID}" ]; then
@@ -21,7 +21,7 @@ if [ -z "${PROJECT_ID}" ]; then
 fi
 
 SERVICE_URL=$(gcloud run services describe "${SERVICE_NAME}" --platform=managed --region="${REGION}" --project="${PROJECT_ID}" --format="value(status.url)")
-TARGET_URI="${SERVICE_URL}/api/v1/trigger-cycle"
+TARGET_URI="${SERVICE_URL}/api/v1/trigger-cycle?sync=true"
 
 echo "================================================================="
 echo "⏰ Setting up FinOps Cloud Scheduler for StudioSonar Taskmaster"

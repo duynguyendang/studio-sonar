@@ -166,6 +166,95 @@ class StudioSonarClickHouseClient:
             logger.debug(f"ClickHouse insert notice: {e}")
             return 0
 
+    def insert_comments(self, comments: List[Dict[str, Any]]) -> int:
+        """
+        Batch streams raw real-time comments into ClickHouse comments_realtime table.
+        Feeds real-time Materialized Views and sliding-window aggregations.
+        """
+        import json
+        import hashlib
+        if not comments:
+            return 0
+        
+        endpoint = f"{self.base_url}/"
+        params = {
+            "database": self.database,
+            "query": "INSERT INTO comments_realtime FORMAT JSONEachRow"
+        }
+        auth = (self.user, self.password) if self.password else None
+
+        rows = []
+        now_ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+        for c in comments:
+            raw_vid = c.get("video_id", "vid_default")
+            v_id = _sanitize_id(raw_vid)
+            text = (c.get("comment_text") or c.get("text") or "").strip()
+            if not text:
+                continue
+            
+            author = (c.get("author") or c.get("author_name") or "anonymous").strip()
+            auth_hash = c.get("author_id_hash") or hashlib.sha256(author.encode("utf-8")).hexdigest()[:16]
+            c_id = c.get("comment_id") or f"c_{hashlib.md5(f'{v_id}_{author}_{text[:20]}'.encode('utf-8')).hexdigest()[:16]}"
+            
+            # Sentiment & toxicity heuristic if not pre-computed
+            sent_score = float(c.get("sentiment_score", 0.0))
+            tox_score = float(c.get("toxicity_score", 0.0))
+            if sent_score == 0.0 and tox_score == 0.0:
+                t_lower = text.lower()
+                neg_words = ["dở", "tệ", "chán", "rác", "scam", "lừa", "đạo", "sạn", "thất vọng", "fake", "bad", "hate", "terrible", "worst"]
+                pos_words = ["hay", "tuyệt", "đẹp", "xuất sắc", "đỉnh", "thích", "yêu", "chất", "tuyệt vời", "good", "great", "love", "awesome"]
+                has_neg = any(w in t_lower for w in neg_words)
+                has_pos = any(w in t_lower for w in pos_words)
+                if has_neg and not has_pos:
+                    sent_score = -0.75
+                    tox_score = 0.70
+                elif has_pos and not has_neg:
+                    sent_score = 0.85
+                    tox_score = 0.05
+                else:
+                    sent_score = 0.20
+                    tox_score = 0.05
+
+            pub_at = c.get("published_at")
+            if pub_at:
+                try:
+                    pub_clean = pub_at.replace("T", " ").replace("Z", "").split(".")[0]
+                except Exception:
+                    pub_clean = now_ts
+            else:
+                pub_clean = now_ts
+
+            likes = int(c.get("like_count", 0))
+
+            rows.append(json.dumps({
+                "comment_id": c_id,
+                "video_id": v_id,
+                "platform": c.get("platform", "youtube"),
+                "author_id_hash": auth_hash,
+                "comment_text": text[:2000],
+                "sentiment_score": sent_score,
+                "toxicity_score": tox_score,
+                "like_count": likes,
+                "published_at": pub_clean,
+                "ingested_at": now_ts
+            }))
+
+        if not rows:
+            return 0
+
+        payload = "\n".join(rows)
+        try:
+            resp = requests.post(endpoint, params=params, data=payload.encode("utf-8"), auth=auth, timeout=5.0)
+            if resp.status_code == 200:
+                logger.info(f"Successfully streamed {len(rows)} raw comments into ClickHouse comments_realtime")
+                return len(rows)
+            else:
+                logger.warning(f"ClickHouse comment insert error ({resp.status_code}): {resp.text[:120]}")
+                return 0
+        except Exception as e:
+            logger.debug(f"ClickHouse comment insert notice: {e}")
+            return 0
+
     def query_realtime_sentiment_spikes(
         self,
         time_window_hours: int = 6,
@@ -527,6 +616,22 @@ class StudioSonarClickHouseClient:
             return list(results[0]["top_terms"])
         return []
 
+    def query_recent_friction_comments(self, video_id: str, limit: int = 5) -> List[Dict[str, Any]]:
+        """
+        Retrieves real verbatim negative/friction comments from ClickHouse comments_realtime.
+        Used by ExternalAttributionMapper to diagnose audience complaints and criticism.
+        """
+        clean_vid = _sanitize_id(video_id)
+        query = f"""
+            SELECT comment_text, sentiment_score, toxicity_score, published_at
+            FROM {self.database}.comments_realtime
+            WHERE video_id = {{video_id:String}} AND (sentiment_score < -0.15 OR toxicity_score > 0.35)
+            ORDER BY toxicity_score DESC, published_at DESC
+            LIMIT {{limit:UInt32}}
+        """
+        results = self.execute_query(query, query_params={"video_id": clean_vid, "limit": int(limit)})
+        return results or []
+
     # =========================================================================
     # U2 — 5s Dashboard Polling & Cost Defense Telemetry (Zero-Fake Transparency)
     # =========================================================================
@@ -600,6 +705,210 @@ class StudioSonarClickHouseClient:
                 "data_provenance": data_provenance,
                 "defense_argument": "High-frequency 5s polling is free on ClickHouse; on BigQuery 8,640 polls/day scans ~2.6TB/mo ($15.45/mo) with 1-3s latency."
             }
+        }
+
+    # =========================================================================
+    # Advanced Analytical Functions (Z-Score, Micro-NLP, Polarization, Lexical)
+    # =========================================================================
+    def query_zscore_velocity_anomalies(self, video_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        Calculates dynamic statistical Z-Scores using ClickHouse Window Functions
+        (avg(views_per_hour) OVER w, stddevSamp(views_per_hour) OVER w).
+        Flags true statistical outliers (Z >= 2.5 sigma) rather than naive static % surges.
+        """
+        where_clause = ""
+        params: Dict[str, Any] = {}
+        if video_id:
+            clean_vid = _sanitize_id(video_id)
+            where_clause = "WHERE video_id = {video_id:String}"
+            params["video_id"] = clean_vid
+
+        query = f"""
+            SELECT 
+                video_id,
+                snapshot_timestamp,
+                views_per_hour,
+                round(avg_vel, 1) AS mean_velocity,
+                round(std_vel, 2) AS stddev_velocity,
+                round(case when std_vel > 0 then (views_per_hour - avg_vel) / std_vel else 0.0 end, 2) AS z_score,
+                case 
+                    when z_score >= 3.0 then 'CRITICAL_OUTLIER_3SIGMA'
+                    when z_score >= 2.0 then 'ELEVATED_SURGE_2SIGMA'
+                    when z_score <= -2.0 then 'UNUSUAL_DROP'
+                    else 'NORMAL_STATISTICAL_BAND'
+                end AS statistical_status
+            FROM (
+                SELECT 
+                    video_id,
+                    snapshot_timestamp,
+                    views_per_hour,
+                    avg(views_per_hour) OVER w AS avg_vel,
+                    stddevSamp(views_per_hour) OVER w AS std_vel
+                FROM {self.database}.video_snapshots
+                {where_clause}
+                WINDOW w AS (PARTITION BY video_id ORDER BY snapshot_timestamp ROWS BETWEEN 24 PRECEDING AND 1 PRECEDING)
+            )
+            ORDER BY snapshot_timestamp DESC
+            LIMIT 10
+        """
+        results = self.execute_query(query, query_params=params)
+        return results or []
+
+    def query_weighted_friction_ngrams(self, video_id: Optional[str] = None, top_n: int = 6) -> List[Dict[str, Any]]:
+        """
+        Micro-NLP in ClickHouse: Extracts top weighted bigrams using
+        tokens(), arrayMap(), and topKWeighted(N)(bigram, toxicity_weight).
+        """
+        where_parts = ["length(comment_text) >= 6"]
+        params: Dict[str, Any] = {"top_n": int(top_n)}
+        if video_id:
+            clean_vid = _sanitize_id(video_id)
+            where_parts.append("video_id = {video_id:String}")
+            params["video_id"] = clean_vid
+
+        where_str = " AND ".join(where_parts)
+        query = f"""
+            SELECT 
+                topKWeighted({{top_n:UInt32}})(
+                    bigram, 
+                    CAST(greatest(toxicity_score * 100, 1.0) AS UInt32)
+                ) AS weighted_phrases
+            FROM (
+                SELECT 
+                    arrayJoin(
+                        arrayMap((x, y) -> concat(x, ' ', y), 
+                                 arrayPopBack(tokens(lower(comment_text))), 
+                                 arrayPopFront(tokens(lower(comment_text))))
+                    ) AS bigram,
+                    toxicity_score
+                FROM {self.database}.comments_realtime
+                WHERE {where_str}
+            )
+        """
+        results = self.execute_query(query, query_params=params)
+        if results and results[0].get("weighted_phrases"):
+            phrases = results[0]["weighted_phrases"]
+            return [{"phrase": p, "rank": idx + 1} for idx, p in enumerate(phrases)]
+        return []
+
+    def query_audience_polarization_index(self, video_id: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Uses ClickHouse quantilesExact(0.10, 0.50, 0.90)(sentiment_score) to measure
+        Audience Polarization Spread (Q90 - Q10) and identify Community Civil Wars.
+        """
+        where_clause = ""
+        params: Dict[str, Any] = {}
+        if video_id:
+            clean_vid = _sanitize_id(video_id)
+            where_clause = "WHERE video_id = {video_id:String}"
+            params["video_id"] = clean_vid
+
+        query = f"""
+            SELECT 
+                count() AS total_comments,
+                quantilesExact(0.10, 0.50, 0.90)(sentiment_score) AS q,
+                round(q[3] - q[1], 3) AS polarization_spread,
+                round(avg(sentiment_score), 2) AS mean_sentiment
+            FROM {self.database}.comments_realtime
+            {where_clause}
+        """
+        results = self.execute_query(query, query_params=params)
+        if results and results[0].get("total_comments", 0) > 0:
+            row = results[0]
+            q = row.get("q", [0.0, 0.0, 0.0])
+            spread = float(row.get("polarization_spread", 0.0))
+            status = "UNANIMOUS_CONSENSUS"
+            if spread >= 1.4:
+                status = "CIVIL_WAR_POLARIZED"
+            elif spread >= 0.8:
+                status = "MODERATE_DEBATE"
+
+            return {
+                "total_comments": row["total_comments"],
+                "q10_negative_tail": round(float(q[0]), 2),
+                "q50_median": round(float(q[1]), 2),
+                "q90_positive_tail": round(float(q[2]), 2),
+                "polarization_spread": spread,
+                "mean_sentiment": row["mean_sentiment"],
+                "status": status
+            }
+        return {
+            "total_comments": 0,
+            "q10_negative_tail": 0.0,
+            "q50_median": 0.0,
+            "q90_positive_tail": 0.0,
+            "polarization_spread": 0.0,
+            "mean_sentiment": 0.0,
+            "status": "STANDBY_NO_DATA"
+        }
+
+    def query_lexical_bot_forensics(self, video_id: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Advanced Astroturfing Forensics:
+        - Lexical Diversity: uniqExact(cityHash64(tokens(lower(comment_text)))) / count()
+        - Author Diversity: uniqExact(author_id_hash) / count()
+        - Shannon Entropy: entropy(author_id_hash)
+        """
+        where_clause = ""
+        params: Dict[str, Any] = {}
+        if video_id:
+            clean_vid = _sanitize_id(video_id)
+            where_clause = "WHERE video_id = {video_id:String}"
+            params["video_id"] = clean_vid
+
+        query = f"""
+            SELECT 
+                count() AS total_comments,
+                uniqExact(author_id_hash) AS uniq_authors,
+                round(uniq_authors / nullIf(total_comments, 0), 3) AS author_diversity_ratio,
+                round(uniqExact(cityHash64(tokens(lower(comment_text)))) / nullIf(total_comments, 0), 3) AS lexical_diversity_ratio,
+                round(entropy(author_id_hash), 2) AS shannon_entropy,
+                round(quantile(0.95)(toxicity_score), 2) AS p95_toxicity
+            FROM {self.database}.comments_realtime
+            {where_clause}
+        """
+        results = self.execute_query(query, query_params=params)
+        if results and results[0].get("total_comments", 0) > 0:
+            r = results[0]
+            lex = float(r.get("lexical_diversity_ratio", 1.0))
+            auth_div = float(r.get("author_diversity_ratio", 1.0))
+            ent = float(r.get("shannon_entropy", 5.0))
+            verdict = "ORGANIC_GENUINE_AUDIENCE"
+            if (lex < 0.35 or auth_div < 0.35) and ent < 4.0:
+                verdict = "COORDINATED_ASTROTURFING_BOTS"
+            elif lex < 0.50:
+                verdict = "SUSPECTED_PARAPHRASE_SEEDING"
+
+            return {
+                "total_comments": r["total_comments"],
+                "uniq_authors": r["uniq_authors"],
+                "author_diversity_ratio": auth_div,
+                "lexical_diversity_ratio": lex,
+                "shannon_entropy": ent,
+                "p95_toxicity": r["p95_toxicity"],
+                "forensic_verdict": verdict
+            }
+        return {
+            "total_comments": 0,
+            "uniq_authors": 0,
+            "author_diversity_ratio": 1.0,
+            "lexical_diversity_ratio": 1.0,
+            "shannon_entropy": 0.0,
+            "p95_toxicity": 0.0,
+            "forensic_verdict": "STANDBY_NO_DATA"
+        }
+
+    def get_advanced_forensics_summary(self, video_id: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Single-invocation bundle delivering all ClickHouse analytical metrics:
+        Z-Score outliers, Polarization Spread, Weighted N-Grams, and Bot Forensics.
+        """
+        return {
+            "video_id": video_id or "all_monitored_assets",
+            "zscore_anomalies": self.query_zscore_velocity_anomalies(video_id),
+            "polarization": self.query_audience_polarization_index(video_id),
+            "weighted_toxic_ngrams": self.query_weighted_friction_ngrams(video_id, top_n=6),
+            "bot_forensics": self.query_lexical_bot_forensics(video_id)
         }
 
 ch_client = StudioSonarClickHouseClient()

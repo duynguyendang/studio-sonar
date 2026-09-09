@@ -45,9 +45,13 @@ def main():
             send_receive_timeout=30
         )
         
+        # Replace schema target with configured database
+        if database != "studiosonar":
+            sql_content = sql_content.replace("studiosonar.", f"{database}.").replace("CREATE DATABASE IF NOT EXISTS studiosonar;", "")
+
         # Split statements by semicolon
-        statements = [s.strip() for s in sql_content.split(";") if s.strip() and not s.strip().startswith("--")]
-        logger.info(f"Executing {len(statements)} DDL statements from infra/clickhouse_schema.sql...")
+        statements = [s.strip() for s in sql_content.split(";") if s.strip()]
+        logger.info(f"Executing {len(statements)} DDL statements from infra/clickhouse_schema.sql on database '{database}'...")
         
         for i, stmt in enumerate(statements, 1):
             # Skip pure comments
@@ -55,7 +59,8 @@ def main():
             clean_stmt = "\n".join(lines).strip()
             if not clean_stmt:
                 continue
-            logger.info(f"[{i}/{len(statements)}] Executing DDL block...")
+            first_line = clean_stmt.splitlines()[0][:60]
+            logger.info(f"[{i}/{len(statements)}] Executing: {first_line}...")
             client.command(clean_stmt)
 
         logger.info("✅ All ClickHouse schemas, tables, and materialized views initialized successfully!")

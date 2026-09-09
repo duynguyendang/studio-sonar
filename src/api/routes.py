@@ -872,3 +872,52 @@ def velocity_slope_endpoint(video_id: str = "UH21OnJwxZE", hours: int = 24) -> D
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
+@router.get("/api/v1/analytics/clickhouse-forensics")
+def clickhouse_forensics_endpoint(video_id: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Advanced ClickHouse Analytical Intelligence:
+    - Z-Score Outlier Anomaly Detection via Window Functions (stddevSamp, avg OVER window)
+    - Audience Polarization Index via quantilesExact(0.10, 0.50, 0.90)
+    - Micro-NLP Weighted Toxic N-Grams via topKWeighted & tokens
+    - Astroturfing Bot Forensics via Lexical Diversity & Shannon Entropy
+    """
+    from src.data.clickhouse_client import ch_client
+    try:
+        return ch_client.get_advanced_forensics_summary(video_id=video_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/api/v1/analytics/attribution-map")
+def get_attribution_map_endpoint(video_id: Optional[str] = None) -> Dict[str, Any]:
+    """
+    ClickHouse External Attribution & Root-Cause Map (GET):
+    Bridges ClickHouse surge metrics (Z-score, velocity slope, toxic bigrams, polarization)
+    with live Google Search Grounding to diagnose why traffic surged, external referrers,
+    content friction, and generates an interactive Mermaid causal map.
+    """
+    from src.tools.attribution_mapper import attribution_mapper
+    from src.core.registry_manager import registry_manager
+    target_vid = video_id
+    if not target_vid:
+        videos = registry_manager.get_all_videos()
+        target_vid = videos[0].get("video_id", "UH21OnJwxZE") if videos else "UH21OnJwxZE"
+
+    try:
+        return attribution_mapper.analyze_video_attribution(target_vid)
+    except Exception as e:
+        import logging
+        logging.getLogger("studiosonar.routes").exception("Attribution map generation error")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/api/v1/analytics/attribution-map")
+def post_attribution_map_endpoint(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    ClickHouse External Attribution & Root-Cause Map (POST).
+    """
+    video_id = payload.get("video_id")
+    return get_attribution_map_endpoint(video_id=video_id)
+
+

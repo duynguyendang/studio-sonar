@@ -1025,11 +1025,13 @@
                         <span style="font-size:0.85rem; font-weight:700; color:#fff;">📄 Active Intelligence Dossier:</span>
                         <select id="dossier-report-select" onchange="loadReport(this.value)" style="background:rgba(0,0,0,0.4); color:var(--accent-cyan); border:1px solid var(--border-color); border-radius:6px; padding:0.4rem 0.8rem; font-size:0.82rem; font-weight:600; cursor:pointer;">
                             <option value="realtime_24h">📊 Master 24h Pulse Dossier (All Channels)</option>
-                            <option value="thien_duong">🎵 Video: Thiên Đường Với Người Thương (PMC)</option>
-                            <option value="nutella">🏭 Video: Ferrero Nutella Factory Inside</option>
-                            <option value="bloomberg_originals">🏢 Channel: Bloomberg Originals</option>
-                            <option value="kiemdinhphim">🎬 Channel: Kiểm Định Phim</option>
-                            <option value="thochupanh_dalat">📸 Channel: Thợ Chụp Ảnh Đà Lạt</option>
+                            <option value="video_UH21OnJwxZE">🎵 Video: Thiên Đường Với Người Thương (PMC)</option>
+                            <option value="video_TNl9diGdyPo">🏭 Video: Ferrero Nutella Factory Inside</option>
+                            <option value="video_Rp6ZnP5WRgI">💿 Video: Dân Chơi Dân Ca (Highlight Medley)</option>
+                            <option value="video_R7Bf4l5VgO8">🌾 Video: Yêu Lắm Miền Tây (Thùy Chi)</option>
+                            <option value="channel_report_bloomberg_originals">🏢 Channel: Bloomberg Originals</option>
+                            <option value="channel_report_kiemdinhphim9_0">🎬 Channel: Kiểm Định Phim</option>
+                            <option value="channel_report_thochupanh_dalat">📸 Channel: Thợ Chụp Ảnh Đà Lạt</option>
                         </select>
                     </div>
                     <div style="display:flex; align-items:center; gap:0.6rem;">
@@ -1181,6 +1183,244 @@
             <div id="radar-tick-banner" style="display: none; margin-top: 0.85rem; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;">
                 <div id="radar-tick-content" style="color: var(--text-primary); line-height: 1.5;"></div>
             </div>
+
+            <!-- ⚡ ClickHouse Deep Statistical & NLP Forensics Matrix -->
+            <div style="margin-top: 1rem; background: rgba(10, 16, 32, 0.85); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: 10px; padding: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.1rem; color: var(--accent-cyan);">📐</span>
+                        <div>
+                            <div style="font-weight: 700; color: #fff; font-size: 0.9rem;">ClickHouse Advanced Analytics &amp; Mathematical Forensics</div>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">
+                                Window Functions • quantilesExact(0.1, 0.5, 0.9) • topKWeighted(N-Grams) • Shannon Entropy
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 0.75rem; color: var(--text-secondary);">Filter Asset:</span>
+                        <select id="forensics-asset-filter" onchange="fetchClickHouseAdvancedForensics(this.value)" style="background: rgba(0,0,0,0.5); color: var(--accent-cyan); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 6px; padding: 0.25rem 0.6rem; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; cursor: pointer;">
+                            <option value="">🌐 All Monitored Assets</option>
+                            <option value="UH21OnJwxZE">🎵 Thiên Đường Với Người Thương</option>
+                            <option value="TNl9diGdyPo">🏭 Ferrero Nutella Inside</option>
+                            <option value="Rp6ZnP5WRgI">💿 Dân Chơi Dân Ca (Medley)</option>
+                            <option value="R7Bf4l5VgO8">🌾 Yêu Lắm Miền Tây</option>
+                        </select>
+                        <button class="quick-action-btn" onclick="fetchClickHouseAdvancedForensics(document.getElementById('forensics-asset-filter').value)" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 Interactive Forensic Cards Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+                    
+                    <!-- 1. Z-Score Statistical Anomaly Radar -->
+                    <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="font-size: 0.72rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase;">1. Z-Score Outlier Radar</span>
+                            <span id="forensic-zscore-badge" class="status-badge" style="background: rgba(0, 245, 160, 0.2); color: #00f5a0; font-size: 0.65rem;">NORMAL BAND</span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; gap: 0.5rem; margin-top: 0.35rem;">
+                            <span id="forensic-zscore-val" style="font-size: 1.8rem; font-weight: 900; color: #fff; font-family: 'JetBrains Mono', monospace;">0.00σ</span>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">threshold: 2.50σ / 3.00σ</span>
+                        </div>
+                        <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.4;">
+                            Mean (μ): <strong id="forensic-zscore-mean" style="color: #fff; font-family: 'JetBrains Mono', monospace;">--</strong> | 
+                            StdDev (σ): <strong id="forensic-zscore-std" style="color: #fff; font-family: 'JetBrains Mono', monospace;">--</strong>
+                        </div>
+                        <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.35rem;">
+                            <em>Window: 24-period rolling baseline via ClickHouse window frames.</em>
+                        </div>
+                    </div>
+
+                    <!-- 2. Audience Polarization Spread -->
+                    <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="font-size: 0.72rem; font-weight: 700; color: var(--accent-purple); text-transform: uppercase;">2. Polarization Spread (Q90 - Q10)</span>
+                            <span id="forensic-polar-badge" class="status-badge" style="background: rgba(192, 132, 252, 0.2); color: #c084fc; font-size: 0.65rem;">CONSENSUS</span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; gap: 0.5rem; margin-top: 0.35rem;">
+                            <span id="forensic-polar-val" style="font-size: 1.8rem; font-weight: 900; color: #c084fc; font-family: 'JetBrains Mono', monospace;">0.00</span>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">Spread (IQR)</span>
+                        </div>
+                        <div style="margin-top: 0.6rem; background: rgba(255, 255, 255, 0.1); height: 8px; border-radius: 4px; position: relative; overflow: hidden;">
+                            <div id="forensic-polar-bar" style="height: 100%; width: 20%; background: linear-gradient(90deg, #ff4757, #00f5a0); border-radius: 4px; transition: width 0.4s ease;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.68rem; font-family: 'JetBrains Mono', monospace; color: var(--text-secondary); margin-top: 0.35rem;">
+                            <span>Q10: <span id="forensic-polar-q10" style="color: #ff4757;">--</span></span>
+                            <span>Q50: <span id="forensic-polar-q50" style="color: #38bdf8;">--</span></span>
+                            <span>Q90: <span id="forensic-polar-q90" style="color: #00f5a0;">--</span></span>
+                        </div>
+                    </div>
+
+                    <!-- 3. Micro-NLP Weighted Toxic N-Grams -->
+                    <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="font-size: 0.72rem; font-weight: 700; color: #ff4757; text-transform: uppercase;">3. Weighted Toxic N-Grams</span>
+                            <span style="font-size: 0.65rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">topKWeighted</span>
+                        </div>
+                        <div id="forensic-ngrams-container" style="display: flex; flex-wrap: wrap; gap: 0.4rem; min-height: 55px; align-items: center; margin-top: 0.35rem;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Awaiting realtime commentary stream...</span>
+                        </div>
+                        <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.5rem;">
+                            <em>Token bigrams weighted by calculated toxicity multiplier.</em>
+                        </div>
+                    </div>
+
+                    <!-- 4. Astroturfing Bot Forensics -->
+                    <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="font-size: 0.72rem; font-weight: 700; color: var(--accent-gold); text-transform: uppercase;">4. Astroturfing Forensics</span>
+                            <span id="forensic-bot-verdict" class="status-badge" style="background: rgba(0, 245, 160, 0.2); color: #00f5a0; font-size: 0.65rem;">ORGANIC</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;">
+                            <div style="background: rgba(255,255,255,0.04); padding: 0.4rem 0.6rem; border-radius: 6px;">
+                                <div style="color: var(--text-secondary); font-size: 0.65rem;">Lexical Diversity</div>
+                                <div id="forensic-bot-lexical" style="font-weight: 800; color: #fff; font-size: 1rem; margin-top: 0.1rem;">--%</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.04); padding: 0.4rem 0.6rem; border-radius: 6px;">
+                                <div style="color: var(--text-secondary); font-size: 0.65rem;">Author Entropy</div>
+                                <div id="forensic-bot-entropy" style="font-weight: 800; color: #fff; font-size: 1rem; margin-top: 0.1rem;">-- H</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                            Unique Authors: <strong id="forensic-bot-authors" style="color: #fff; font-family: 'JetBrains Mono', monospace;">--</strong> | 
+                            p95 Toxicity: <strong id="forensic-bot-p95" style="color: #ff4757; font-family: 'JetBrains Mono', monospace;">--</strong>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ========================================================================= -->
+                <!-- 5. Attribution & Root-Cause Radar (Google Search Grounded Causal Map) -->
+                <!-- ========================================================================= -->
+                <div id="attribution-radar-container" style="margin-top: 1.5rem; background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(192, 132, 252, 0.25); border-radius: 8px; padding: 1.25rem; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.8rem;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                                <span style="font-size: 0.95rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    ⚡ ClickHouse Attribution & Root-Cause Radar
+                                </span>
+                                <span class="status-badge" style="background: rgba(121, 40, 202, 0.25); color: #c084fc; font-size: 0.65rem; border: 1px solid rgba(121, 40, 202, 0.4);">
+                                    GOOGLE SEARCH GROUNDED
+                                </span>
+                                <span class="status-badge" style="background: rgba(0, 245, 160, 0.15); color: #00f5a0; font-size: 0.65rem;">
+                                    GEMINI 3.8 FLASH CAUSAL MAP
+                                </span>
+                            </div>
+                            <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                Correlates real-time ClickHouse metrics to diagnose traffic surge causes, external referrers (TikTok, press, social), and detect negative community feedback or content friction.
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                            <select id="attribution-video-select" style="background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.75rem; border-radius: 6px; padding: 0.4rem 0.6rem; max-width: 280px;">
+                                <option value="UH21OnJwxZE">UH21OnJwxZE (Phương Mỹ Chi x DTAP)</option>
+                                <option value="TNl9diGdyPo">TNl9diGdyPo (Vũ - Bình Yên)</option>
+                                <option value="Rp6ZnP5WRgI">Rp6ZnP5WRgI (DTAP Official)</option>
+                                <option value="R7Bf4l5VgO8">R7Bf4l5VgO8 (Trúc Nhân)</option>
+                            </select>
+                            <button id="btn-run-attribution-map" class="btn-control btn-play" onclick="triggerAttributionMapping()" style="background: linear-gradient(135deg, #7928ca, #4facfe); border: none; font-size: 0.75rem; padding: 0.45rem 1rem; border-radius: 6px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                                <span id="attribution-spinner" style="display: none;">⏳</span>
+                                <span id="attribution-btn-text">🔍 Trace Surge & Map Attribution</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Attribution Content Body -->
+                    <div id="attribution-results-wrapper">
+                        <!-- Summary Ribbon -->
+                        <div id="attribution-summary-ribbon" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 1rem;">
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 0.6rem 0.8rem;">
+                                <div style="font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase;">Primary Catalyst</div>
+                                <div id="attr-catalyst-title" style="font-size: 0.95rem; font-weight: 800; color: #38bdf8; margin-top: 0.2rem;">--</div>
+                                <div id="attr-catalyst-type" style="font-size: 0.65rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">Click 'Trace Surge' to diagnose</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 0.6rem 0.8rem;">
+                                <div style="font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase;">Confidence & Telemetry</div>
+                                <div id="attr-confidence" style="font-size: 0.95rem; font-weight: 800; color: #00f5a0; margin-top: 0.2rem;">--%</div>
+                                <div id="attr-telemetry-badge" style="font-size: 0.65rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">ClickHouse Z: --σ | Spread: --</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 0.6rem 0.8rem;">
+                                <div style="font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase;">Search Grounding Proofs</div>
+                                <div id="attr-citation-count" style="font-size: 0.95rem; font-weight: 800; color: #c084fc; margin-top: 0.2rem;">0 Verified Sources</div>
+                                <div id="attr-search-queries" style="font-size: 0.65rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Dual-vector queries ready</div>
+                            </div>
+                        </div>
+
+                        <!-- 2-Column Layout: Flowchart Map (Left) + Detail Intelligence Cards (Right) -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1rem; align-items: stretch;">
+                            
+                            <!-- Left: Interactive Mermaid Causal Flowchart Map -->
+                            <div style="background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                                    <span style="font-size: 0.75rem; font-weight: 700; color: #fff; text-transform: uppercase;">
+                                        🗺️ Root-Cause Attribution Causal Map
+                                    </span>
+                                    <span style="font-size: 0.65rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">MERMAID.JS CAUSAL GRAPH</span>
+                                </div>
+                                <div id="attribution-mermaid-container" style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border-radius: 6px; overflow-x: auto; padding: 0.75rem;">
+                                    <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 2rem;">
+                                        🚀 Click <strong>"Trace Surge & Map Attribution"</strong> to execute root-cause diagnostics and render a dynamic causal flowchart.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Structured Forensic Findings & Proofs -->
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                
+                                <!-- Card 1: Traffic Surge Origin & External Referrals -->
+                                <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 6px; padding: 0.75rem;">
+                                    <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 0.35rem;">
+                                        🚀 Why Did Traffic Surge? (External Referral Sources)
+                                    </div>
+                                    <div id="attr-traffic-reason" style="font-size: 0.8rem; color: #fff; line-height: 1.45;">
+                                        Awaiting diagnostic execution...
+                                    </div>
+                                    <div id="attr-sources-identified" style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.4rem; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 0.35rem;">
+                                        No external referral sources detected yet.
+                                    </div>
+                                </div>
+
+                                <!-- Card 2: Content Friction & Negative Discourse -->
+                                <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 71, 87, 0.25); border-radius: 6px; padding: 0.75rem;">
+                                    <div style="font-size: 0.72rem; font-weight: 700; color: #ff6b81; text-transform: uppercase; margin-bottom: 0.35rem;">
+                                        ⚠️ Audience Friction & Criticism Forensics
+                                    </div>
+                                    <div id="attr-friction-analysis" style="font-size: 0.8rem; color: #fff; line-height: 1.45;">
+                                        Awaiting micro-NLP & Google Search scan...
+                                    </div>
+                                    <div id="attr-positive-resonance" style="font-size: 0.72rem; color: #00f5a0; margin-top: 0.4rem; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 0.35rem;">
+                                        --
+                                    </div>
+                                </div>
+
+                                <!-- Card 3: Google Search Citations -->
+                                <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(192, 132, 252, 0.25); border-radius: 6px; padding: 0.75rem;">
+                                    <div style="font-size: 0.72rem; font-weight: 700; color: #c084fc; text-transform: uppercase; margin-bottom: 0.35rem;">
+                                        🔗 Verified External Web Evidence (Google Search Grounding)
+                                    </div>
+                                    <div id="attr-citations-list" style="display: flex; flex-direction: column; gap: 0.4rem; max-height: 140px; overflow-y: auto;">
+                                        <span style="font-size: 0.72rem; color: var(--text-muted);">No external web citations loaded yet.</span>
+                                    </div>
+                                </div>
+
+                                <!-- Card 4: Action Protocol -->
+                                <div style="background: rgba(121, 40, 202, 0.12); border: 1px solid rgba(121, 40, 202, 0.3); border-radius: 6px; padding: 0.75rem;">
+                                    <div style="font-size: 0.72rem; font-weight: 700; color: #00f5a0; text-transform: uppercase; margin-bottom: 0.35rem;">
+                                        📋 Strategic Action Protocol (Creator & Brand PR)
+                                    </div>
+                                    <ul id="attr-actions-list" style="margin: 0; padding-left: 1.2rem; font-size: 0.75rem; color: #fff; line-height: 1.4;">
+                                        <li>Ready to formulate strategic remediation actions once telemetry is mapped.</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -1265,6 +1505,26 @@
         let activeReportKey = 'realtime_24h';
         let currentTab = 'cockpit';
         let liveAssetsData = [];
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function switchScreen(screen) {
+            if (screen === 'techops' || screen === 'tech') {
+                switchNavTab('tech');
+            } else if (screen === 'dossier') {
+                switchNavTab('dossier');
+            } else {
+                switchNavTab('cockpit');
+            }
+        }
 
         // 1. Fetch Swarm Telemetry & Update UI
         async function fetchSwarmTelemetry() {
@@ -1484,6 +1744,9 @@
                             </button>
                             <button class="btn-card-action btn-script" onclick="selectReportAndNavigate('${asset.reportKey || 'realtime_24h'}')">
                                 <span>📄</span> Report
+                            </button>
+                            <button class="btn-card-action" style="background: rgba(121, 40, 202, 0.25); border: 1px solid rgba(192, 132, 252, 0.4); color: #c084fc;" onclick="triggerAttributionMapForAsset('${asset.id}')" title="Trace surge causes & external sources with Google Search">
+                                <span>⚡</span> Map Surge
                             </button>
                             <a class="btn-card-action btn-crosscheck" href="${asset.url || '#'}" target="_blank" rel="noopener noreferrer" title="Direct platform cross-check: ${asset.url}">
                                 <span>🔗</span> Cross Check ↗
@@ -2197,6 +2460,316 @@
             if (overlay) overlay.style.display = 'none';
         }
 
+        async function fetchClickHouseAdvancedForensics(videoId) {
+            try {
+                const vidParam = videoId ? `?video_id=${encodeURIComponent(videoId)}` : '';
+                const res = await fetch(`/api/v1/analytics/clickhouse-forensics${vidParam}`);
+                if (!res.ok) return;
+                const data = await res.json();
+
+                // 1. Z-Score Anomaly
+                const zList = data.zscore_anomalies || [];
+                const zLatest = zList[0] || {};
+                const zVal = zLatest.z_score !== undefined ? zLatest.z_score : 0.0;
+                const zBadge = document.getElementById('forensic-zscore-badge');
+                const zValEl = document.getElementById('forensic-zscore-val');
+                const zMeanEl = document.getElementById('forensic-zscore-mean');
+                const zStdEl = document.getElementById('forensic-zscore-std');
+
+                if (zValEl) zValEl.innerText = `${zVal > 0 ? '+' : ''}${zVal.toFixed(2)}σ`;
+                if (zMeanEl) zMeanEl.innerText = `${zLatest.mean_velocity ?? '--'} v/h`;
+                if (zStdEl) zStdEl.innerText = `${zLatest.stddev_velocity ?? '--'} v/h`;
+                if (zBadge) {
+                    if (zVal >= 3.0) {
+                        zBadge.innerText = '🚨 3σ CRITICAL';
+                        zBadge.style.background = 'rgba(255, 71, 87, 0.2)';
+                        zBadge.style.color = '#ff4757';
+                    } else if (zVal >= 2.0) {
+                        zBadge.innerText = '⚠️ 2σ SURGE';
+                        zBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+                        zBadge.style.color = '#f59e0b';
+                    } else {
+                        zBadge.innerText = 'NORMAL BAND';
+                        zBadge.style.background = 'rgba(0, 245, 160, 0.2)';
+                        zBadge.style.color = '#00f5a0';
+                    }
+                }
+
+                // 2. Audience Polarization Spread
+                const pol = data.polarization || {};
+                const polValEl = document.getElementById('forensic-polar-val');
+                const polBadge = document.getElementById('forensic-polar-badge');
+                const polBar = document.getElementById('forensic-polar-bar');
+                const q10El = document.getElementById('forensic-polar-q10');
+                const q50El = document.getElementById('forensic-polar-q50');
+                const q90El = document.getElementById('forensic-polar-q90');
+
+                const spread = pol.polarization_spread || 0.0;
+                if (polValEl) polValEl.innerText = `${spread.toFixed(2)}`;
+                if (q10El) q10El.innerText = pol.q10_negative_tail !== undefined ? pol.q10_negative_tail : '--';
+                if (q50El) q50El.innerText = pol.q50_median !== undefined ? pol.q50_median : '--';
+                if (q90El) q90El.innerText = pol.q90_positive_tail !== undefined ? pol.q90_positive_tail : '--';
+                if (polBar) {
+                    const pct = Math.min(Math.max((spread / 2.0) * 100, 10), 100);
+                    polBar.style.width = `${pct}%`;
+                    polBar.style.background = spread >= 1.4 ? 'linear-gradient(90deg, #ff4757, #ff6b81)' : (spread >= 0.8 ? 'linear-gradient(90deg, #f59e0b, #38bdf8)' : 'linear-gradient(90deg, #00f5a0, #38bdf8)');
+                }
+                if (polBadge) {
+                    if (pol.status === 'CIVIL_WAR_POLARIZED') {
+                        polBadge.innerText = '🔥 CIVIL WAR';
+                        polBadge.style.background = 'rgba(255, 71, 87, 0.2)';
+                        polBadge.style.color = '#ff4757';
+                    } else if (pol.status === 'MODERATE_DEBATE') {
+                        polBadge.innerText = '💬 ACTIVE DEBATE';
+                        polBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+                        polBadge.style.color = '#f59e0b';
+                    } else {
+                        polBadge.innerText = 'CONSENSUS';
+                        polBadge.style.background = 'rgba(0, 245, 160, 0.2)';
+                        polBadge.style.color = '#00f5a0';
+                    }
+                }
+
+                // 3. Micro-NLP Weighted Toxic N-Grams
+                const ngrams = data.weighted_toxic_ngrams || [];
+                const ngramsContainer = document.getElementById('forensic-ngrams-container');
+                if (ngramsContainer) {
+                    if (ngrams.length > 0) {
+                        ngramsContainer.innerHTML = ngrams.map((ng, i) => `
+                            <span style="background: rgba(255, 71, 87, 0.15); border: 1px solid rgba(255, 71, 87, 0.35); color: #ff6b81; border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;">
+                                #${i + 1} "${escapeHtml(ng.phrase)}"
+                            </span>
+                        `).join('');
+                    } else {
+                        ngramsContainer.innerHTML = `<span style="font-size: 0.72rem; color: #00f5a0;">✅ No high-toxicity n-gram clusters detected (healthy discourse).</span>`;
+                    }
+                }
+
+                // 4. Astroturfing Bot Forensics
+                const bot = data.bot_forensics || {};
+                const botVerdictEl = document.getElementById('forensic-bot-verdict');
+                const botLexEl = document.getElementById('forensic-bot-lexical');
+                const botEntEl = document.getElementById('forensic-bot-entropy');
+                const botAuthEl = document.getElementById('forensic-bot-authors');
+                const botP95El = document.getElementById('forensic-bot-p95');
+
+                if (botLexEl) botLexEl.innerText = `${Math.round((bot.lexical_diversity_ratio || 1.0) * 100)}%`;
+                if (botEntEl) botEntEl.innerText = `${(bot.shannon_entropy || 0.0).toFixed(1)} H`;
+                if (botAuthEl) botAuthEl.innerText = `${(bot.uniq_authors || 0).toLocaleString()} / ${(bot.total_comments || 0).toLocaleString()}`;
+                if (botP95El) botP95El.innerText = `${(bot.p95_toxicity || 0.0).toFixed(2)}`;
+
+                if (botVerdictEl) {
+                    const isBot = bot.forensic_verdict === 'COORDINATED_ASTROTURFING_BOTS';
+                    const isSuspect = bot.forensic_verdict === 'SUSPECTED_PARAPHRASE_SEEDING';
+                    if (isBot) {
+                        botVerdictEl.innerText = '🚨 BOT BRIGADE';
+                        botVerdictEl.style.background = 'rgba(255, 71, 87, 0.2)';
+                        botVerdictEl.style.color = '#ff4757';
+                    } else if (isSuspect) {
+                        botVerdictEl.innerText = '⚠️ SUSPECT SEED';
+                        botVerdictEl.style.background = 'rgba(245, 158, 11, 0.2)';
+                        botVerdictEl.style.color = '#f59e0b';
+                    } else {
+                        botVerdictEl.innerText = 'ORGANIC';
+                        botVerdictEl.style.background = 'rgba(0, 245, 160, 0.2)';
+                        botVerdictEl.style.color = '#00f5a0';
+                    }
+                }
+
+            } catch (e) {
+                console.warn("ClickHouse advanced forensics fetch error:", e);
+            }
+        }
+
+        // =========================================================================
+        // Attribution & Root-Cause Radar Logic (Google Search Grounded)
+        // =========================================================================
+        async function populateAttributionVideoSelector() {
+            const selectEl = document.getElementById('attribution-video-select');
+            if (!selectEl) return;
+
+            try {
+                const res = await fetch('/api/v1/registry/tracking');
+                if (res.ok) {
+                    const data = await res.json();
+                    const videos = data.videos || [];
+                    if (videos.length > 0) {
+                        const currentVal = selectEl.value;
+                        selectEl.innerHTML = videos.map(v => `
+                            <option value="${v.video_id}">${v.video_id} (${v.title ? v.title.slice(0, 35) : 'Asset'})</option>
+                        `).join('');
+                        if (currentVal && videos.some(v => v.video_id === currentVal)) {
+                            selectEl.value = currentVal;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Could not populate video selector:", e);
+            }
+        }
+
+        async function triggerAttributionMapping() {
+            const selectEl = document.getElementById('attribution-video-select');
+            const videoId = selectEl ? selectEl.value : 'UH21OnJwxZE';
+            const btnText = document.getElementById('attribution-btn-text');
+            const spinner = document.getElementById('attribution-spinner');
+            const btn = document.getElementById('btn-run-attribution-map');
+
+            if (btn) btn.disabled = true;
+            if (spinner) spinner.style.display = 'inline-block';
+            if (btnText) btnText.innerText = 'Analyzing ClickHouse & Searching Web...';
+
+            const mermaidContainer = document.getElementById('attribution-mermaid-container');
+            if (mermaidContainer) {
+                mermaidContainer.innerHTML = `
+                    <div style="text-align: center; color: var(--accent-cyan); font-size: 0.85rem; padding: 2.5rem;">
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;" class="pulse-icon">⚡</div>
+                        <div>Connecting ClickHouse telemetry with Google Search Grounding...</div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem;">Gemini 3.8 Flash synthesizing root causes and generating causal graph...</div>
+                    </div>
+                `;
+            }
+
+            try {
+                const res = await fetch('/api/v1/analytics/attribution-map', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ video_id: videoId })
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+                }
+
+                const data = await res.json();
+                const analysis = data.attribution_analysis || {};
+                const telemetry = data.telemetry_snapshot || {};
+                const search = data.search_grounding || {};
+
+                // 1. Ribbon values
+                const catalystTitleEl = document.getElementById('attr-catalyst-title');
+                const catalystTypeEl = document.getElementById('attr-catalyst-type');
+                const confidenceEl = document.getElementById('attr-confidence');
+                const telemetryBadgeEl = document.getElementById('attr-telemetry-badge');
+                const citationCountEl = document.getElementById('attr-citation-count');
+                const searchQueriesEl = document.getElementById('attr-search-queries');
+
+                if (catalystTitleEl) catalystTitleEl.innerText = analysis.catalyst_title || analysis.catalyst_type || 'Surge Detected';
+                if (catalystTypeEl) catalystTypeEl.innerText = `${analysis.catalyst_type} • Score: ${Math.round((analysis.confidence_score || 0.9) * 100)}%`;
+                if (confidenceEl) confidenceEl.innerText = `${Math.round((analysis.confidence_score || 0.9) * 100)}%`;
+                if (telemetryBadgeEl) {
+                    const z = telemetry.z_score || 0.0;
+                    const spread = telemetry.polarization_spread || 0.0;
+                    telemetryBadgeEl.innerText = `ClickHouse Z: ${z >= 0 ? '+' : ''}${z.toFixed(2)}σ (${telemetry.statistical_status || 'NORMAL'}) • Spread: ${spread.toFixed(2)}`;
+                }
+                if (citationCountEl) citationCountEl.innerText = `${search.total_citations || 0} Verified Sources`;
+                if (searchQueriesEl) searchQueriesEl.innerText = search.catalyst_query || 'Dual-vector search complete';
+
+                // 2. Detailed Diagnostic Cards
+                const reasonEl = document.getElementById('attr-traffic-reason');
+                const sourcesEl = document.getElementById('attr-sources-identified');
+                const frictionEl = document.getElementById('attr-friction-analysis');
+                const positiveEl = document.getElementById('attr-positive-resonance');
+                const citationsListEl = document.getElementById('attr-citations-list');
+                const actionsListEl = document.getElementById('attr-actions-list');
+
+                if (reasonEl) reasonEl.innerText = analysis.traffic_surge_reason || 'Traffic surged significantly.';
+                if (sourcesEl) sourcesEl.innerHTML = `<strong>External Sources:</strong> ${escapeHtml(analysis.external_sources_identified || 'Undetermined')}`;
+                if (frictionEl) frictionEl.innerText = analysis.content_friction_analysis || 'No significant content friction detected.';
+                if (positiveEl) positiveEl.innerHTML = `<strong>Positive Resonance:</strong> ${escapeHtml(analysis.positive_resonance_summary || 'Positive reception.')}`;
+
+                // Citations list
+                if (citationsListEl) {
+                    const citations = search.citations || [];
+                    if (citations.length > 0) {
+                        citationsListEl.innerHTML = citations.map(c => `
+                            <a href="${escapeHtml(c.link || '#')}" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: none; font-size: 0.72rem; line-height: 1.35; display: block; background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="font-weight: 700; color: #fff;">${escapeHtml(c.title || c.link)} ↗</div>
+                                <div style="color: var(--text-muted); font-size: 0.65rem; margin-top: 0.1rem;">${escapeHtml(c.source || 'web')} • ${escapeHtml((c.snippet || '').slice(0, 110))}...</div>
+                            </a>
+                        `).join('');
+                    } else {
+                        citationsListEl.innerHTML = `<span style="font-size:0.72rem; color:var(--text-muted);">No matching external web citations found.</span>`;
+                    }
+                }
+
+                // Action list
+                if (actionsListEl) {
+                    const actions = analysis.strategic_actions || [];
+                    if (actions.length > 0) {
+                        actionsListEl.innerHTML = actions.map(act => `
+                            <li style="margin-bottom: 0.25rem;">${escapeHtml(act)}</li>
+                        `).join('');
+                    }
+                }
+
+                // 3. Render Interactive Mermaid Causal Graph
+                if (mermaidContainer) {
+                    const rawMermaid = analysis.mermaid_flowchart || `flowchart TD\n    A[ClickHouse Spike] --> B[Google Search Grounding]\n    B --> C[External Source]`;
+                    try {
+                        if (window.mermaid && typeof mermaid.render === 'function') {
+                            const renderId = 'attr-graph-' + Math.floor(Math.random() * 1000000);
+                            const res = await mermaid.render(renderId, rawMermaid);
+                            mermaidContainer.innerHTML = `<div style="width: 100%; display: flex; justify-content: center; overflow-x: auto;">${res.svg}</div>`;
+                        } else if (window.mermaid && typeof mermaid.run === 'function') {
+                            mermaidContainer.innerHTML = `<div class="mermaid" style="width: 100%; display: flex; justify-content: center;">${rawMermaid}</div>`;
+                            await mermaid.run({ nodes: mermaidContainer.querySelectorAll('.mermaid') });
+                        } else {
+                            mermaidContainer.innerHTML = `<pre style="font-size:0.75rem; color:#fff; font-family:'JetBrains Mono',monospace; padding:0.5rem;">${escapeHtml(rawMermaid)}</pre>`;
+                        }
+                    } catch (merr) {
+                        console.warn("Mermaid render error:", merr);
+                        mermaidContainer.innerHTML = `<pre style="font-size:0.75rem; color:#00f2fe; font-family:'JetBrains Mono',monospace; padding:0.5rem; background:rgba(0,0,0,0.3); border-radius:6px; overflow-x:auto;">${escapeHtml(rawMermaid)}</pre>`;
+                    }
+                }
+
+            } catch (err) {
+                console.error("Attribution mapping error:", err);
+                if (mermaidContainer) {
+                    mermaidContainer.innerHTML = `<div style="color:#ff4757; padding:1.5rem; text-align:center;">⚠️ Attribution mapping error: ${escapeHtml(err.message)}</div>`;
+                }
+            } finally {
+                if (btn) btn.disabled = false;
+                if (spinner) spinner.style.display = 'none';
+                if (btnText) btnText.innerText = '🔍 Trace Surge & Map Attribution';
+            }
+        }
+
+        function triggerAttributionMapForAsset(assetId) {
+            console.log("Mapping surge for asset:", assetId);
+            switchNavTab('tech');
+            const selectEl = document.getElementById('attribution-video-select');
+            if (selectEl) {
+                let targetId = assetId;
+                if (assetId && assetId.startsWith('ch_')) {
+                    targetId = selectEl.options[0] ? selectEl.options[0].value : 'UH21OnJwxZE';
+                }
+                let found = false;
+                for (let i = 0; i < selectEl.options.length; i++) {
+                    if (selectEl.options[i].value === targetId) {
+                        selectEl.selectedIndex = i;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    const newOpt = document.createElement('option');
+                    newOpt.value = targetId;
+                    newOpt.innerText = `${targetId} (Selected Asset)`;
+                    selectEl.appendChild(newOpt);
+                    selectEl.value = targetId;
+                }
+            }
+            const container = document.getElementById('attribution-radar-container');
+            if (container) {
+                setTimeout(() => {
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+            // Trigger automatic diagnosis
+            triggerAttributionMapping();
+        }
+
         window.onload = () => {
             resizeTopologyCanvas();
             initLiveCounters();
@@ -2205,8 +2778,11 @@
             loadReport('realtime_24h');
             fetchHotCounters();
             fetchNativeAnalytics();
+            fetchClickHouseAdvancedForensics();
+            populateAttributionVideoSelector();
             setInterval(fetchHotCounters, 5000); // Live 5s ClickHouse polling
             setInterval(fetchNativeAnalytics, 30000); // 30s Pearson synergy & slope polling
+            setInterval(fetchClickHouseAdvancedForensics, 15000); // 15s advanced math analytics polling
             window.addEventListener('resize', () => {
                 resizeTopologyCanvas();
                 drawTopologyGraph();

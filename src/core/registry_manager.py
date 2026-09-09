@@ -27,6 +27,16 @@ class TrackingRegistryManager:
         """Lazily initializes the BigQuery client (single source of truth on Cloud Run)."""
         if self._bq_client is not None:
             return self._bq_client
+        has_sa = bool(
+            os.getenv("GOOGLE_APPLICATION_CREDENTIALS") or
+            os.getenv("K_SERVICE") or
+            os.getenv("GAE_INSTANCE") or
+            os.path.exists(os.path.expanduser("~/.config/gcloud/application_default_credentials.json")) or
+            (os.getenv("GCP_PROJECT_ID") and os.path.exists("/var/run/secrets/google.internal"))
+        )
+        if not has_sa and not os.getenv("FORCE_ADC"):
+            self._bq_available = False
+            return None
         try:
             from google.cloud import bigquery
             self._bq_client = bigquery.Client(project=settings.gcp_project_id)
@@ -79,8 +89,7 @@ class TrackingRegistryManager:
         """
         client = self._get_bq_client()
         if not client:
-            logger.warning("get_all_channels: BigQuery unavailable (strict mode) -> returning empty list.")
-            return []
+            return [c for c in self._load_data().get("channels", []) if c.get("tracking_status") == "ACTIVE"]
 
         dataset = settings.bigquery_dataset
         channels = self._query_channels(client, dataset)
@@ -142,8 +151,7 @@ class TrackingRegistryManager:
         """
         client = self._get_bq_client()
         if not client:
-            logger.warning("get_all_videos: BigQuery unavailable (strict mode) -> returning empty list.")
-            return []
+            return [v for v in self._load_data().get("videos", []) if v.get("tracking_status") == "ACTIVE"]
 
         dataset = settings.bigquery_dataset
         videos = self._query_videos(client, dataset)
@@ -235,6 +243,36 @@ class TrackingRegistryManager:
         videos.append(new_entry)
         self._save_data(data)
         return new_entry
+
+    def remove_channel(self, channel_id: str) -> bool:
+        """Removes a channel from tracking, synchronizing deletion with BigQuery and local registry."""
+        success = False
+        client = self._get_bq_client()
+        if client:
+            try:
+                from google.cloud import bigquery
+                dataset = settings.bigquery_dataset
+                dml = f"DELETE FROM `{client.project}.{dataset}.tracked_channels` WHERE channel_id = @channel_id"
+                job_config = bigquery.QueryJobConfig(
+                    query_parameters=[bigquery.ScalarQueryParameter("channel_id", "STRING", channel_id)]
+                )
+                query_job = client.query(dml, job_config=job_config)
+                query_job.result()
+                logger.info(f"Deleted channel {channel_id} from BigQuery {dataset}.tracked_channels")
+                success = True
+            except Exception as e:
+                logger.warning(f"Failed to delete channel {channel_id} from BigQuery: {e}")
+
+        # Also purge from local JSON registry if present
+        data = self._load_data()
+        channels = data.get("channels", [])
+        original_len = len(channels)
+        data["channels"] = [c for c in channels if c.get("channel_id") != channel_id]
+        if len(data["channels"]) < original_len:
+            self._save_data(data)
+            success = True
+
+        return success
 
     def resolve_report_path(self, report_key: str) -> Optional[str]:
         """

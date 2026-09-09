@@ -131,14 +131,32 @@ class StudioSonarOrchestrationEngine:
             ingest_res = bq_client.collect_and_ingest_latest_telemetry()
             
             # 2. Ingest to ClickHouse Hot Path Substrate (Sub-second sliding windows)
-            snaps = ingest_res.get("snapshots", [])
+            snaps = ingest_res.get("snapshots") or ingest_res.get("videos") or []
             ch_inserted = ch_client.insert_snapshots(snaps)
+
+            # 3. Stream live comments into ClickHouse comments_realtime for instant analytics
+            ch_comments_inserted = 0
+            try:
+                from src.tools.youtube_live_client import youtube_live_client
+                all_incoming_comments = []
+                for s in snaps:
+                    vid = s.get("video_id")
+                    if vid and not vid.startswith("tt_"):
+                        yt_comments = youtube_live_client.get_live_comments(vid, max_results=25)
+                        for c in yt_comments:
+                            c["video_id"] = vid
+                            all_incoming_comments.append(c)
+                if all_incoming_comments:
+                    ch_comments_inserted = ch_client.insert_comments(all_incoming_comments)
+            except Exception as e:
+                logger.debug(f"ClickHouse live comments ingestion notice: {e}")
             
-            logger.info(f"Step 0 Complete: Ingested {ingest_res.get('ingested_count', 0)} snapshots to BQ (SoR) and {ch_inserted} to ClickHouse (Hot Path).")
+            logger.info(f"Step 0 Complete: Ingested {ingest_res.get('ingested_count', 0)} snapshots to BQ (SoR), {ch_inserted} snapshots & {ch_comments_inserted} comments to ClickHouse.")
             executed_actions.append({
                 "step": "Step 0 - Dual Substrate Ingestion",
                 "bigquery_so_record": ingest_res.get("ingested_count", 0),
-                "clickhouse_hot_path": ch_inserted
+                "clickhouse_snapshots": ch_inserted,
+                "clickhouse_comments": ch_comments_inserted
             })
         except Exception as e:
             logger.warning(f"Dual Ingestion notice: {e}")
@@ -427,8 +445,21 @@ class StudioSonarOrchestrationEngine:
             from src.agents.generators.llm_report_author import llm_report_author
             from src.core.registry_manager import registry_manager
             
+            target_videos = ingest_res.get("ingested_videos") or ingest_res.get("videos")
+            if not target_videos:
+                target_videos = []
+                for v in registry_manager.get_all_videos():
+                    snaps = v.get("snapshots", [{}])
+                    target_videos.append({
+                        "video_id": v.get("video_id"),
+                        "title": v.get("title", f"Video {v.get('video_id')}"),
+                        "views": snaps[0].get("views", 0) if snaps else 0,
+                        "likes": snaps[0].get("likes", 0) if snaps else 0,
+                        "comments": snaps[0].get("comments", 0) if snaps else 0,
+                    })
+
             published_dossiers = llm_report_author.author_all_reports_parallel(
-                videos=ingest_res.get("videos", []),
+                videos=target_videos,
                 channels=registry_manager.get_all_channels()
             )
             gcs_published_files = list(set(gcs_published_files + published_dossiers))

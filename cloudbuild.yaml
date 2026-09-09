@@ -9,7 +9,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:$COMMIT_SHA'
+      - 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:$_TAG'
       - '-t'
       - 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:latest'
       - '--cache-from'
@@ -19,12 +19,8 @@ steps:
 
   # Step 2: Push images to Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:$COMMIT_SHA']
-    id: 'push-sha-image'
-
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:latest']
-    id: 'push-latest-image'
+    args: ['push', 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:$_TAG']
+    id: 'push-tag-image'
 
   # Step 3: Deploy Service to Google Cloud Run with Dedicated Service Account
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -33,19 +29,18 @@ steps:
       - 'run'
       - 'deploy'
       - 'studiosonar-taskmaster'
-      - '--image=gcr.io/$PROJECT_ID/studiosonar-taskmaster:$COMMIT_SHA'
+      - '--image=gcr.io/$PROJECT_ID/studiosonar-taskmaster:$_TAG'
       - '--region=us-central1'
       - '--platform=managed'
       - '--service-account=studio-sonar-sa@$PROJECT_ID.iam.gserviceaccount.com'
       - '--allow-unauthenticated'
       - '--memory=512Mi'
       - '--cpu=1'
-      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=us-central1,BIGQUERY_DATASET=studiosonar_analytics,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.8-flash,USE_VERTEX_SEARCH_GROUNDING=true,GOOGLE_SEARCH_ENABLED=true,CLICKHOUSE_HOST=sfzvgvl2p7.us-central1.gcp.clickhouse.cloud,CLICKHOUSE_PORT=8443,CLICKHOUSE_USER=default,CLICKHOUSE_PASSWORD=ZoUQbd24Iv~~J,CLICKHOUSE_DATABASE=default,CLICKHOUSE_SECURE=true,TRIGGER_ACTIVE_WINDOW_ENABLED=true,TRIGGER_START_HOUR=8,TRIGGER_END_HOUR=18,TRIGGER_TIMEZONE=Asia/Ho_Chi_Minh'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=us-central1,BIGQUERY_DATASET=studiosonar_analytics,EXECUTION_MODE=live,GEMINI_MODEL=gemini-3.8-flash,USE_VERTEX_SEARCH_GROUNDING=true,GOOGLE_SEARCH_ENABLED=true,CLICKHOUSE_HOST=sfzvgvl2p7.us-central1.gcp.clickhouse.cloud,CLICKHOUSE_PORT=8443,CLICKHOUSE_USER=default,CLICKHOUSE_PASSWORD=ZoUQbd24Iv~~J,CLICKHOUSE_DATABASE=default,CLICKHOUSE_SECURE=true,TRIGGER_ACTIVE_WINDOW_ENABLED=true,TRIGGER_START_HOUR=8,TRIGGER_END_HOUR=18,TRIGGER_TIMEZONE=Asia/Ho_Chi_Minh,YOUTUBE_DATA_API_KEY=AIzaSyAV5KupWHw65Y-EMtuEcgm7DFkszYyBOx4'
     id: 'deploy-cloud-run-service'
 
-images:
-  - 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:$COMMIT_SHA'
-  - 'gcr.io/$PROJECT_ID/studiosonar-taskmaster:latest'
+substitutions:
+  _TAG: 'latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY
