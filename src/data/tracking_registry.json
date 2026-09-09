@@ -99,36 +99,44 @@
       "anomaly_status": "NORMAL"
     },
     {
-      "video_id": "Rp6ZnP5WRgI",
-      "channel_id": "ch_phuongmychi",
-      "url": "https://www.youtube.com/watch?v=Rp6ZnP5WRgI",
-      "title": "PHƯƠNG MỸ CHI x DTAP | ALBUM 'DÂN CHƠI DÂN CA' | OFFICIAL HIGHLIGHT MEDLEY",
-      "published_at": "2026-08-24T12:00:00Z",
+      "video_id": "Fe2AjVSW-TA",
+      "channel_id": "ch_business",
+      "url": "https://www.youtube.com/watch?v=Fe2AjVSW-TA",
+      "title": "Brent Oil Hits $100 as US-Iran War Shows Little Sign of Abating | The Opening Trade 9/9/2026",
+      "published_at": "2026-09-09T11:01:37Z",
       "tracking_duration_days": 30,
       "expires_at": null,
       "custom_sentiment_categories": [
-        "Folk Fusion Innovation Praise",
-        "DTAP Music Production Quality",
-        "Vocal Transformation Dynamics",
-        "Album Release Inquiries"
+        "Geopolitical Escalation Debates",
+        "Crude Oil & Energy Inflation",
+        "Macro Market Sentiment",
+        "Federal Reserve Policy Impact"
+      ],
+      "monitoring_keywords": [
+        "Brent Crude",
+        "Oil",
+        "US-Iran War",
+        "Strait of Hormuz",
+        "Gas Prices",
+        "Energy Inflation"
       ],
       "monitoring_tier": "HIGH_PRIORITY_24H",
       "tracking_status": "ACTIVE",
-      "created_at": "2026-08-25T09:55:00+00:00",
+      "created_at": "2026-09-09T11:01:37+00:00",
       "last_analyzed_at": null,
       "snapshots": [
         {
-          "timestamp": "2026-08-25T09:55:00+00:00",
-          "hours_since_publish": 24.0,
-          "views": 232424,
-          "likes": 13370,
-          "comments": 839,
-          "velocity_views_per_hour": 9684.0,
-          "sentiment_positive_pct": 98.6,
-          "sentiment_negative_pct": 0.3
+          "timestamp": "2026-09-09T11:01:37+00:00",
+          "hours_since_publish": 1.0,
+          "views": 281,
+          "likes": 16,
+          "comments": 1,
+          "velocity_views_per_hour": 280.0,
+          "sentiment_positive_pct": 75.0,
+          "sentiment_negative_pct": 25.0
         }
       ],
-      "generated_report_path": "reports/video_report_Rp6ZnP5WRgI.md",
+      "generated_report_path": "reports/video_report_Fe2AjVSW-TA.md",
       "anomaly_status": "NORMAL"
     },
     {

@@ -487,33 +487,42 @@ Respond strictly with valid JSON.
             }
 
         # ---------------------------------------------------------------------
-        # Asset Profile 2: Album 'Dân Chơi Dân Ca' - Highlight Medley
+        # Asset Profile 2: Brent Oil $100 & US-Iran War (Bloomberg Television)
         # ---------------------------------------------------------------------
-        elif video_id == "Rp6ZnP5WRgI" or "highlight medley" in lower_title or "dân chơi dân ca" in lower_title:
+        elif video_id == "Fe2AjVSW-TA" or "brent oil" in lower_title or "us-iran" in lower_title:
             mermaid = f"""flowchart TD
-    A["⚡ ClickHouse Telemetry: Z={z_score:+.2f}σ | {views_hr:,.0f} views/hr (Album Medley)"] --> B["💿 Catalyst: Highly Anticipated Album Tracklist Preview"]
-    B --> C1["📲 Facebook Music Communities: Track Snippet Dissections"]
-    B --> C2["📺 YouTube Algorithmic Suggested: Post-MV Autoplay Feed"]
-    C1 --> D["👥 Core Music Enthusiast & Industry Influx"]
+    A["⚡ ClickHouse Telemetry: Z={z_score:+.2f}σ | {views_hr:,.0f} views/hr (Bloomberg Oil $100 Special)"] --> B["🛢️ Geopolitical Catalyst: US-Iran Escalation & Strait of Hormuz Supply Shock"]
+    B --> C1["🌐 External Influx: Bloomberg Terminal, Financial Twitter & Energy Subreddits"]
+    B --> C2["📺 YouTube Algorithmic Recommended: Global Macro & Commodity Traders Feed"]
+    C1 --> D["👥 Institutional & Retail Investor Influx"]
     C2 --> D
-    D --> E1["🔥 Fan Anticipation: Universal Acclaim for Folk-Pop Sonic Evolution"]
-    D --> E2["⏳ Community Feedback: Eager Audience Demanding Full Track Releases"]
-    E1 --> F["🎯 Tactical Action: Pin Streaming Pre-Save Link & Schedule Premieres"]
+    D --> E1["📈 High Intent: Intense Audience Scrutiny on Inflation Forecasts & Fed Rate Cuts"]
+    D --> E2["⚠️ Divergent Opinions: Geopolitical Skepticism vs Energy Speculation"]
+    E1 --> F["📊 Strategic Protocol: Produce 3-Minute Chart Breakdown on Crude Breakout Levels"]
     E2 --> F
 """
             return {
-                "catalyst_type": "ORGANIC_FAN_SURGE",
-                "catalyst_title": "Album Teaser Anticipation & Sonic Hybrid Praise",
-                "confidence_score": 0.94,
-                "traffic_surge_reason": "High-intent fan traffic seeking previews of upcoming tracks following the success of lead single releases.",
-                "external_sources_identified": "Facebook music reviewer groups, Threads audio snippet discussions, and YouTube Suggested video recommendations.",
-                "content_friction_analysis": "Negligible friction (<0.3% negative). Audience sentiment focuses entirely on anticipation and impatience for the official album drop.",
-                "positive_resonance_summary": "Praise for eclectic musical arrangements spanning Quan Họ, Vọng Cổ, and modern electronic basslines.",
+                "catalyst_type": "EXTERNAL_PRESS_COVERAGE",
+                "catalyst_title": "Geopolitical Crude Oil Surge ($100/bbl) & Macro Escalation",
+                "confidence_score": 0.97,
+                "traffic_surge_reason": (
+                    f"Traffic surged amidst international breaking news covering crude oil breaching $100/barrel "
+                    f"due to escalating US-Iran conflict and tanker passage risks in the Persian Gulf."
+                ),
+                "external_sources_identified": (
+                    "Bloomberg Television broadcasts, Reuters / Financial Times syndication, "
+                    "energy market newsletters, and algorithmic recommendations to financial audiences."
+                ),
+                "content_friction_analysis": (
+                    "High audience polarization regarding geopolitical accountability and conflicting forecasts "
+                    "on whether OPEC+ or strategic petroleum reserves will intervene."
+                ),
+                "positive_resonance_summary": "Viewers commend Bloomberg's rapid reporting, institutional analyst commentary, and real-time market data visualization.",
                 "mermaid_flowchart": mermaid,
                 "strategic_actions": [
-                    "Pin digital streaming pre-save links across all social channels.",
-                    "Publish short visualizer teasers for the top two most requested tracks from the medley.",
-                    "Host an exclusive YouTube Premiere live chat session on album release day."
+                    "Publish 60-second YouTube Shorts highlighting key price resistance levels and shipping route maps.",
+                    "Pin an official comment linking live Bloomberg Terminal commodity ticker data.",
+                    "Host an emergency live Q&A panel featuring chief commodity strategists."
                 ]
             }
 
