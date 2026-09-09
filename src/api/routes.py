@@ -2,7 +2,7 @@ import os
 from typing import Dict, Any, Optional, List
 from pydantic import BaseModel
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 from src.agents.orchestrator import taskmaster_orchestrator
 from src.tools.video_report_generator import VideoReportGenerator
 from src.tools.tiktok_video_analyzer import tiktok_scanner
@@ -550,12 +550,18 @@ def get_cycle_status() -> Dict[str, Any]:
     return {"status": "SUCCESS", "ledger": ledger}
 
 @router.post("/api/v1/trigger-cycle")
-def trigger_scheduled_cycle(background_tasks: BackgroundTasks, force: bool = False) -> Dict[str, Any]:
+def trigger_scheduled_cycle(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    force: bool = False,
+    sync: bool = False
+) -> Dict[str, Any]:
     """
     Endpoint triggered by Google Cloud Scheduler / Eventarc or UI.
     Includes FinOps Cost Governance Gate to skip scheduled runs outside active hours
     (allowing ClickHouse Cloud to auto-suspend and stay at $0 cost).
     Pass force=True (or click UI button) to override the gate for on-demand demos.
+    If sync=True or called by Google-Cloud-Scheduler, executes synchronously to hold Cloud Run CPU allocation.
     """
     import logging as _logging
     from datetime import datetime, timezone as _tz
@@ -602,8 +608,9 @@ def trigger_scheduled_cycle(background_tasks: BackgroundTasks, force: bool = Fal
                 "reports_published": len(results.get("gcs_published_reports", [])),
                 "actions_executed": len(results.get("actions_executed", [])),
             })
-            _log.info(f"Autonomous cycle completed in background: {len(results.get('actions_executed', []))} actions, "
+            _log.info(f"Autonomous cycle completed: {len(results.get('actions_executed', []))} actions, "
                       f"{len(results.get('gcs_published_reports', []))} reports published")
+            return results
         except Exception as e:
             gcs_report_manager.save_cycle_ledger({
                 "status": "FAILED",
@@ -613,14 +620,33 @@ def trigger_scheduled_cycle(background_tasks: BackgroundTasks, force: bool = Fal
                 "error": str(e),
             })
             _log.exception("Autonomous background cycle failed: %s", e)
+            return {"error": str(e)}
 
-    background_tasks.add_task(_run_cycle)
-    return {
-        "status": "TRIGGERED_SUCCESS",
-        "execution": "ASYNCHRONOUS_BACKGROUND",
-        "detail": "Autonomous Multi-Agent cycle scheduled in the background.",
-        "run_id": None
-    }
+    # Cloud Run with CPU throttling freezes background tasks immediately after HTTP response.
+    # Cloud Scheduler invocations (or sync=True) MUST execute synchronously with dedicated CPU.
+    is_scheduler = request.headers.get("User-Agent", "").startswith("Google-Cloud-Scheduler")
+    run_synchronously = sync or is_scheduler
+
+    if run_synchronously:
+        _log.info("Executing Autonomous Swarm Cycle synchronously (holding Cloud Run CPU allocation)...")
+        results = _run_cycle()
+        return {
+            "status": "COMPLETED_SUCCESS",
+            "execution": "SYNCHRONOUS_DEDICATED_CPU",
+            "detail": "Autonomous Multi-Agent cycle completed successfully.",
+            "started_at": now_iso,
+            "completed_at": datetime.now(_tz.utc).isoformat(),
+            "reports_published": len(results.get("gcs_published_reports", [])) if isinstance(results, dict) else 0,
+            "actions_executed": len(results.get("actions_executed", [])) if isinstance(results, dict) else 0,
+        }
+    else:
+        background_tasks.add_task(_run_cycle)
+        return {
+            "status": "TRIGGERED_SUCCESS",
+            "execution": "ASYNCHRONOUS_BACKGROUND",
+            "detail": "Autonomous Multi-Agent cycle scheduled in the background.",
+            "run_id": None
+        }
 
 @router.post("/api/v1/simulate/company-channel-upload")
 def simulate_company_channel_upload(channel_id: Optional[str] = None) -> Dict[str, Any]:
