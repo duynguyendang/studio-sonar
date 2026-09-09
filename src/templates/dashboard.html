@@ -1027,7 +1027,7 @@
                             <option value="realtime_24h">📊 Master 24h Pulse Dossier (All Channels)</option>
                             <option value="video_UH21OnJwxZE">🎵 Video: Thiên Đường Với Người Thương (PMC)</option>
                             <option value="video_TNl9diGdyPo">🏭 Video: Ferrero Nutella Factory Inside</option>
-                            <option value="video_Rp6ZnP5WRgI">💿 Video: Dân Chơi Dân Ca (Highlight Medley)</option>
+                            <option value="video_Fe2AjVSW-TA">🛢️ Video: Brent Oil Hits $100 (Bloomberg)</option>
                             <option value="video_R7Bf4l5VgO8">🌾 Video: Yêu Lắm Miền Tây (Thùy Chi)</option>
                             <option value="channel_report_bloomberg_originals">🏢 Channel: Bloomberg Originals</option>
                             <option value="channel_report_kiemdinhphim9_0">🎬 Channel: Kiểm Định Phim</option>
@@ -1202,7 +1202,7 @@
                             <option value="">🌐 All Monitored Assets</option>
                             <option value="UH21OnJwxZE">🎵 Thiên Đường Với Người Thương</option>
                             <option value="TNl9diGdyPo">🏭 Ferrero Nutella Inside</option>
-                            <option value="Rp6ZnP5WRgI">💿 Dân Chơi Dân Ca (Medley)</option>
+                            <option value="Fe2AjVSW-TA">🛢️ Brent Oil Hits $100</option>
                             <option value="R7Bf4l5VgO8">🌾 Yêu Lắm Miền Tây</option>
                         </select>
                         <button class="quick-action-btn" onclick="fetchClickHouseAdvancedForensics(document.getElementById('forensics-asset-filter').value)" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
@@ -1316,9 +1316,9 @@
                         <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
                             <select id="attribution-video-select" style="background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.75rem; border-radius: 6px; padding: 0.4rem 0.6rem; max-width: 280px;">
                                 <option value="UH21OnJwxZE">UH21OnJwxZE (Phương Mỹ Chi x DTAP)</option>
-                                <option value="TNl9diGdyPo">TNl9diGdyPo (Vũ - Bình Yên)</option>
-                                <option value="Rp6ZnP5WRgI">Rp6ZnP5WRgI (DTAP Official)</option>
-                                <option value="R7Bf4l5VgO8">R7Bf4l5VgO8 (Trúc Nhân)</option>
+                                <option value="TNl9diGdyPo">TNl9diGdyPo (Ferrero Chocolate Doc)</option>
+                                <option value="Fe2AjVSW-TA">Fe2AjVSW-TA (Brent Oil $100 / US-Iran)</option>
+                                <option value="R7Bf4l5VgO8">R7Bf4l5VgO8 (Thùy Chi - Yêu Lắm Miền Tây)</option>
                             </select>
                             <button id="btn-run-attribution-map" class="btn-control btn-play" onclick="triggerAttributionMapping()" style="background: linear-gradient(135deg, #7928ca, #4facfe); border: none; font-size: 0.75rem; padding: 0.45rem 1rem; border-radius: 6px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
                                 <span id="attribution-spinner" style="display: none;">⏳</span>
@@ -2585,26 +2585,62 @@
         // Attribution & Root-Cause Radar Logic (Google Search Grounded)
         // =========================================================================
         async function populateAttributionVideoSelector() {
-            const selectEl = document.getElementById('attribution-video-select');
-            if (!selectEl) return;
-
             try {
                 const res = await fetch('/api/v1/registry/tracking');
-                if (res.ok) {
-                    const data = await res.json();
-                    const videos = data.videos || [];
-                    if (videos.length > 0) {
-                        const currentVal = selectEl.value;
-                        selectEl.innerHTML = videos.map(v => `
-                            <option value="${v.video_id}">${v.video_id} (${v.title ? v.title.slice(0, 35) : 'Asset'})</option>
-                        `).join('');
-                        if (currentVal && videos.some(v => v.video_id === currentVal)) {
-                            selectEl.value = currentVal;
+                if (!res.ok) return;
+                const data = await res.json();
+                const videos = data.videos || [];
+                const channels = data.channels || [];
+
+                // 1. Attribution selector
+                const attrSelect = document.getElementById('attribution-video-select');
+                if (attrSelect && videos.length > 0) {
+                    const currentVal = attrSelect.value;
+                    attrSelect.innerHTML = videos.map(v => `
+                        <option value="${v.video_id}">${v.video_id} (${v.title ? v.title.slice(0, 35) : 'Asset'})</option>
+                    `).join('');
+                    if (currentVal && videos.some(v => v.video_id === currentVal)) {
+                        attrSelect.value = currentVal;
+                    }
+                }
+
+                // 2. ClickHouse Forensics filter
+                const forensicSelect = document.getElementById('forensics-asset-filter');
+                if (forensicSelect && videos.length > 0) {
+                    const currentVal = forensicSelect.value;
+                    let opts = `<option value="">🌐 All Monitored Assets</option>`;
+                    opts += videos.map(v => `
+                        <option value="${v.video_id}">📹 ${v.title ? v.title.slice(0, 32) : v.video_id}</option>
+                    `).join('');
+                    forensicSelect.innerHTML = opts;
+                    if (currentVal && (currentVal === "" || videos.some(v => v.video_id === currentVal))) {
+                        forensicSelect.value = currentVal;
+                    }
+                }
+
+                // 3. Dossier Report selector
+                const dossierSelect = document.getElementById('dossier-report-select');
+                if (dossierSelect) {
+                    const currentVal = dossierSelect.value || activeReportKey;
+                    let opts = `<option value="realtime_24h">📊 Master 24h Pulse Dossier (All Channels)</option>`;
+                    opts += videos.map(v => `
+                        <option value="video_${v.video_id}">📹 Video: ${v.title ? v.title.slice(0, 35) : v.video_id}</option>
+                    `).join('');
+                    opts += channels.map(c => `
+                        <option value="channel_report_${c.report_key || c.channel_id}">🏢 Channel: ${c.title || c.handle}</option>
+                    `).join('');
+                    dossierSelect.innerHTML = opts;
+                    if (currentVal) {
+                        for (let opt of dossierSelect.options) {
+                            if (opt.value === currentVal) {
+                                dossierSelect.value = currentVal;
+                                break;
+                            }
                         }
                     }
                 }
             } catch (e) {
-                console.warn("Could not populate video selector:", e);
+                console.warn("Could not populate video selectors:", e);
             }
         }
 

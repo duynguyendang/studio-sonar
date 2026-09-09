@@ -54,8 +54,10 @@ class GCSReportManager:
             "thochupanh": "thochupanh_dalat",
             "thien_duong": "UH21OnJwxZE",
             "thienduong": "UH21OnJwxZE",
-            "dan_choi_dan_ca": "Rp6ZnP5WRgI",
-            "danchoi": "Rp6ZnP5WRgI",
+            "brent_oil": "Fe2AjVSW-TA",
+            "brent": "Fe2AjVSW-TA",
+            "oil": "Fe2AjVSW-TA",
+            "us_iran": "Fe2AjVSW-TA",
             "nutella": "TNl9diGdyPo",
             "thuy_chi": "R7Bf4l5VgO8",
             "yeu_lam_mien_tay": "R7Bf4l5VgO8"
