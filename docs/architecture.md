@@ -17,6 +17,7 @@
 3. [System Architecture & Google ADK Multi-Agent Swarm](#3-system-architecture--google-adk-multi-agent-swarm)
 4. [Mathematical Formulation: Real-Time ClickHouse Velocity & Sentiment Detection](#4-mathematical-formulation-real-time-clickhouse-velocity--sentiment-detection)
 5. [Storage & Data Substrate: ClickHouse Hot Path vs. BigQuery System of Record](#5-storage--data-substrate-clickhouse-hot-path-vs-bigquery-system-of-record)
+   * [5.4 Dynamic GCS Intelligence Dossier Discovery & Zero-Hardcode Presentation](#54-dynamic-gcs-intelligence-dossier-discovery--zero-hardcode-presentation)
 6. [Autonomous External Grounding: Google Search Intelligence Engine](#6-autonomous-external-grounding-google-search-intelligence-engine)
 7. [Scheduled Jobs, Background Tasks & Execution Modes](#7-scheduled-jobs-background-tasks--execution-modes)
 8. [Enterprise Deployment Guide (Step-by-Step)](#8-enterprise-deployment-guide-step-by-step)
@@ -106,8 +107,8 @@ flowchart TB
     PR_AGENT --> SLACK & NOTION
     VC_AGENT --> GDOCS & NOTION
     
-    TM --> GCS
-    GCS --> UI_DOSSIER
+    TM -->|Publish Compiled Dossiers| GCS
+    GCS -->|GET /api/v1/reports/list & /content| UI_DOSSIER
     CH & BQ --> UI_COCKPIT & UI_TECHOPS
 ```
 
@@ -355,6 +356,43 @@ StudioSonar avoids the trade-off between query speed and long-term durability by
   $$\text{Monthly Cost} = 2.592\text{ TB} \times \$6.25/\text{TB} = \mathbf{\$16.20/\text{month per active dashboard}}$$
 * ClickHouse runs on fixed compute with **$0 marginal cost** for high-frequency queries and sub-15ms response times.
 
+### 5.4 Dynamic GCS Intelligence Dossier Discovery & Zero-Hardcode Presentation
+
+To achieve a true **cloud-native, decoupled presentation layer**, StudioSonar completely isolates report generation and storage from frontend HTML templates:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ☁️ Google Cloud Storage: gs://studiosonar-dev-reports/                       │
+│ • realtime_24h_pulse_report.md  • video_report_Fe2AjVSW-TA.md (Brent Oil)  │
+│ • video_report_TNl9diGdyPo.md   • video_report_UH21OnJwxZE.md              │
+│ • channel_report_bloomberg.md   • video_report_R7Bf4l5VgO8.md              │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                         GET /api/v1/reports/list
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ⚡ GCSReportManager.list_available_reports()                                 │
+│ • Scans GCS blobs directly via google.cloud.storage.Client.list_blobs()     │
+│ • Enriches filenames with live BigQuery registry metadata (Titles, Handles) │
+│ • Hierarchically categorizes: Master Pulse ➔ Videos ➔ Channels ➔ Sounds     │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                           JSON Catalog Response
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 🎛️ Mission Control UI (dashboard.html - Dynamic Hydration)                  │
+│ • Zero static <option> tags in HTML templates                               │
+│ • Dynamically populates <select id="dossier-report-select"> on page load    │
+│ • Instant on-demand catalog sync via "🔄 Refresh Dossier" button            │
+│ • Zero-deployment overhead: Uploading a new .md appears immediately         │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Core Architectural Guarantees:
+1. **Zero Frontend Hardcoding Debt:** The UI contains no static report option tags. Video additions (e.g. Brent Crude Oil Geopolitics `Fe2AjVSW-TA`) or asset removals take effect immediately across all dashboard menus without requiring HTML template edits or service redeployments.
+2. **Dual-Tier Resilient Fallback:** If GCS is unreachable during offline local container runs, `GCSReportManager` transparently falls back to scanning the local `reports/` directory mirror.
+3. **Automated Structured Taxonomy:** File naming conventions (`video_report_{vid}`, `channel_report_{ch}`, `realtime_24h_pulse_report`) are automatically resolved into user-friendly category badges and live metadata titles.
+
 
 ---
 
@@ -444,6 +482,8 @@ flowchart LR
 ### 6.6 Direct REST API Endpoints for Intelligence & Grounding
 * `POST /api/v1/search/live-intel`: Real-time Google Search Grounding with verified source links and citations.
 * `POST /api/v1/keywords/suggest`: Multi-dimensional AI keyword recommendation with optional auto-search grounding (`include_search_grounding=true`).
+* `GET /api/v1/reports/list`: Discovers and enumerates all available markdown dossiers directly from Google Cloud Storage (`gs://studiosonar-dev-reports`) with rich entity resolution.
+* `GET /api/v1/reports/content?report_key={key}`: Streams the real-time Markdown dossier directly from GCS for client-side Markdown, KaTeX, and Mermaid rendering.
 
 
 ---
@@ -541,5 +581,6 @@ gcloud run deploy studiosonar-taskmaster \
 | 👑 **Root Taskmaster & UI** | Google Cloud Run ([Live Service](https://studiosonar-taskmaster-i7mjye6viq-uc.a.run.app)) | Autonomous coordinator & Mission Cockpit | 99.95% |
 | 🤖 **Swarm Reasoning Engine** | Google ADK + Gemini 3.8 Flash | Cognitive PR containment & viral scripting | Real-time |
 | ☁️ **Master Reports Storage** | Google Cloud Storage | Markdown dossiers (`gs://studiosonar-dev-reports`) | Instant read |
+| 🗂️ **Dynamic Dossier Discovery** | Cloud Run + GCS Blob Scanner | Auto-populates UI selectors from bucket (`/reports/list`) | < 100ms |
 | 🛡️ **Identity & Access** | IAM Service Account (`studio-sonar-sa`) | Zero-Secret Application Default Credentials | Instant IAM |
 
