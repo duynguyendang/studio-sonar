@@ -129,23 +129,23 @@ SEED_VIDEOS: List[Dict[str, Any]] = [
         "comment_count": 25382
     },
     {
-        "video_id": "Rp6ZnP5WRgI",
-        "channel_id": "ch_phuongmychi",
+        "video_id": "Fe2AjVSW-TA",
+        "channel_id": "ch_business",
         "platform": "youtube",
-        "url": "https://www.youtube.com/watch?v=Rp6ZnP5WRgI",
-        "title": "PHƯƠNG MỸ CHI x DTAP | ALBUM 'DÂN CHƠI DÂN CA' | OFFICIAL HIGHLIGHT MEDLEY",
-        "published_at": "2026-08-24T12:00:00Z",
+        "url": "https://www.youtube.com/watch?v=Fe2AjVSW-TA",
+        "title": "Brent Oil Hits $100 as US-Iran War Shows Little Sign of Abating | The Opening Trade 9/9/2026",
+        "published_at": "2026-09-09T11:01:37Z",
         "monitoring_tier": "HIGH_PRIORITY_24H",
         "tracking_status": "ACTIVE",
         "custom_sentiment_categories": [
-            "Folk Fusion Innovation Praise",
-            "DTAP Music Production Quality",
-            "Vocal Transformation Dynamics",
-            "Album Release Inquiries"
+            "Geopolitical Escalation Debates",
+            "Crude Oil & Energy Inflation",
+            "Macro Market Sentiment",
+            "Federal Reserve Policy Impact"
         ],
-        "view_count": 232424,
-        "like_count": 13370,
-        "comment_count": 839
+        "view_count": 281,
+        "like_count": 16,
+        "comment_count": 1
     },
     {
         "video_id": "R7Bf4l5VgO8",
