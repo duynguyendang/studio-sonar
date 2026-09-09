@@ -294,6 +294,16 @@ def get_tracking_registry_endpoint() -> Dict[str, Any]:
         "videos": registry_manager.get_all_videos()
     }
 
+@router.get("/api/v1/reports/list")
+def list_reports():
+    """Lists all available markdown intelligence reports directly from Google Cloud Storage (GCS)."""
+    reports = gcs_report_manager.list_available_reports()
+    return {
+        "status": "SUCCESS",
+        "total_reports": len(reports),
+        "reports": reports
+    }
+
 @router.get("/api/v1/reports/content")
 def get_report_content(report_key: str):
     """Fetches real-time markdown report directly from Google Cloud Storage (GCS)."""

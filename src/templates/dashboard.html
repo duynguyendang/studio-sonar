@@ -1036,7 +1036,7 @@
                     </div>
                     <div style="display:flex; align-items:center; gap:0.6rem;">
                         <span style="font-size:0.72rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">☁️ GCS Live Substrate</span>
-                        <button class="quick-action-btn" onclick="loadReport(activeReportKey)">
+                        <button class="quick-action-btn" onclick="refreshDossierView()">
                             <span>🔄</span> Refresh Dossier
                         </button>
                     </div>
@@ -2118,7 +2118,38 @@
             wctx.fill();
         }
 
-        // 11. Load Master Intelligence Report
+        // 11. Dynamic Intelligence Reports from GCS
+        async function fetchAndPopulateGCSReports() {
+            try {
+                const res = await fetch('/api/v1/reports/list');
+                if (!res.ok) return;
+                const data = await res.json();
+                const reports = data.reports || [];
+                const dossierSelect = document.getElementById('dossier-report-select');
+                if (dossierSelect && reports.length > 0) {
+                    const currentVal = dossierSelect.value || activeReportKey;
+                    dossierSelect.innerHTML = reports.map(r => `
+                        <option value="${r.report_key}">${r.title}</option>
+                    `).join('');
+                    if (currentVal) {
+                        for (let opt of dossierSelect.options) {
+                            if (opt.value === currentVal || currentVal.includes(opt.value) || opt.value.includes(currentVal)) {
+                                dossierSelect.value = opt.value;
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Could not fetch reports list from GCS:", e);
+            }
+        }
+
+        async function refreshDossierView() {
+            await fetchAndPopulateGCSReports();
+            await loadReport(activeReportKey);
+        }
+
         async function loadReport(reportKey) {
             activeReportKey = reportKey;
 
@@ -2812,6 +2843,7 @@
             fetchSwarmTelemetry();
             renderCockpitAssets();
             loadReport('realtime_24h');
+            fetchAndPopulateGCSReports();
             fetchHotCounters();
             fetchNativeAnalytics();
             fetchClickHouseAdvancedForensics();

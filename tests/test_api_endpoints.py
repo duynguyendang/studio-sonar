@@ -46,3 +46,14 @@ def test_chat_command_endpoint_validation():
     assert response.status_code == 200
     data = response.json()
     assert "reply" in data
+
+
+def test_reports_list_endpoint():
+    """Validates /api/v1/reports/list returns dynamically discovered reports."""
+    response = client.get("/api/v1/reports/list")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "SUCCESS"
+    assert "total_reports" in data
+    assert isinstance(data["reports"], list)
+    assert any(r["report_key"] == "realtime_24h" for r in data["reports"])

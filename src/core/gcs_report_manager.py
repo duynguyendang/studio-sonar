@@ -187,4 +187,99 @@ class GCSReportManager:
             logger.debug(f"Cycle ledger fetch notice: {e}")
         return default
 
+    def list_available_reports(self):
+        """
+        Lists all available intelligence reports directly from Google Cloud Storage,
+        falling back to the local reports/ mirror if GCS is unreachable.
+        Returns a sorted, categorized list of report descriptors for frontend selectors.
+        """
+        reports_map = {}
+
+        # 1. Fetch registry lookup maps for rich titles
+        video_title_map = {}
+        channel_title_map = {}
+        try:
+            for v in registry_manager.get_all_videos():
+                vid = v.get("video_id")
+                if vid:
+                    video_title_map[vid] = v.get("title") or vid
+            for ch in registry_manager.get_all_channels():
+                ch_key = ch.get("report_key") or ch.get("channel_id")
+                if ch_key:
+                    channel_title_map[ch_key] = ch.get("title") or ch.get("handle") or ch_key
+        except Exception as e:
+            logger.debug(f"Registry title lookup notice: {e}")
+
+        # 2. Query GCS Bucket Blobs
+        try:
+            bucket = self._get_bucket()
+            if bucket:
+                blobs = bucket.list_blobs()
+                for blob in blobs:
+                    name = blob.name
+                    if not name.endswith(".md") or name == "README.md" or name == "channel_report_.md":
+                        continue
+                    mtime = blob.updated.isoformat() if blob.updated else ""
+                    self._process_report_entry(name, mtime, video_title_map, channel_title_map, reports_map)
+        except Exception as e:
+            logger.warning(f"Could not list blobs from GCS: {e}")
+
+        # 3. If GCS yielded nothing or for local development, scan local reports directory
+        if not reports_map and os.path.exists(REPORTS_DIR):
+            for fname in os.listdir(REPORTS_DIR):
+                if not fname.endswith(".md") or fname == "README.md" or fname == "channel_report_.md":
+                    continue
+                fpath = os.path.join(REPORTS_DIR, fname)
+                mtime = os.path.getmtime(fpath)
+                from datetime import datetime, timezone
+                dt_str = datetime.fromtimestamp(mtime, tz=timezone.utc).isoformat()
+                self._process_report_entry(fname, dt_str, video_title_map, channel_title_map, reports_map)
+
+        # 4. Sort and order: Master pulse first, then Videos, then Channels, then TikTok/Others
+        category_order = {"master": 0, "video": 1, "channel": 2, "tiktok": 3, "other": 4}
+        sorted_reports = sorted(
+            reports_map.values(),
+            key=lambda r: (category_order.get(r.get("category", "other"), 5), r.get("title", ""))
+        )
+        return sorted_reports
+
+    def _process_report_entry(self, filename: str, updated_at: str, video_title_map: dict, channel_title_map: dict, reports_map: dict):
+        clean_name = filename.replace(".md", "")
+        
+        if clean_name in ["realtime_24h_pulse_report", "realtime_24h"]:
+            report_key = "realtime_24h"
+            title = "📊 Master 24h Pulse Dossier (All Channels)"
+            category = "master"
+        elif clean_name.startswith("video_report_"):
+            vid_id = clean_name.replace("video_report_", "")
+            report_key = f"video_{vid_id}"
+            v_title = video_title_map.get(vid_id)
+            if not v_title:
+                v_title = vid_id
+            title = f"📹 Video: {v_title[:45]}"
+            category = "video"
+        elif clean_name.startswith("channel_report_"):
+            ch_key = clean_name.replace("channel_report_", "")
+            report_key = f"channel_report_{ch_key}"
+            ch_title = channel_title_map.get(ch_key) or ch_key.replace("_", " ").title()
+            title = f"🏢 Channel: {ch_title[:40]}"
+            category = "channel"
+        elif clean_name.startswith("tiktok_report_"):
+            sound_key = clean_name.replace("tiktok_report_", "")
+            report_key = clean_name
+            title = f"🎵 TikTok Sound: {sound_key.replace('_', ' ').title()[:35]}"
+            category = "tiktok"
+        else:
+            report_key = clean_name
+            title = f"📄 Report: {clean_name.replace('_', ' ').title()}"
+            category = "other"
+
+        reports_map[report_key] = {
+            "report_key": report_key,
+            "filename": filename,
+            "title": title,
+            "category": category,
+            "updated_at": updated_at
+        }
+
 gcs_report_manager = GCSReportManager()
