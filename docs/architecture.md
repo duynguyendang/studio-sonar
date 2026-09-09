@@ -86,30 +86,36 @@ flowchart TB
         UI_TECHOPS["⚙️ Tech Ops<br/>(Live Topology Graph, Counters, Logs)"]
     end
 
-    TriggerLayer -->|POST ?sync=true| TM
-    TM -->|Step 0: Fetch Live Telemetry| YT
-    TM -.->|Optional Stream Pull| TT
-    YT -->|1. Ingest Immutable Snapshot (SoR)| BQ
-    YT -->|2. Mirror Streaming Ingestion (OLAP)| CH
-    CH -.->|Cold Archive Sync| BQ
+    TriggerLayer -->|"POST ?sync=true"| TM
+    TM -->|"Step 0: Fetch Live Telemetry"| YT
+    TM -.->|"Optional Stream Pull"| TT
+    YT -->|"1. Ingest Immutable Snapshot (SoR)"| BQ
+    YT -->|"2. Mirror Streaming Ingestion (OLAP)"| CH
+    CH -.->|"Cold Archive Sync"| BQ
 
     TM --> CS_AGENT
     CS_AGENT --> AD_AGENT
-    AD_AGENT -->|Sub-second Spike Query| CH
+    AD_AGENT -->|"Sub-second Spike Query"| CH
 
-    AD_AGENT -->|Backlash > 150% & Neg > 20%| PR_AGENT
-    AD_AGENT -->|Viral Breakout > 200% & Pos >= 95%| VC_AGENT
+    AD_AGENT -->|"Backlash Spike (> 150% Velocity)"| PR_AGENT
+    AD_AGENT -->|"Viral Breakout (> 200% Velocity)"| VC_AGENT
 
-    PR_AGENT <-->|Investigate Controversy Origin| GS
-    VC_AGENT <-->|Investigate Viral Catalyst & Context| GS
+    PR_AGENT <-->|"Investigate Controversy Origin"| GS
+    VC_AGENT <-->|"Investigate Viral Catalyst & Context"| GS
 
-    CS_AGENT --> SLACK & NOTION
-    PR_AGENT --> SLACK & NOTION
-    VC_AGENT --> GDOCS & NOTION
+    CS_AGENT --> SLACK
+    CS_AGENT --> NOTION
+    PR_AGENT --> SLACK
+    PR_AGENT --> NOTION
+    VC_AGENT --> GDOCS
+    VC_AGENT --> NOTION
     
-    TM -->|Publish Compiled Dossiers| GCS
-    GCS -->|GET /api/v1/reports/list & /content| UI_DOSSIER
-    CH & BQ --> UI_COCKPIT & UI_TECHOPS
+    TM -->|"Publish Compiled Dossiers"| GCS
+    GCS -->|"GET /api/v1/reports/list & /content"| UI_DOSSIER
+    CH --> UI_COCKPIT
+    CH --> UI_TECHOPS
+    BQ --> UI_COCKPIT
+    BQ --> UI_TECHOPS
 ```
 
 ---
@@ -155,13 +161,13 @@ sequenceDiagram
         Anomaly->>ClickHouse: Query Materialized View mv_hourly_sentiment_spikes (<50ms)
     end
 
-    alt Negative Backlash Spike (> 150% Velocity & > 20% Negative Sentiment)
+    alt Negative Backlash Spike: High Velocity and Negative Sentiment
         Anomaly->>PRCrisis: A2A Handoff (Anomaly metadata & friction comments)
         PRCrisis->>GoogleSearch: Query live news & community discourse ("Brand/Video" controversy)
         GoogleSearch-->>PRCrisis: Return breaking news headlines, Reddit/X sentiment snippets
         PRCrisis->>PRCrisis: Synthesize Root Cause with Gemini 3.8 Flash + Search Grounding
         PRCrisis->>External: Dispatch Slack P1 Red Alert & Notion Emergency Board
-    else Positive Viral Breakout (> 200% Velocity & >= 95% Positive Sentiment)
+    else Positive Viral Breakout: High Velocity and Positive Sentiment
         Anomaly->>ContentCreator: A2A Handoff (Breakout trend & momentum context)
         ContentCreator->>GoogleSearch: Query viral catalyst, origin memes & trending hooks
         GoogleSearch-->>ContentCreator: Return cultural meme context & viral reference links
@@ -454,7 +460,10 @@ graph TD
     AI --> G2["2. Risk Keywords<br/>(Copyright, disclosure, drama, quality)"]
     AI --> G3["3. Viral Slang Hooks<br/>(TikTok sound, dance challenge, FYP slang)"]
     AI --> G4["4. Competitor Benchmarks<br/>(Direct competitor channels, peers)"]
-    G1 & G2 & G3 & G4 --> Registry["Persisted into tracking_registry.json<br/>& ClickHouse Anomaly Filter"]
+    G1 --> Registry["Persisted into tracking_registry.json<br/>and ClickHouse Anomaly Filter"]
+    G2 --> Registry
+    G3 --> Registry
+    G4 --> Registry
 ```
 
 ### 6.5 Zero-Secret GCP Service Account Grounding (`Vertex AI Search`)
