@@ -68,7 +68,55 @@ In modern high-velocity media and entertainment workflows, cultural trends and b
 
 ---
 
-## 3. Partner Integration: Why ClickHouse?
+## 3. Mission Control Dashboard: Core Feature Walkthrough
+
+StudioSonar provides a single pane of glass command center designed for media executives, PR directors, and technical operations teams:
+
+### 3.1 🎛️ Mission Cockpit: Real-Time Executive Surveillance & Hot Ledger
+The **Mission Cockpit** is the primary executive dashboard providing instant situational awareness over all monitored media streams:
+* **Live Telemetry Banners:** Top-level dynamic counters displaying Total Processed Views, Comments Logged (24h), and Historical Snapshots in BigQuery with real-time count-up animations.
+* **PR Crisis Stance Indicator:** Color-coded status badge (`ALL_CLEAR_GREEN` vs `ESCALATED_P1_ALERT`) reflecting real-time threat levels across all monitored assets.
+* **Interactive Asset Grid:** Real-time surveillance ledger for all monitored YouTube uploads and TikTok sounds (e.g., *Brent Oil Hits $100*, *Ferrero Nutella Inside*, *Phương Mỹ Chi MV*, *Thùy Chi MV*). Each card displays:
+  - Direct clickable cross-check URLs linking to the live external platforms.
+  - Multi-platform metrics (Views, Likes, Comments, Snapshots in BigQuery).
+  - **4D Sentiment Spectrum Bar:** Interactive visualization breaking down audience sentiment into *Positive Resonance*, *Cultural Aesthetic*, and *Community Friction*.
+* **ClickHouse Native Statistical Cards:** Real-time display of **Pearson Cross-Platform Synergy** ($r$) and **Momentum Slope** ($\beta$) measuring viral acceleration vs. audience fatigue.
+* **Instant Attribution Trigger:** A dedicated action button on each asset card allowing operators to jump directly to deep root-cause forensics.
+
+### 3.2 📄 Intelligence Dossier: Deep Multi-Agent Audits & GCS Substrate
+The **Intelligence Dossier** delivers executive-ready, long-form analytical audits compiled autonomously by the Google ADK swarm:
+* **Live Decoupled GCS Substrate:** Dossiers are rendered dynamically from Markdown files stored directly in Google Cloud Storage (`gs://studiosonar-dev-reports/`), ensuring zero frontend hardcoding debt.
+* **Dynamic Catalog Auto-Discovery (`GET /api/v1/reports/list`):** The Dossier selector dropdown automatically queries the GCS bucket in real-time, instantly listing new video or channel reports as soon as they are uploaded without requiring code changes or redeployments.
+* **Comprehensive Multi-Dimensional Audits:**
+  - **Master 24h Pulse Dossier:** Cross-channel holistic synthesis of macro trends, velocity leaders, and brand safety health.
+  - **High-Priority Asset Deep-Dives:** 6-section and 7-section audits featuring KaTeX mathematical baselines, sentiment cohort verbatim quotes, and prescriptive autonomous growth or PR containment strategies synthesized by Gemini 3.8 Flash.
+* **Interactive Visualization Support:** Renders rich, dark-mode Mermaid flowcharts, formatted markdown data tables, and mathematical formulas directly in the browser.
+* **On-Demand GCS Refresh:** The **🔄 Refresh Dossier** button re-queries the GCS bucket to pull the latest analytical deliverables on demand.
+
+### 3.3 ⚙️ Tech Ops: Swarm Topology, ClickHouse Forensics & Attribution Radar
+The **Tech Ops** screen provides an engineering-grade control room for inspecting swarm internals, distributed database telemetry, and granular mathematical forensics:
+* **Live Agent Swarm Topology Graph:** An interactive HTML5 canvas mapping the 8 Google ADK agent nodes and their active communication edges.
+  - **Agent Reasoning Inspector:** Clicking any agent node opens an interactive modal revealing the agent's live cognitive thought process, tool execution inputs, and decision rationale.
+* **ClickHouse Advanced Mathematical Forensics Matrix:**
+  - **1. Z-Score Outlier Radar:** Real-time 24-period rolling baseline evaluating statistical anomalies against $2.5\sigma$ and $3.0\sigma$ thresholds.
+  - **2. Momentum Acceleration Slope ($\beta$):** ClickHouse linear regression slope measuring whether traffic velocity is actively accelerating, plateauing, or cooling down.
+  - **3. Audience Polarization Spread ($Q_{90} - Q_{10}$):** Interquartile spread detecting internal community conflict ("Civil War" index).
+  - **4. Coordinated Bot Brigade vs. Organic Forensics:** Computes Shannon author entropy and author hash diversity ($A_{\text{diversity}}$) to distinguish coordinated astroturfing attacks from genuine community outcry.
+* **External Attribution & Root-Cause Radar (Google Search Grounded):**
+  - Connects ClickHouse statistical outliers with live Google Search Grounding (Vertex AI ADC).
+  - Traces external catalysts (press syndication, TikTok audio trends, Reddit discussion threads) and audience friction vectors.
+  - Generates interactive Mermaid causal flowcharts and prescriptive creator response protocols with verified web citations.
+* **Live Swarm Terminal (`studiosonar tail -f`):** Live streaming event log showing sub-second agent decisions and real container resource telemetry (CPU/RAM).
+* **Monitored Asset Streams Sidebar:** Real-time catalog of all active stream endpoints with live verification links.
+
+### 3.4 💬 Settings Copilot: Conversational Natural Language Control
+StudioSonar includes a natural language command bar allowing operators to steer the system without navigating complex menus:
+* **Zero-Prompt Background Operation:** The swarm functions autonomously on schedule, but operators can intervene at any time via the Settings Copilot bar.
+* **Natural Language Command Processing:** Supports commands in English and Vietnamese (e.g., `"quét 30 ngày"`, `"kích hoạt chu kỳ phân tích"`, `"kiểm tra an toàn thương hiệu"`), processed by Gemini 3.8 Flash via `/api/v1/chat/command`.
+
+---
+
+## 4. Partner Integration: Why ClickHouse?
 
 StudioSonar relies on **ClickHouse Cloud as the core analytical backbone** for sub-second telemetry aggregation before passing synthesized context to Gemini 3.8 Flash.
 
@@ -109,7 +157,7 @@ LIMIT 5;
 
 ---
 
-## 4. The 8-Agent Swarm Specification
+## 5. The 8-Agent Swarm Specification
 
 StudioSonar coordinates **8 specialized, decoupled agents** executing via Google ADK v2.7.1 and Antigravity SDK:
 
@@ -126,7 +174,7 @@ StudioSonar coordinates **8 specialized, decoupled agents** executing via Google
 
 ---
 
-## 5. Technology Stack
+## 6. Technology Stack
 
 * **Foundation LLM:** Google Gemini 3.8 Flash (Vertex AI IAM ADC & API Key)
 * **Agent Framework:** Google Agent Development Kit (ADK) v2.7.1 & Antigravity Multi-Agent SDK
@@ -137,7 +185,7 @@ StudioSonar coordinates **8 specialized, decoupled agents** executing via Google
 
 ---
 
-## 6. Local Setup & Reproduction Guide
+## 7. Local Setup & Reproduction Guide
 
 ### Prerequisites
 
